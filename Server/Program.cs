@@ -53,12 +53,7 @@ namespace Server
                 //send unpacked packet to the threadpool
                 ThreadPool.QueueUserWorkItem(processIncomingPacket, unpacked);
 
-				Console.WriteLine ("Sending response packet.");
-				// Create a new packet
-				packet = connection.CreatePacket (elements, elements);
-
-				// Send the packet
-				socket.Send (packet, socket.LastReceivedFrom);
+				
 			}
         }
 
@@ -94,6 +89,7 @@ namespace Server
             Packet packet = connect.CreatePacket(el, el);
 
             //Send packet to connected socket
+            Console.WriteLine("Sending response packet.");
             socket.Send(packet, socket.LastReceivedFrom); 
 
 
