@@ -25,14 +25,20 @@ namespace Server
 			// Create a ServerStateMessageBridge to use later
 			ServerStateMessageBridge bridge = new ServerStateMessageBridge ();
 
+            //Create ThreadPoole
+
 			while (true) {
 				// Receive a packet. Receive calls block
 				Packet packet = socket.Receive ();
 
 				Console.WriteLine ("Got packet.");
 
+                
 				// Unpack the packet using the ReliableUDPConnection
 				UnpackedPacket unpacked = connection.ProcessPacket (packet, new ElementId[] {ElementId.HealthElement});
+                ////SEND UNPACKED PACKET TO THREAD POOL
+
+
 				// Iterate through the unreliable elements and call their UpdateState function.
 				foreach (var element in unpacked.UnreliableElements) {
 					element.UpdateState (bridge);
