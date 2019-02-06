@@ -3,6 +3,7 @@ using NetworkLibrary;
 using NetworkLibrary.CWrapper;
 using NetworkLibrary.MessageElements;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Server
 {
@@ -25,7 +26,7 @@ namespace Server
 			// Create a ServerStateMessageBridge to use later
 			ServerStateMessageBridge bridge = new ServerStateMessageBridge ();
 
-            //Create ThreadPoole
+            
 
 			while (true) {
 				// Receive a packet. Receive calls block
@@ -33,16 +34,11 @@ namespace Server
 
 				Console.WriteLine ("Got packet.");
 
-                
 				// Unpack the packet using the ReliableUDPConnection
 				UnpackedPacket unpacked = connection.ProcessPacket (packet, new ElementId[] {ElementId.HealthElement});
-                ////SEND UNPACKED PACKET TO THREAD POOL
-
-
-				// Iterate through the unreliable elements and call their UpdateState function.
-				foreach (var element in unpacked.UnreliableElements) {
-					element.UpdateState (bridge);
-				}
+                
+                //send unpacked packet to the threadpool
+                ThreadPool.QueueUserWorkItem(processIncomingPacket, unpacked);
 
 				Console.WriteLine ("Sending response packet.");
 				// Create a new packet
@@ -51,6 +47,17 @@ namespace Server
 				// Send the packet
 				socket.Send (packet, socket.LastReceivedFrom);
 			}
-		}
+        }
+
+        static void processIncomingPacket(Object packetInfo)
+        {
+            UnpackedPacket up = (UnpackedPacket)packetInfo; //may not work if not serializable, will have to look into that
+            foreach (var element in up.UnreliableElements)
+            {
+                element.UpdateState(new ServerStateMessageBridge()); //maybe should also keep a single bridge object in state instead of making a new one every time?
+            }
+
+        }
 	}
 }
+
