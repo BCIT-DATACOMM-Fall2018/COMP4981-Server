@@ -1,118 +1,99 @@
 ﻿using System;
-using System.Threading;
+using System.Timers; 
 using NetworkLibrary;
 using NetworkLibrary.CWrapper;
 using NetworkLibrary.MessageElements;
 using System.Collections.Generic;
-using System.Collections.Concurrent;    //Thread-safe collections
+using System.Threading;
+using GameStateComponents;
+
 
 namespace Server
 {
-    class MainClass
-    {
-        private static ConcurrentQueue<Packet> packets = new ConcurrentQueue<Packet>();     //used for read loop
-        private static List<UpdateElement> elements = new List<UpdateElement>();            //used for process loop that goes together with library
-        private static UDPSocket socket;
-        private static ReliableUDPConnection connection;
-        private static ServerStateMessageBridge bridge;
+	class MainClass
+	{
+        // Timer to send game state
+        private static System.Timers.Timer sendGSTimer;
 
-        //Program Start
-        public static void Main(string[] args)
+		public static void Main (string[] args)
+		{
+			// Create a list of elements to send. Using the same list for unreliable and reliable
+			List<UpdateElement> elements = new List<UpdateElement>();
+			elements.Add(new HealthElement(15,6));
+
+			// Create a UDPSocket
+			UDPSocket socket = new UDPSocket ();
+			// Bind the socket. Address must be in network byte order
+			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
+
+			// Create a ReliableUDPConnection
+			ReliableUDPConnection connection = new ReliableUDPConnection ();
+
+			// Create a ServerStateMessageBridge to use later
+			ServerStateMessageBridge bridge = new ServerStateMessageBridge ();
+
+
+            //Create Game State ? 
+            GameState gameState = GameState.Instance; 
+
+
+            // Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
+            SetGSTimer(socket, gameState, connection); 
+           
+
+			while (true) {
+				// Receive a packet. Receive calls block
+				Packet packet = socket.Receive ();
+
+				Console.WriteLine ("Got packet.");
+
+				// Unpack the packet using the ReliableUDPConnection
+				UnpackedPacket unpacked = connection.ProcessPacket (packet, new ElementId[] {ElementId.HealthElement});
+                
+                //send unpacked packet to the threadpool
+                ThreadPool.QueueUserWorkItem(processIncomingPacket, unpacked);
+
+				
+			}
+        }
+
+        static void processIncomingPacket(Object packetInfo)
         {
-            // Create a list of elements to send. Using the same list for unreliable and reliable
-            elements = new List<UpdateElement>();
-            elements.Add(new HealthElement(15, 6));
+            UnpackedPacket up = (UnpackedPacket)packetInfo; //may not work if not serializable, will have to look into that
+            foreach (var element in up.UnreliableElements)
+            {
+                element.UpdateState(new ServerStateMessageBridge()); //maybe should also keep a single bridge object in state instead of making a new one every time?
+            }
 
-            // Create a UDPSocket
-            socket = new UDPSocket();
 
-            // Bind the socket. Address must be in network byte order
-            socket.Bind((ushort)System.Net.IPAddress.HostToNetworkOrder((short)8000));
-
-            // Create a ReliableUDPConnection
-            connection = new ReliableUDPConnection();
-
-            // Create a ServerStateMessageBridge to use later
-            bridge = new ServerStateMessageBridge();
-
-            ThreadStart readJob = new ThreadStart(ReadLoop);
-            Thread readThread = new Thread(readJob);
-            ThreadStart processJob = new ThreadStart(ProcessLoop);
-            Thread processThread = new Thread(processJob);
             
-            //ThreadStart unreliableJob = new ThreadStart(UnreliableLoop);
-            //Thread unreliableThread = new Thread(unreliableJob);
-            //ThreadStart reliableJob = new ThreadStart(ReliableLoop);
-            //Thread reliableThread = new Thread(reliableJob);
-            readThread.Start();
-            processThread.Start();
-            //unreliableThread.Start();
-            //reliableThread.Start();
+		}
 
-        }
-
-        //Purpose: Only add packets into 
-        private static void ReadLoop()
+        private static void SetGSTimer(UDPSocket socket, GameState gs, ReliableUDPConnection connect)
         {
-            while (true)
-            {
-                // Receive a packet. Receive calls block
-                Packet packet = socket.Receive();
+            // Create Timer with a 1/30 second interval
+            sendGSTimer = new System.Timers.Timer(33);
 
-                Console.WriteLine("Got packet.");
-                packets.Enqueue(packet);
-
-            }
+            // Set func on timer event (autoreset for continuous sending)
+            sendGSTimer.Elapsed += (source, e) => sendGameState(source, e, socket, gs, connect);
+            sendGSTimer.AutoReset = true;
+            sendGSTimer.Enabled = true; 
         }
 
-        //Purpose: Check queue and call responding unreliable reliable stuff
-        private static void ProcessLoop()
+
+        private static void sendGameState(Object source, ElapsedEventArgs e, UDPSocket socket, GameState gs, ReliableUDPConnection connect)
         {
-            Packet packet;
-            while (true)
-            {
-                if (!packets.IsEmpty)
-                {
+            List<UpdateElement> el = new List<UpdateElement>();
+            el.Add(new HealthElement(0, gs.getHealth(0)));
 
-                    if (!packets.TryDequeue(out packet))
-                    {
-                        Console.WriteLine("Dequeue error.");
-                    }
-                    else
-                    {
-                        // Unpack the packet using the ReliableUDPConnection
-                        UnpackedPacket unpacked = connection.ProcessPacket(packet, new ElementId[] { ElementId.HealthElement });
+            Packet packet = connect.CreatePacket(el, el);
 
-                        // Iterate through the unreliable elements and call their UpdateState function.
-                        foreach (var element in unpacked.UnreliableElements)
-                        {
-                            element.UpdateState(bridge);
-                        }
-                    }
+            //Send packet to connected socket
+            Console.WriteLine("Sending response packet.");
+            socket.Send(packet, socket.LastReceivedFrom); 
 
-                    //No Send loop yet so keeping these inside here.
-
-                    Console.WriteLine("Sending response packet.");
-                    // Create a new packet
-                    packet = connection.CreatePacket(elements, elements);
-
-                    // Send the packet
-                    socket.Send(packet, socket.LastReceivedFrom);
-                }
-
-            }
 
         }
-
-        //Purpose: Unreliable processing
-        private static void UnreliableLoop() {
-
-        }
-
-        //Purpose: Reliable processing
-        private static void ReliableLoop()
-        {
-
-        }
-    }
+	}
 }
+

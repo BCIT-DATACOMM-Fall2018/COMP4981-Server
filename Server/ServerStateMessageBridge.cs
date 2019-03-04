@@ -1,5 +1,6 @@
 ﻿using System;
 using NetworkLibrary;
+using GameStateComponents;
 
 namespace Server
 {
@@ -17,7 +18,11 @@ namespace Server
 
 		public void UpdateActorHealth (int actorId, int newHealth){
 			Console.WriteLine("Actor Id: " + actorId + ", Health: " + newHealth);
-		}
+            //get instance of the gameState
+            GameState gamestate = GameState.Instance;
+            gamestate.addPlayer();
+            gamestate.updateHealth(0, newHealth);
+        }
 
 		public void UseActorAbility (int actorId, int abilityId, int targetId, int x, int y){
 

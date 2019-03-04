@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace GameStateComponents {
     public class GameState {
-        private static Gamestate instance = null;
+        private static GameState instance = null;
         private static readonly object padlock = new object();
-        private List<Player> players = new List<Player>();
+        private Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
+        private int createdActorsCount = 0;
 
         private GameState() {
 
@@ -21,30 +23,31 @@ namespace GameStateComponents {
             }
         }
 
-        public void addPlayer() {
-            int playerId = players.Count;
-            Player newPlayer = new Player(playerId);
-            players.Add(newPlayer);
+        public int addPlayer() {
+            int actorId = createdActorsCount++;
+            Player newPlayer = new Player(actorId);
+            actors.Add(actorId, newPlayer);
+            return actorId;
         }
 
-        public void updateHealth(int playerId, int health) {
-            players[playerId].setHealth(health);
+        public void updateHealth(int actorId, int health) {
+            ((Player) actors[actorId]).setHealth(health);
         }
 
-        public void updatePosition(int playerId, double x, double y) {
-            players[playerId].setPosition(x, y);
+        public void updatePosition(int actorId, double x, double y) {
+            actors[actorId].setPosition(x, y);
         }
 
-        public void updatePosition(int playerId, double[] position) {
-            players[playerId].setPosition(position);
+        public void updatePosition(int actorId, double[] position) {
+            actors[actorId].setPosition(position);
         }
 
-        public int getHealth(int playerId) {
-            return players[playerId].getHealth();
+        public int getHealth(int actorId) {
+            return ((Player)actors[actorId]).getHealth();
         }
 
-        public double[] getPosition(int playerId) {
-            return players[playerId].getPosition();
+        public double[] getPosition(int actorId) {
+            return actors[actorId].getPosition();
         }
     }
 }
