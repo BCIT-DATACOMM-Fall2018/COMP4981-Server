@@ -2,6 +2,8 @@
 using NetworkLibrary;
 using NetworkLibrary.CWrapper;
 using NetworkLibrary.MessageElements;
+using System.Collections.Generic;
+
 
 using GameStateComponents;
 
@@ -12,25 +14,30 @@ namespace Server
         State state;
         GameState gamestate;
         ClientManager clientmanager;
+        UDPSocket socket;
         public ServerStateMessageBridge ()
 		{
             state = State.Instance;
             gamestate = state.getGameState();
-            clientmanager = state.getClientManger();
+            clientmanager = state.getClientManger(); 
         }
 
-        public void UpdateActorPosition (int actorId, float x, float z){
-            double[]  pos = new double[2];
-            pos[0] = x;
-            pos[1] = z;
+        public ServerStateMessageBridge(UDPSocket sock)
+        {
+            state = State.Instance;
+            gamestate = state.getGameState();
+            clientmanager = state.getClientManger();
+            socket = sock;
+        }
 
-            gamestate.updatePosition(actorId, pos);
-		}
+        public void UpdateActorPosition(int actorId, float x, float z)
+        {
+            //TARGET POSITION FOR CLIENT TO MOVE TO.
+            gamestate.updateTargetPosition(actorId, x, z);
+        }
 
-		public void UpdateActorHealth (int actorId, int newHealth){
-			//Console.WriteLine("Actor Id: " + actorId + ", Health: " + newHealth);
-            gamestate.addPlayer();
-            gamestate.updateHealth(0, newHealth);
+        public void UpdateActorHealth (int actorId, int newHealth){
+            //send to all clients 
         }
 
 
@@ -51,26 +58,31 @@ namespace Server
 
         public void SpawnActor(ActorType actorType, int ActorId, float x, float z)
         {
-            double[] pos = new double[2];
-            pos[0] = x;
-            pos[1] = z;
-            if (actorType != ActorType.Player)
-            {
-                Console.WriteLine("NOT YET IMPLEMENTED");
-                return;
-            }
-            //currently just updates the position of the actor in the gamestate.
-            //Should then send a reliable message to all clients to tell them something spawned
-            gamestate.updatePosition(ActorId, pos);
-            
+            //send to all clients 
+
         }
 
         public void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ)
         {
             //send to all clients 
-            Console.WriteLine("NOT YET IMPLEMENTED");
         }
+
+            
 
     }
 }
 
+//SERVER ONLY SENDS MOVEMENT (UNRELIABLE)
+// -- calculate distance moved per tick along a straight line
+// send updated postion + target position every tick
+// if a player doesnt request movement then target pos will be same as current position
+
+//HEALTH (UNRELIABLE)
+
+//SPAWN (RELIABLE)
+//send at start of game right now
+
+//RECEIVE USE ABLILITY (EITHER)
+//validate, then echo to every client
+
+   

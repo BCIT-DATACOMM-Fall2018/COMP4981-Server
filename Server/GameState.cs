@@ -34,20 +34,30 @@ namespace GameStateComponents {
             ((Player) actors[actorId]).setHealth(health);
         }
 
-        public void updatePosition(int actorId, double x, double y) {
+        public void updatePosition(int actorId, float x, float y) {
             actors[actorId].setPosition(x, y);
         }
 
-        public void updatePosition(int actorId, double[] position) {
+        public void updatePosition(int actorId, float[] position) {
             actors[actorId].setPosition(position);
+        }
+
+        public void updateTargetPosition(int actorId, float x, float y)
+        {
+            actors[actorId].setTargetPosition(x, y);
         }
 
         public int getHealth(int actorId) {
             return ((Player)actors[actorId]).getHealth();
         }
 
-        public double[] getPosition(int actorId) {
+        public float[] getPosition(int actorId) {
             return actors[actorId].getPosition();
+        }
+
+        public float[] getTargetPosition(int actorId)
+        {
+            return actors[actorId].getTargetPosition();
         }
     }
 }

@@ -9,9 +9,12 @@ namespace GameStateComponents {
         private static ClientManager instance = null;
         private static readonly object padlock = new object();
         private PlayerConnection[] connections = new PlayerConnection[10];
+        private int countCurrConnections;
+
+        //when checking connections elswhere in the code, we are looking at connections[i] where 0 <= i < countCurrConnections 
 
         private ClientManager() {
-
+            countCurrConnections = 0;
         }
 
         public static ClientManager Instance {
@@ -25,10 +28,10 @@ namespace GameStateComponents {
             }
         }
 
-        public int addConnection(int actorId, Destination destination, Socket socket) {
+        public int addConnection(int actorId, Destination destination, Socket socket, ReliableUDPConnection connection) {
             for (int i = 0; i < 10; i++) {
                 if (connections[i] == null) {
-                    PlayerConnection newPlayer = new PlayerConnection(i, actorId, destination, socket);
+                    PlayerConnection newPlayer = new PlayerConnection(i, actorId, destination, socket, connection);
                     connections[i] = newPlayer;
                     return i;
                 }
@@ -65,6 +68,21 @@ namespace GameStateComponents {
         public Socket getSocketFromActor(int actorId) {
             int clientId = getClientId(actorId);
             return connections[clientId].getSocket();
+        }
+
+        public PlayerConnection[] getAllPlayerConnections()
+        {
+            return connections;
+        }
+
+        public int getCountCurrConnections()
+        {
+            return countCurrConnections;
+        }
+
+        public void setCountCurrConnections(int count)
+        {
+            countCurrConnections = count;
         }
     }
 }

@@ -10,12 +10,14 @@ namespace GameStateComponents {
         private int actorId;
         private Destination destination;
         private Socket socket;
+        private ReliableUDPConnection connection;
 
-        public PlayerConnection(int clientId, int actorId, Destination destination, Socket socket) {
+        public PlayerConnection(int clientId, int actorId, Destination destination, Socket socket, ReliableUDPConnection connection) {
             this.clientId = clientId;
             this.actorId = actorId;
             this.destination = destination;
             this.socket = socket;
+            this.connection = connection;
         }
 
         public int getClientId() {
@@ -32,6 +34,11 @@ namespace GameStateComponents {
 
         public Socket getSocket() {
             return socket;
+        }
+
+        public ReliableUDPConnection getConnection()
+        {
+            return connection;
         }
     }
 }

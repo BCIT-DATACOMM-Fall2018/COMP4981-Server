@@ -30,10 +30,11 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="NetworkLibrary">
-      <HintPath>..\Client\lib\NetworkLibrary.dll</HintPath>
+    <Reference Include="NetworkLibrary, Version=1.0.6970.38568, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\NetworkLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
