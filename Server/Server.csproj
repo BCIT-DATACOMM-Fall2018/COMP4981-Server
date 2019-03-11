@@ -30,16 +30,15 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="NetworkLibrary">
-      <HintPath>..\Client\lib\NetworkLibrary.dll</HintPath>
+      <HintPath>lib\NetworkLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="GameState.cs" />
-    <Compile Include="GameStateTest.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerConnection.cs" />
     <Compile Include="Program.cs" />
