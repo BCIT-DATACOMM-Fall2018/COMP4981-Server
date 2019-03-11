@@ -10,6 +10,7 @@ namespace GameStateComponents {
         private int actorId;
         private Destination destination;
         private Socket socket;
+        private bool IsReady {get;set;}
 
         public PlayerConnection(int clientId, int actorId, Destination destination, Socket socket) {
             this.clientId = clientId;
