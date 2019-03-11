@@ -27,7 +27,7 @@ namespace Server
 			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
 
 			// Create a ReliableUDPConnection
-			ReliableUDPConnection connection = new ReliableUDPConnection ();
+			ReliableUDPConnection connection = new ReliableUDPConnection (0);
 
 			// Create a ServerStateMessageBridge to use later
 			ServerStateMessageBridge bridge = new ServerStateMessageBridge ();
