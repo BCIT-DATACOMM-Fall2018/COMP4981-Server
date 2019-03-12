@@ -12,6 +12,7 @@ namespace Server
 {
 	class MainClass
 	{
+        private static Logger Log;
 		// Timer to send game state
 		private static System.Timers.Timer sendGameStateTimer;
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
@@ -19,6 +20,8 @@ namespace Server
 
 		public static void Main (string[] args)
 		{
+            Log = Logger.Instance;
+            Log.D("Server started.");
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 			List<UpdateElement> elements = new List<UpdateElement> ();
 			elements.Add (new HealthElement (15, 6));
@@ -36,6 +39,8 @@ namespace Server
             
 
 			LobbyState(socket, state, bridge);
+
+            Log.Dispose();
 		}
 
         private static void LobbyState(UDPSocket socket, State state, ServerStateMessageBridge bridge)

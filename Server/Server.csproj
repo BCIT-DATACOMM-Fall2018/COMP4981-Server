@@ -42,6 +42,7 @@
     <Compile Include="ClientManager.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="GameStateTest.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerConnection.cs" />
     <Compile Include="Program.cs" />
