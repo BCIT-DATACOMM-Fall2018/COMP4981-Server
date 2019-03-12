@@ -2,18 +2,10 @@ using System;
 
 namespace GameStateComponents {
     public class Player : Actor {
-        private int health;
+		public int Health { get; set; }
 
         public Player(int actorId) : base(actorId) {
-            health = 100;
-        }
-
-        public int getHealth() {
-            return health;
-        }
-
-        public void setHealth(int health) {
-            this.health = health;
+            Health = 100;
         }
     }
 }

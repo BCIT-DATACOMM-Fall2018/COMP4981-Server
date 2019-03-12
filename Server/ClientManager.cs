@@ -6,83 +6,46 @@ using NetworkLibrary.MessageElements;
 
 namespace GameStateComponents {
     class ClientManager {
-        private static ClientManager instance = null;
-        private static readonly object padlock = new object();
-        private PlayerConnection[] connections = new PlayerConnection[10];
-        private int countCurrConnections;
+		public PlayerConnection[] Connections { get; private set; } = new PlayerConnection[10];
+		public int CountCurrConnections { get; private set; }
 
         //when checking connections elswhere in the code, we are looking at connections[i] where 0 <= i < countCurrConnections 
 
-        private ClientManager() {
-            countCurrConnections = 0;
+        public ClientManager() {
         }
 
-        public static ClientManager Instance {
-            get {
-                lock (padlock) {
-                    if (instance == null) {
-                        instance = new ClientManager();
-                    }
-                    return instance;
-                }
-            }
-        }
-
-        public int addConnection(int actorId, Destination destination, Socket socket, ReliableUDPConnection connection) {
+        public int AddConnection(Destination destination) {
             for (int i = 0; i < 10; i++) {
-                if (connections[i] == null) {
-                    PlayerConnection newPlayer = new PlayerConnection(i, actorId, destination, socket, connection);
-                    connections[i] = newPlayer;
+				if (Connections[i] == null) {
+					PlayerConnection newPlayer = new PlayerConnection(i, i, destination, new ReliableUDPConnection(i));
+					Connections[i] = newPlayer;
+					CountCurrConnections++;
                     return i;
                 }
             }
-            return -1;
+			throw new OutOfMemoryException ();
         }
 
-        public int getActorId(int clientId) {
-            return connections[clientId].getActorId();
+        public int GetActorId(int clientId) {
+			return Connections[clientId].ActorId;
         }
 
-        public int getClientId(int actorId) {
+        public int GetClientId(int actorId) {
             for (int i = 0; i < 10; i++) {
-                if (connections[i].getActorId() == actorId) {
-                    return connections[i].getClientId();
+				if (Connections[i].ActorId == actorId) {
+					return Connections[i].ClientId;
                 }
             }
             return -1;
         }
 
-        public Destination getDestinationFromClient(int clientId) {
-            return connections[clientId].getDestination();
+        public Destination GetDestinationFromClient(int clientId) {
+			return Connections[clientId].Destination;
         }
 
-        public Destination getDestinationFromActor(int actorId) {
-            int clientId = getClientId(actorId);
-            return connections[clientId].getDestination();
-        }
-
-        public Socket getSocketFromClient(int clientId) {
-            return connections[clientId].getSocket();
-        }
-
-        public Socket getSocketFromActor(int actorId) {
-            int clientId = getClientId(actorId);
-            return connections[clientId].getSocket();
-        }
-
-        public PlayerConnection[] getAllPlayerConnections()
-        {
-            return connections;
-        }
-
-        public int getCountCurrConnections()
-        {
-            return countCurrConnections;
-        }
-
-        public void setCountCurrConnections(int count)
-        {
-            countCurrConnections = count;
+        public Destination GetDestinationFromActor(int actorId) {
+            int clientId = GetClientId(actorId);
+			return Connections[clientId].Destination;
         }
     }
 }

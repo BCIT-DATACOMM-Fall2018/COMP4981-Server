@@ -14,26 +14,19 @@ namespace Server
         State state;
         GameState gamestate;
         ClientManager clientmanager;
-        UDPSocket socket;
+
         public ServerStateMessageBridge ()
 		{
             state = State.Instance;
-            gamestate = state.getGameState();
-            clientmanager = state.getClientManger(); 
-        }
-
-        public ServerStateMessageBridge(UDPSocket sock)
-        {
-            state = State.Instance;
-            gamestate = state.getGameState();
-            clientmanager = state.getClientManger();
-            socket = sock;
+            gamestate = state.GameState;
+            clientmanager = state.ClientManager; 
         }
 
         public void UpdateActorPosition(int actorId, float x, float z)
         {
             //TARGET POSITION FOR CLIENT TO MOVE TO.
-            gamestate.updateTargetPosition(actorId, x, z);
+			Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
+            gamestate.UpdateTargetPosition(actorId, x, z);
         }
 
         public void UpdateActorHealth (int actorId, int newHealth){
@@ -67,7 +60,14 @@ namespace Server
             //send to all clients 
         }
 
-            
+		public void SetReady(int clientId, bool ready){
+			state.ClientManager.Connections [clientId].Ready = ready;
+			Console.WriteLine ("Set ready status of {0} to {1}", clientId, ready);
+		}
+
+		public void StartGame (int playerNum){
+
+		}
 
     }
 }

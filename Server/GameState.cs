@@ -1,63 +1,66 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using NetworkLibrary;
+using NetworkLibrary.MessageElements;
 
-namespace GameStateComponents {
-    public class GameState {
-        private static GameState instance = null;
-        private static readonly object padlock = new object();
-        private Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
-        private int createdActorsCount = 0;
+namespace GameStateComponents
+{
+	public class GameState
+	{
+		private Dictionary<int, Actor> actors = new Dictionary<int, Actor> ();
+		private int createdActorsCount = 0;
+		public ConcurrentQueue<SpawnElement> SpawnQueue {get; private set;}
 
-        private GameState() {
+		public GameState ()
+		{
+			SpawnQueue = new ConcurrentQueue<SpawnElement> ();
+		}
 
-        }
+		public int AddPlayer ()
+		{
+			int actorId = createdActorsCount++;
+			Player newPlayer = new Player (actorId);
+			actors.Add (actorId, newPlayer);
+			Console.WriteLine ("Adding player actor with id {0}", actorId);
+			SpawnQueue.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, 0, 0));
+			return actorId;
+		}
 
-        public static GameState Instance {
-            get {
-                lock (padlock) {
-                    if (instance == null) {
-                        instance = new GameState();
-                    }
-                    return instance;
-                }
-            }
-        }
+		public void UpdateHealth (int actorId, int health)
+		{
+			((Player)actors [actorId]).Health = health;
+		}
 
-        public int addPlayer() {
-            int actorId = createdActorsCount++;
-            Player newPlayer = new Player(actorId);
-            actors.Add(actorId, newPlayer);
-            return actorId;
-        }
+		public void UpdatePosition (int actorId, float x, float z)
+		{
+			
+			actors [actorId].Position = new Actor.Location (x, z);
+		}
 
-        public void updateHealth(int actorId, int health) {
-            ((Player) actors[actorId]).setHealth(health);
-        }
+		public void UpdatePosition (int actorId, Actor.Location position)
+		{
+			actors [actorId].Position = position;
+		}
 
-        public void updatePosition(int actorId, float x, float y) {
-            actors[actorId].setPosition(x, y);
-        }
+		public void UpdateTargetPosition (int actorId, float x, float z)
+		{
+			actors [actorId].TargetPosition = new Actor.Location (x, z);
+		}
 
-        public void updatePosition(int actorId, float[] position) {
-            actors[actorId].setPosition(position);
-        }
+		public int GetHealth (int actorId)
+		{
+			return ((Player)actors [actorId]).Health;
+		}
 
-        public void updateTargetPosition(int actorId, float x, float y)
-        {
-            actors[actorId].setTargetPosition(x, y);
-        }
+		public Actor.Location GetPosition (int actorId)
+		{
+			return actors [actorId].Position;
+		}
 
-        public int getHealth(int actorId) {
-            return ((Player)actors[actorId]).getHealth();
-        }
-
-        public float[] getPosition(int actorId) {
-            return actors[actorId].getPosition();
-        }
-
-        public float[] getTargetPosition(int actorId)
-        {
-            return actors[actorId].getTargetPosition();
-        }
-    }
+		public Actor.Location GetTargetPosition (int actorId)
+		{
+			return actors [actorId].Position;
+		}
+	}
 }

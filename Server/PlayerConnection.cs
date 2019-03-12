@@ -6,39 +6,17 @@ using NetworkLibrary.MessageElements;
 
 namespace GameStateComponents {
     class PlayerConnection {
-        private int clientId;
-        private int actorId;
-        private Destination destination;
-        private Socket socket;
-        private ReliableUDPConnection connection;
+		public int ClientId { get; private set;}
+		public int ActorId { get; private set;}
+		public Destination Destination { get; private set;}
+		public ReliableUDPConnection Connection { get; private set;}
+		public bool Ready { get; set; }
 
-        public PlayerConnection(int clientId, int actorId, Destination destination, Socket socket, ReliableUDPConnection connection) {
-            this.clientId = clientId;
-            this.actorId = actorId;
-            this.destination = destination;
-            this.socket = socket;
-            this.connection = connection;
-        }
-
-        public int getClientId() {
-            return clientId;
-        }
-
-        public int getActorId() {
-            return actorId;
-        }
-
-        public Destination getDestination() {
-            return destination;
-        }
-
-        public Socket getSocket() {
-            return socket;
-        }
-
-        public ReliableUDPConnection getConnection()
-        {
-            return connection;
+        public PlayerConnection(int clientId, int actorId, Destination destination, ReliableUDPConnection connection) {
+			this.ClientId = clientId;
+			this.ActorId = actorId;
+			this.Destination = destination;
+			this.Connection = connection;
         }
     }
 }

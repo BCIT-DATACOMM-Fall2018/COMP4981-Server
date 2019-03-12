@@ -4,12 +4,12 @@ namespace GameStateComponents {
     class State {
         private static State instance = null;
         private static readonly object padlock = new object();
-        private static GameState gamestate;
-        private static ClientManager clientmanager;
+		public GameState GameState { get; private set; }
+		public ClientManager ClientManager { get; private set; }
 
         private State() {
-            gamestate = GameState.Instance;
-            clientmanager = ClientManager.Instance;
+			GameState = new GameState();
+			ClientManager = new ClientManager();
         }
 
         public static State Instance {
@@ -21,14 +21,6 @@ namespace GameStateComponents {
                     return instance;
                 }
             }
-        }
-
-        public GameState getGameState() {
-            return gamestate;
-        }
-
-        public ClientManager getClientManger() {
-            return clientmanager;
         }
     }
 }
