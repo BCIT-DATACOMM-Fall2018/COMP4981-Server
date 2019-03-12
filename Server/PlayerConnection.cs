@@ -11,6 +11,7 @@ namespace GameStateComponents {
 		public Destination Destination { get; private set;}
 		public ReliableUDPConnection Connection { get; private set;}
 		public bool Ready { get; set; }
+        public bool startedGame { get; set; }
 
         public PlayerConnection(int clientId, int actorId, Destination destination, ReliableUDPConnection connection) {
 			this.ClientId = clientId;
