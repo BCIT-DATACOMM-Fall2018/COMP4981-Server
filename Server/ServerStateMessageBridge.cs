@@ -28,11 +28,6 @@ namespace Server
 			Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
             gamestate.UpdateTargetPosition(actorId, x, z);
 
-            //CREATE MOVE FUNCTION FOR THE ACTOR TO DO THE MOVEMENT
-            GameUtility.coordinate start = gamestate.GetPosition(actorId);
-            GameUtility.coordinate target = gamestate.GetTargetPosition(actorId);
-            GameUtility.coordinate result = GameUtility.findNewCoordinate(start, target, (float)0.11);
-            gamestate.UpdatePosition(actorId, result);
         }
 
         public void UpdateActorHealth (int actorId, int newHealth){

@@ -10,7 +10,7 @@ namespace GameStateComponents
 	public class GameState
 	{
 		private Dictionary<int, Actor> actors = new Dictionary<int, Actor> ();
-		private int createdActorsCount = 0;
+		public int CreatedActorsCount { get; private set;} = 0;
 		public ConcurrentQueue<SpawnElement> SpawnQueue {get; private set;}
 
 		public GameState ()
@@ -20,7 +20,7 @@ namespace GameStateComponents
 
 		public int AddPlayer ()
 		{
-			int actorId = createdActorsCount++;
+			int actorId = CreatedActorsCount++;
 			Player newPlayer = new Player (actorId);
 			actors.Add (actorId, newPlayer);
 			Console.WriteLine ("Adding player actor with id {0}", actorId);
@@ -36,17 +36,17 @@ namespace GameStateComponents
 		public void UpdatePosition (int actorId, float x, float z)
 		{
 			
-			actors [actorId].Position = new GameUtility.coordinate (x, z); //is this a memory leak waiting to happen?
+			actors [actorId].Position = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
 		}
 
-		public void UpdatePosition (int actorId, GameUtility.coordinate position)
+		public void UpdatePosition (int actorId, GameUtility.Coordinate position)
 		{
 			actors [actorId].Position = position;
 		}
 
 		public void UpdateTargetPosition (int actorId, float x, float z)
 		{
-			actors [actorId].TargetPosition = new GameUtility.coordinate(x, z); //is this a memory leak waiting to happen?
+			actors [actorId].TargetPosition = new GameUtility.Coordinate(x, z); //is this a memory leak waiting to happen?
         }
 
 		public int GetHealth (int actorId)
@@ -54,12 +54,12 @@ namespace GameStateComponents
 			return ((Player)actors [actorId]).Health;
 		}
 
-		public GameUtility.coordinate GetPosition (int actorId)
+		public GameUtility.Coordinate GetPosition (int actorId)
 		{
 			return actors [actorId].Position;
 		}
 
-		public GameUtility.coordinate GetTargetPosition (int actorId)
+		public GameUtility.Coordinate GetTargetPosition (int actorId)
 		{
 			return actors [actorId].TargetPosition;
 		}

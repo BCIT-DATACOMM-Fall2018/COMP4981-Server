@@ -12,6 +12,8 @@ namespace Server
 {
 	class MainClass
 	{
+
+
 		// Timer to send game state
 		private static System.Timers.Timer sendGameStateTimer;
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
@@ -88,6 +90,9 @@ namespace Server
                     Console.WriteLine("Client {0}, {1}", i, client.Ready);
                     allReady &= client.Ready; //bitwise operater to check that every connection is ready
                 }
+				if (state.ClientManager.CountCurrConnections < 2) {
+					allReady = false;
+				}
                 if (allReady)
                 {
                     Console.WriteLine("All are ready sending startgame packet");
@@ -109,10 +114,11 @@ namespace Server
                         packet = socket.Receive();
                         switch (ReliableUDPConnection.GetPacketType(packet))
                         {
-                            case PacketType.GameplayPacket:
-                                clientId = ReliableUDPConnection.GetPlayerID(packet);
-                                state.ClientManager.Connections[clientId].startedGame = true;
-                                allSendGame = true;
+						case PacketType.GameplayPacket:
+							clientId = ReliableUDPConnection.GetPlayerID (packet);
+							state.ClientManager.Connections [clientId].startedGame = true;
+							allSendGame = true;
+							Console.WriteLine ("Received packet from {0}", clientId);
                                 for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
                                 {
                                     PlayerConnection client = state.ClientManager.Connections[i];
@@ -198,9 +204,18 @@ namespace Server
 					reliable.Add(spawnElement);
 				}
 
+				//CREATE MOVE FUNCTION FOR THE ACTOR TO DO THE MOVEMENT
+				for (int i = 0; i < gs.CreatedActorsCount; i++) {
+					GameUtility.Coordinate start = gs.GetPosition(i);
+					GameUtility.Coordinate target = gs.GetTargetPosition(i);
+					GameUtility.Coordinate result = GameUtility.FindNewCoordinate(start, target, 0.22f);
+					gs.UpdatePosition(i, result);
+				}
+
+
 				// Create unreliable elements that will be sent to all clients
 				int actorId;
-				for (int i = 0; i < cm.CountCurrConnections; i++) {
+				for (int i = 0; i < gs.CreatedActorsCount; i++) {
 					actorId = cm.Connections [i].ActorId;
 					unreliable.Add (new HealthElement (actorId, gs.GetHealth(actorId)));
 					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
