@@ -30,7 +30,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NetworkLibrary, Version=1.0.6970.38568, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="NetworkLibrary, Version=1.0.7009.21488, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\NetworkLibrary.dll</HintPath>
     </Reference>
@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
+    <Compile Include="GameUtility.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="GameStateTest.cs" />
