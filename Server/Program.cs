@@ -136,7 +136,6 @@ namespace Server
             }
         }
 
-        //private static void waitForAllInGame
 
 		private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
@@ -204,7 +203,7 @@ namespace Server
 				for (int i = 0; i < cm.CountCurrConnections; i++) {
 					actorId = cm.Connections [i].ActorId;
 					unreliable.Add (new HealthElement (actorId, gs.GetHealth(actorId)));
-					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).X, gs.GetPosition (actorId).Z, gs.GetTargetPosition (actorId).X, gs.GetTargetPosition (actorId).Z));
+					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
 				}
 
 				// Create and send packets to all clients

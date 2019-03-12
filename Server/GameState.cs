@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using NetworkLibrary;
 using NetworkLibrary.MessageElements;
+using Server;
 
 namespace GameStateComponents
 {
@@ -35,32 +36,32 @@ namespace GameStateComponents
 		public void UpdatePosition (int actorId, float x, float z)
 		{
 			
-			actors [actorId].Position = new Actor.Location (x, z);
+			actors [actorId].Position = new GameUtility.coordinate (x, z); //is this a memory leak waiting to happen?
 		}
 
-		public void UpdatePosition (int actorId, Actor.Location position)
+		public void UpdatePosition (int actorId, GameUtility.coordinate position)
 		{
 			actors [actorId].Position = position;
 		}
 
 		public void UpdateTargetPosition (int actorId, float x, float z)
 		{
-			actors [actorId].TargetPosition = new Actor.Location (x, z);
-		}
+			actors [actorId].TargetPosition = new GameUtility.coordinate(x, z); //is this a memory leak waiting to happen?
+        }
 
 		public int GetHealth (int actorId)
 		{
 			return ((Player)actors [actorId]).Health;
 		}
 
-		public Actor.Location GetPosition (int actorId)
+		public GameUtility.coordinate GetPosition (int actorId)
 		{
 			return actors [actorId].Position;
 		}
 
-		public Actor.Location GetTargetPosition (int actorId)
+		public GameUtility.coordinate GetTargetPosition (int actorId)
 		{
-			return actors [actorId].Position;
+			return actors [actorId].TargetPosition;
 		}
 	}
 }

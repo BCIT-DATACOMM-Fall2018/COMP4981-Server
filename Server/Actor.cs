@@ -1,4 +1,5 @@
 using System;
+using Server;
 
 namespace GameStateComponents {
     public abstract class Actor {
@@ -15,8 +16,10 @@ namespace GameStateComponents {
 		}
 
 		public int ActorId { get; private set; }
-		public Location Position { get; set; }
-		public Location TargetPosition { get; set; }
+		//public Location Position { get; set; }
+		//public Location TargetPosition { get; set; }
+        public GameUtility.coordinate Position { get; set; }
+        public GameUtility.coordinate TargetPosition { get; set; }
 
         public Actor(int actorId) {
             ActorId = actorId;
