@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
+    <Compile Include="CircularBuffer.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Player.cs" />
