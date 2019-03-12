@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using NetworkLibrary;
 using NetworkLibrary.MessageElements;
+using Server;
 
 namespace GameStateComponents
 {
@@ -35,7 +36,7 @@ namespace GameStateComponents
 		public void UpdatePosition (int actorId, float x, float z)
 		{
 			
-			actors [actorId].Position = new Actor.Location (x, z);
+			actors [actorId].Position = GameUtility.coordinate (x, z);
 		}
 
 		public void UpdatePosition (int actorId, Actor.Location position)
