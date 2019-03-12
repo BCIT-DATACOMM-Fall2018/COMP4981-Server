@@ -28,9 +28,29 @@ namespace GameStateComponents
 			return actorId;
 		}
 
-		public void UpdateHealth (int actorId, int health)
+        public int AddCreep()
+        {
+            int actorId = CreatedActorsCount++;
+            Creep newCreep = new Creep(actorId);
+            actors.Add(actorId, newCreep);
+            Console.WriteLine("Adding creep actor with id {0}", actorId);
+            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
+            return actorId;
+        }
+
+        public int AddTower()
+        {
+			int actorId = CreatedActorsCount++;
+            Tower newTower = new Tower(actorId);
+            actors.Add(actorId, newTower);
+            Console.WriteLine("Adding tower actor with id {0}", actorId);
+            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
+            return actorId;
+        }
+
+        public void UpdateHealth (int actorId, int health)
 		{
-			((Player)actors [actorId]).Health = health;
+			actors [actorId].Health = health;
 		}
 
 		public void UpdatePosition (int actorId, float x, float z)
@@ -51,7 +71,7 @@ namespace GameStateComponents
 
 		public int GetHealth (int actorId)
 		{
-			return ((Player)actors [actorId]).Health;
+			return actors [actorId].Health;
 		}
 
 		public GameUtility.Coordinate GetPosition (int actorId)

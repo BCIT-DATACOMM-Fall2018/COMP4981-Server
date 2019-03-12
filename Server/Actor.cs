@@ -15,6 +15,8 @@ namespace GameStateComponents {
 
 		}
 
+		public int Health { get; set;}
+
 		public int ActorId { get; private set; }
 		//public Location Position { get; set; }
 		//public Location TargetPosition { get; set; }
