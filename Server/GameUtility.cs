@@ -40,6 +40,12 @@ namespace Server
 			y3 = y1 + (distance / slope) * (y2 - y1);
 			return new Coordinate (x3, y3);
         }
+
+		public static float AngleBetweenCoordinates(Coordinate c1, Coordinate c2){
+			float xDiff = c2.x - c1.x;
+			float yDiff = c2.z - c2.z;
+			return (float)Math.Atan2 (yDiff, xDiff);
+		}
     }
 
 }

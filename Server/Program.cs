@@ -26,7 +26,7 @@ namespace Server
 			elements.Add (new HealthElement (15, 6));
 
 			// Create a UDPSocket
-			UDPSocket socket = new UDPSocket (10);
+			UDPSocket socket = new UDPSocket (0);
 			// Bind the socket. Address must be in network byte order
 			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
 
@@ -90,6 +90,8 @@ namespace Server
                     Console.WriteLine("Client {0}, {1}", i, client.Ready);
                     allReady &= client.Ready; //bitwise operater to check that every connection is ready
                 }
+				Console.WriteLine ("Current connections {0}", state.ClientManager.CountCurrConnections);
+
 				if (state.ClientManager.CountCurrConnections < 2) {
 					allReady = false;
 				}
@@ -204,13 +206,7 @@ namespace Server
 					reliable.Add(spawnElement);
 				}
 
-				//CREATE MOVE FUNCTION FOR THE ACTOR TO DO THE MOVEMENT
-				for (int i = 0; i < gs.CreatedActorsCount; i++) {
-					GameUtility.Coordinate start = gs.GetPosition(i);
-					GameUtility.Coordinate target = gs.GetTargetPosition(i);
-					GameUtility.Coordinate result = GameUtility.FindNewCoordinate(start, target, 0.22f);
-					gs.UpdatePosition(i, result);
-				}
+				gs.MoveActors();
 
 
 				// Create unreliable elements that will be sent to all clients

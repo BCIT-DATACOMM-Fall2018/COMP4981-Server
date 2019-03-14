@@ -24,7 +24,9 @@ namespace GameStateComponents
 			Player newPlayer = new Player (actorId);
 			actors.Add (actorId, newPlayer);
 			Console.WriteLine ("Adding player actor with id {0}", actorId);
-			SpawnQueue.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, 0, 0));
+			SpawnQueue.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, 310f, 90f));
+			actors [actorId].Position = new GameUtility.Coordinate (310, 90);
+			actors [actorId].TargetPosition = new GameUtility.Coordinate (310, 90);
 			return actorId;
 		}
 
@@ -67,7 +69,7 @@ namespace GameStateComponents
 		public void UpdateTargetPosition (int actorId, float x, float z)
 		{
 			actors [actorId].TargetPosition = new GameUtility.Coordinate(x, z); //is this a memory leak waiting to happen?
-        }
+		}
 
 		public int GetHealth (int actorId)
 		{
@@ -82,6 +84,12 @@ namespace GameStateComponents
 		public GameUtility.Coordinate GetTargetPosition (int actorId)
 		{
 			return actors [actorId].TargetPosition;
+		}
+
+		public void MoveActors(){
+			for (int i = 0; i < CreatedActorsCount; i++) {
+				actors [i].Move ();
+			}
 		}
 	}
 }

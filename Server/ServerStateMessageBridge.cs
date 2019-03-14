@@ -25,6 +25,9 @@ namespace Server
         public void UpdateActorPosition(int actorId, float x, float z)
         {
             //TARGET POSITION FOR CLIENT TO MOVE TO.
+			if (x == 0 && z == 0) {
+				return;
+			}
 			Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
             gamestate.UpdateTargetPosition(actorId, x, z);
 
