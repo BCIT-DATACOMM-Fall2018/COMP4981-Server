@@ -153,7 +153,7 @@ namespace Server
 			StartGameStateTimer (socket, state); 
 
 			while (true) {
-				Console.WriteLine ("Waiting for packet in game state");
+				//Console.WriteLine ("Waiting for packet in game state");
 				Packet packet = socket.Receive ();
 				if (ReliableUDPConnection.GetPacketType (packet) != PacketType.GameplayPacket) {
 					continue;
@@ -194,7 +194,7 @@ namespace Server
 
 		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
-			Console.WriteLine ("Forming packet");
+			//Console.WriteLine ("Forming packet");
 			try {
 				ClientManager cm = state.ClientManager;
 				GameState gs = state.GameState;
@@ -208,7 +208,7 @@ namespace Server
 				}
 
 				gs.MoveActors();
-
+				gs.CollisionBuffer.DecrementTTL();
 
 				// Create unreliable elements that will be sent to all clients
 				int actorId;

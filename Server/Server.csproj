@@ -38,7 +38,6 @@
   <ItemGroup>
     <Compile Include="Actor.cs" />
     <Compile Include="GameUtility.cs" />
-    <Compile Include="CircularBuffer.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Player.cs" />
@@ -49,6 +48,7 @@
     <Compile Include="State.cs" />
     <Compile Include="Creep.cs" />
     <Compile Include="Tower.cs" />
+    <Compile Include="CollisionBuffer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

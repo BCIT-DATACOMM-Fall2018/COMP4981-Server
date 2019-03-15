@@ -4,7 +4,7 @@ namespace GameStateComponents {
     public class Player : Actor {
 
         public Player(int actorId) : base(actorId) {
-            Health = 100;
+            Health = 1000;
         }
     }
 }

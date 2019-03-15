@@ -12,10 +12,12 @@ namespace GameStateComponents
 		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
 		public int CreatedActorsCount { get; private set;} = 0;
 		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
+		public CollisionBuffer CollisionBuffer { get; private set; }
 
 		public GameState ()
 		{
 			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
+			CollisionBuffer = new CollisionBuffer (this);
 		}
 
 		public int AddPlayer ()
@@ -100,6 +102,11 @@ namespace GameStateComponents
 
 		public bool ValidateAbilityUse(int actorId, AbilityType abilityId){
 			return true;
+		}
+
+		public void TriggerAbilityEffects(AbilityType abilityType, int actorHitId, int actorCastId){
+			Console.WriteLine ("Lower health of {0}", actorHitId);
+			actors [actorHitId].Health -= 20;
 		}
 	}
 }

@@ -14,14 +14,14 @@ namespace Server
         State state;
         GameState gamestate;
         ClientManager clientmanager;
-		readonly CircularBuffer circularBuffer;
+		readonly CollisionBuffer collisionBuffer;
 
         public ServerStateMessageBridge ()
 		{
             state = State.Instance;
             gamestate = state.GameState;
             clientmanager = state.ClientManager;
-			circularBuffer = CircularBuffer.Instance;
+			collisionBuffer = gamestate.CollisionBuffer;
         }
 
         public void UpdateActorPosition(int actorId, float x, float z)
@@ -30,7 +30,7 @@ namespace Server
 			if (x == 0 && z == 0) {
 				return;
 			}
-			Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
+			//Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
             gamestate.UpdateTargetPosition(actorId, x, z);
 
         }
@@ -56,7 +56,8 @@ namespace Server
 
         public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId)
         {
-			circularBuffer.Insert(new BufferItem(abilityId, actorHitId, actorCastId));
+			Console.WriteLine ("Received Collision {0}, {1}, {2}", abilityId, actorHitId, actorCastId);
+			collisionBuffer.Insert(new CollisionItem(abilityId, actorHitId, actorCastId));
         }
 
         public void SpawnActor(ActorType actorType, int ActorId, float x, float z)

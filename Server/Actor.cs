@@ -39,5 +39,6 @@ namespace GameStateComponents
 		{
 			Position = GameUtility.FindNewCoordinate (Position, TargetPosition, Speed);
 		}
+			
 	}
 }
