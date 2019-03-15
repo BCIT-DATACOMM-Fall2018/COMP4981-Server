@@ -9,22 +9,24 @@ namespace GameStateComponents
 {
 	public class GameState
 	{
-		private Dictionary<int, Actor> actors = new Dictionary<int, Actor> ();
+		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
 		public int CreatedActorsCount { get; private set;} = 0;
-		public ConcurrentQueue<SpawnElement> SpawnQueue {get; private set;}
+		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
 
 		public GameState ()
 		{
-			SpawnQueue = new ConcurrentQueue<SpawnElement> ();
+			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
 		}
 
 		public int AddPlayer ()
 		{
 			int actorId = CreatedActorsCount++;
 			Player newPlayer = new Player (actorId);
-			actors.Add (actorId, newPlayer);
+			if (!actors.TryAdd (actorId, newPlayer)) {
+				//TODO Handle failure
+			}
 			Console.WriteLine ("Adding player actor with id {0}", actorId);
-			SpawnQueue.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, 310f, 90f));
+			OutgoingReliableElements.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, 310f, 90f));
 			actors [actorId].Position = new GameUtility.Coordinate (310, 90);
 			actors [actorId].TargetPosition = new GameUtility.Coordinate (310, 90);
 			return actorId;
@@ -34,8 +36,10 @@ namespace GameStateComponents
         {
             int actorId = CreatedActorsCount++;
             Creep newCreep = new Creep(actorId);
-            actors.Add(actorId, newCreep);
-            Console.WriteLine("Adding creep actor with id {0}", actorId);
+			if (!actors.TryAdd (actorId, newCreep)) {
+				//TODO Handle failure
+			}            
+			Console.WriteLine("Adding creep actor with id {0}", actorId);
             //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
         }
@@ -44,8 +48,10 @@ namespace GameStateComponents
         {
 			int actorId = CreatedActorsCount++;
             Tower newTower = new Tower(actorId);
-            actors.Add(actorId, newTower);
-            Console.WriteLine("Adding tower actor with id {0}", actorId);
+			if (!actors.TryAdd (actorId, newTower)) {
+				//TODO Handle failure
+			}            
+			Console.WriteLine("Adding tower actor with id {0}", actorId);
             //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
         }
@@ -90,6 +96,10 @@ namespace GameStateComponents
 			for (int i = 0; i < CreatedActorsCount; i++) {
 				actors [i].Move ();
 			}
+		}
+
+		public bool ValidateAbilityUse(int actorId, AbilityType abilityId){
+			return true;
 		}
 	}
 }

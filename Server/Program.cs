@@ -92,6 +92,7 @@ namespace Server
                 }
 				Console.WriteLine ("Current connections {0}", state.ClientManager.CountCurrConnections);
 
+				// Force game to wait until 2 players have connected
 				if (state.ClientManager.CountCurrConnections < 2) {
 					allReady = false;
 				}
@@ -200,10 +201,10 @@ namespace Server
 				List<UpdateElement> unreliable = new List<UpdateElement> ();
 				List<UpdateElement> reliable = new List<UpdateElement> ();
 
-				// Get new spawn elements from game state
-				SpawnElement spawnElement;
-				while(gs.SpawnQueue.TryDequeue(out spawnElement)){
-					reliable.Add(spawnElement);
+				// Get new update elements from game state
+				UpdateElement updateElement;
+				while(gs.OutgoingReliableElements.TryDequeue(out updateElement)){
+					reliable.Add(updateElement);
 				}
 
 				gs.MoveActors();

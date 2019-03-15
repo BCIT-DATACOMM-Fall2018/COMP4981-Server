@@ -38,14 +38,18 @@ namespace Server
         }
 
 
-        public void UseTargetedAbility(int actorId, AbilityType abilityType, int targetID)
+        public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId)
         {
-            Console.WriteLine("NOT YET IMPLEMENTED");
+			if (gamestate.ValidateAbilityUse (actorId, abilityId)) {
+				gamestate.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(actorId, abilityId, targetId));
+			}
         }
 
         public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z)
         {
-            Console.WriteLine("NOT YET IMPLEMENTED");
+			if (gamestate.ValidateAbilityUse (actorId, abilityId)) {
+				gamestate.OutgoingReliableElements.Enqueue(new AreaAbilityElement(actorId, abilityId, x, z));
+			}
         }
 
         public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId)
