@@ -14,12 +14,14 @@ namespace Server
         State state;
         GameState gamestate;
         ClientManager clientmanager;
+		readonly CircularBuffer circularBuffer;
 
         public ServerStateMessageBridge ()
 		{
             state = State.Instance;
             gamestate = state.GameState;
-            clientmanager = state.ClientManager; 
+            clientmanager = state.ClientManager;
+			circularBuffer = CircularBuffer.Instance;
         }
 
         public void UpdateActorPosition(int actorId, float x, float z)
@@ -54,7 +56,7 @@ namespace Server
 
         public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId)
         {
-            Console.WriteLine("NOT YET IMPLEMENTED");
+			circularBuffer.Insert(new BufferItem(abilityId, actorHitId, actorCastId));
         }
 
         public void SpawnActor(ActorType actorType, int ActorId, float x, float z)
@@ -92,5 +94,3 @@ namespace Server
 
 //RECEIVE USE ABLILITY (EITHER)
 //validate, then echo to every client
-
-   
