@@ -8,7 +8,7 @@ namespace Server
 {
     public class CollisionItem
     {
-        private const int maxTimeToLive = 4;
+        private const int maxTimeToLive = 8;
 
 		public AbilityType abilityId { get; }
         public int actorHitId { get; }
@@ -80,12 +80,14 @@ namespace Server
 						Console.WriteLine ("Adding collision item to the queue");
 						buffer[headPtr++] = toAdd;
 						currentBufferSize++;
+						cur = toAdd;
 					}
 					else
 					{
 						Console.WriteLine ("Incrementing validity of existing collision item");
-						if (++cur.validity == maxValidity || !cur.isSignalSent)
-							SignalCollision(cur);
+					}
+					if (++cur.validity == maxValidity || !cur.isSignalSent) {
+						SignalCollision(cur);
 					}
 				}
 				else
