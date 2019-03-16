@@ -48,7 +48,7 @@ namespace Server
 				// Check if the ability is instantly applied and apply it if it is
 				if (!AbilityInfo.InfoArray [(int)abilityId].RequiresCollision) {
 					Console.WriteLine ("Instantly activating ability effects {0} used by {1} on {2}", abilityId, actorId, targetId);
-					gamestate.TriggerAbilityEffects (abilityId, actorId, targetId);
+					gamestate.TriggerAbilityEffects (abilityId,targetId, actorId);
 				}
 
 				// Queue the ability use to be sent to all clients
