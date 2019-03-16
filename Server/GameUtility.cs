@@ -47,5 +47,4 @@ namespace Server
 			return (float)Math.Atan2 (yDiff, xDiff);
 		}
     }
-
 }

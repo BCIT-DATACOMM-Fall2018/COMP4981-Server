@@ -105,8 +105,22 @@ namespace GameStateComponents
 		}
 
 		public void TriggerAbilityEffects(AbilityType abilityType, int actorHitId, int actorCastId){
-			Console.WriteLine ("Lower health of {0}", actorHitId);
-			actors [actorHitId].Health -= 20;
+			switch (abilityType) {
+			case AbilityType.TestProjectile:
+				actors [actorHitId].Health -= 50;
+				break;
+			case AbilityType.TestTargeted:
+				actors [actorHitId].Health -= 100;
+				break;
+			case AbilityType.TestTargetedHoming:
+				actors [actorHitId].Health -= 100;
+				break;
+			case AbilityType.TestAreaOfEffect:
+				actors [actorHitId].Health -= 200;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }

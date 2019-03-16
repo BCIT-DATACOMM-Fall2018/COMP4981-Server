@@ -94,7 +94,7 @@ namespace Server
 
 				// Force game to wait until 2 players have connected
 				if (state.ClientManager.CountCurrConnections < 2) {
-					allReady = false;
+					//allReady = false;
 				}
                 if (allReady)
                 {

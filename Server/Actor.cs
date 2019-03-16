@@ -6,20 +6,23 @@ namespace GameStateComponents
 	public abstract class Actor
 	{
 
-		public struct Location
-		{
-			public float X;
-			public float Z;
+		private const int MAX_HEALTH = 1000;
 
-			public Location (float x, float z)
-			{
-				this.X = x;
-				this.Z = z;
+
+
+		private int _health;
+
+		public int Health {
+			get { return _health; } 
+			set { 
+				_health = value; 
+				if (_health > MAX_HEALTH) {
+					_health = MAX_HEALTH;
+				} else if (_health < 0) {
+					_health = 0;
+				}
 			}
-
 		}
-
-		public int Health { get; set; }
 
 		public int ActorId { get; private set; }
 
@@ -28,7 +31,7 @@ namespace GameStateComponents
 
 		public GameUtility.Coordinate Position { get; set; }
 
-		public GameUtility.Coordinate TargetPosition { get; set;}
+		public GameUtility.Coordinate TargetPosition { get; set; }
 
 		public Actor (int actorId)
 		{
