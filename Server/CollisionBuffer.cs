@@ -8,17 +8,18 @@ namespace Server
 {
     public class CollisionItem
     {
-        private const int maxTimeToLive = 8;
+        private const int maxTimeToLive = 20;
 
 		public AbilityType abilityId { get; }
         public int actorHitId { get; }
         public int actorCastId { get; }
         public int validity { get; set; }
         public int timeToLive { get; set; } 
+		public int collisionId { get; }
 
         public bool isSignalSent;
 
-        public CollisionItem(AbilityType abilityId, int actorHitId, int actorCastId)
+		public CollisionItem(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
         {
             this.abilityId = abilityId;
             this.actorHitId = actorHitId;
@@ -26,6 +27,7 @@ namespace Server
             validity = 0;
             timeToLive = maxTimeToLive;
             isSignalSent = false;
+			this.collisionId = collisionId;
         }
 
 		public override bool Equals (object obj)
@@ -37,7 +39,9 @@ namespace Server
     		if (obj.GetType () != typeof(CollisionItem))
     			return false;
     		CollisionItem other = (CollisionItem)obj;
-    		return abilityId == other.abilityId && actorHitId == other.actorHitId && actorCastId == other.actorCastId;
+			Console.WriteLine ("{0} = {1}", other.collisionId, collisionId );
+
+			return abilityId == other.abilityId && actorHitId == other.actorHitId && actorCastId == other.actorCastId && collisionId == other.collisionId;
     	}
     	
 
@@ -81,6 +85,7 @@ namespace Server
 						buffer[headPtr++] = toAdd;
 						currentBufferSize++;
 						cur = toAdd;
+						Console.WriteLine ("Added collision head {0} , tail {1}", headPtr, tailPtr);
 					}
 					else
 					{

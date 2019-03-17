@@ -40,7 +40,7 @@ namespace Server
         }
 
 
-        public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId)
+		public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
         {
 			// Validate that the ability can be used by the actor
 			if (gamestate.ValidateAbilityUse (actorId, abilityId)) {
@@ -52,24 +52,24 @@ namespace Server
 				}
 
 				// Queue the ability use to be sent to all clients
-				gamestate.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(actorId, abilityId, targetId));
+				gamestate.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(actorId, abilityId, targetId, gamestate.MakeCollisionId()));
 			}
         }
 
-        public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z)
+		public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z, int collisionId)
         {
 			// Validate that the ability can be used by the actor
 			if (gamestate.ValidateAbilityUse (actorId, abilityId)) {
 
 				// Queue the ability use to be sent to all clients
-				gamestate.OutgoingReliableElements.Enqueue(new AreaAbilityElement(actorId, abilityId, x, z));
+				gamestate.OutgoingReliableElements.Enqueue(new AreaAbilityElement(actorId, abilityId, x, z, gamestate.MakeCollisionId()));
 			}
         }
 
-        public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId)
+		public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
         {
 			Console.WriteLine ("Received Collision {0}, {1}, {2}", abilityId, actorHitId, actorCastId);
-			collisionBuffer.Insert(new CollisionItem(abilityId, actorHitId, actorCastId));
+			collisionBuffer.Insert(new CollisionItem(abilityId, actorHitId, actorCastId, collisionId));
         }
 
         public void SpawnActor(ActorType actorType, int ActorId, float x, float z)

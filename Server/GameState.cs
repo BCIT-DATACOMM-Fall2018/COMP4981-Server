@@ -9,15 +9,24 @@ namespace GameStateComponents
 {
 	public class GameState
 	{
+		
 		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
 		public int CreatedActorsCount { get; private set;} = 0;
 		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
 		public CollisionBuffer CollisionBuffer { get; private set; }
 
+		private int CollisionIdCounter;
+		private const int COLLISION_ID_MAX = 255;
+
 		public GameState ()
 		{
 			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
 			CollisionBuffer = new CollisionBuffer (this);
+		}
+
+		public int MakeCollisionId(){
+			Console.WriteLine("New ability with collision id {0}", CollisionIdCounter + 1);
+			return CollisionIdCounter++ % COLLISION_ID_MAX;
 		}
 
 		public int AddPlayer ()
