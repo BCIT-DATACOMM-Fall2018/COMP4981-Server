@@ -207,7 +207,7 @@ namespace Server
 					reliable.Add(updateElement);
 				}
 
-				gs.MoveActors();
+				gs.TickAllActors();
 				gs.CollisionBuffer.DecrementTTL();
 
 				// Create unreliable elements that will be sent to all clients

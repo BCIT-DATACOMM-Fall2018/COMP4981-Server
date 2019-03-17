@@ -131,7 +131,7 @@ namespace Server
         {
 			Console.WriteLine ("Signal collision {0}, {1}, {2}", toSignal.abilityId, toSignal.actorHitId, toSignal.actorCastId);
 			toSignal.isSignalSent = true;
-			gameState.TriggerAbilityEffects (toSignal.abilityId, toSignal.actorHitId, toSignal.actorCastId);
+			gameState.TriggerAbility (toSignal.abilityId, toSignal.actorHitId, toSignal.actorCastId);
         }
 
         public CollisionItem Remove()

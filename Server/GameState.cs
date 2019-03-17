@@ -11,6 +11,7 @@ namespace GameStateComponents
 	{
 		
 		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
+
 		public int CreatedActorsCount { get; private set;} = 0;
 		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
 		public CollisionBuffer CollisionBuffer { get; private set; }
@@ -103,33 +104,18 @@ namespace GameStateComponents
 			return actors [actorId].TargetPosition;
 		}
 
-		public void MoveActors(){
+		public void TickAllActors(){
 			for (int i = 0; i < CreatedActorsCount; i++) {
-				actors [i].Move ();
+				actors [i].Tick ();
 			}
 		}
 
 		public bool ValidateAbilityUse(int actorId, AbilityType abilityId){
-			return true;
+			return actors [actorId].UseAbility (abilityId);
 		}
 
-		public void TriggerAbilityEffects(AbilityType abilityType, int actorHitId, int actorCastId){
-			switch (abilityType) {
-			case AbilityType.TestProjectile:
-				actors [actorHitId].Health -= 50;
-				break;
-			case AbilityType.TestTargeted:
-				actors [actorHitId].Health += 100;
-				break;
-			case AbilityType.TestTargetedHoming:
-				actors [actorHitId].Health -= 100;
-				break;
-			case AbilityType.TestAreaOfEffect:
-				actors [actorHitId].Health -= 200;
-				break;
-			default:
-				break;
-			}
+		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
+			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
 	}
 }
