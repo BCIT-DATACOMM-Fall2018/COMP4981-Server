@@ -11,7 +11,7 @@ namespace GameStateComponents
 
 		// Used to make sure an Actor can only use 1 ability at a time to 
 		// prevent race condition with cooldown being set.
-		private static readonly object abilityLock = new object();
+		private readonly object abilityLock = new object();
 
 		private int _health;
 
