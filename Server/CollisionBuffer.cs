@@ -58,7 +58,7 @@ namespace Server
     public class CollisionBuffer
     {
         private const int MaxBufferSize = 1024;
-		private const int maxValidity = 1;
+		private const int maxValidity = 2;
 	
 		private readonly object padlock = new object();
 		private CollisionItem[] buffer;
@@ -89,9 +89,9 @@ namespace Server
 					}
 					else
 					{
-						Console.WriteLine ("Incrementing validity of existing collision item");
+						Console.WriteLine ("Incrementing validity of existing collision item. Validity {0}", cur.validity);
 					}
-					if (++cur.validity == maxValidity || !cur.isSignalSent) {
+					if (++cur.validity == maxValidity && !cur.isSignalSent) {
 						SignalCollision(cur);
 					}
 				}

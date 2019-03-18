@@ -43,26 +43,30 @@ namespace Server
 		public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
         {
 			// Validate that the ability can be used by the actor
-			if (gamestate.ValidateAbilityUse (actorId, abilityId)) {
+			if (gamestate.ValidateTargetedAbilityUse (actorId, abilityId, targetId)) {
 
 				// Check if the ability is instantly applied and apply it if it is
 				if (!AbilityInfo.InfoArray [(int)abilityId].RequiresCollision) {
 					Console.WriteLine ("Instantly activating ability effects {0} used by {1} on {2}", abilityId, actorId, targetId);
-					gamestate.TriggerAbility (abilityId,targetId, actorId);
+					gamestate.TriggerAbility (abilityId, targetId, actorId);
 				}
 
 				// Queue the ability use to be sent to all clients
-				gamestate.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(actorId, abilityId, targetId, gamestate.MakeCollisionId()));
+				gamestate.OutgoingReliableElements.Enqueue (new TargetedAbilityElement (actorId, abilityId, targetId, gamestate.MakeCollisionId ()));
+			} else {
+				Console.WriteLine ("Invalid ability use {0} by {1} on {2}", abilityId, actorId, targetId);
 			}
         }
 
 		public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z, int collisionId)
         {
 			// Validate that the ability can be used by the actor
-			if (gamestate.ValidateAbilityUse (actorId, abilityId)) {
+			if (gamestate.ValidateAreaAbilityUse (actorId, abilityId, x, z)) {
 
 				// Queue the ability use to be sent to all clients
-				gamestate.OutgoingReliableElements.Enqueue(new AreaAbilityElement(actorId, abilityId, x, z, gamestate.MakeCollisionId()));
+				gamestate.OutgoingReliableElements.Enqueue (new AreaAbilityElement (actorId, abilityId, x, z, gamestate.MakeCollisionId ()));
+			} else {
+				Console.WriteLine ("Invalid ability use {0} by {1} on location {2},{3}", abilityId, actorId, x, z);
 			}
         }
 

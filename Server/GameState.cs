@@ -110,8 +110,36 @@ namespace GameStateComponents
 			}
 		}
 
-		public bool ValidateAbilityUse(int actorId, AbilityType abilityId){
-			return actors [actorId].UseAbility (abilityId);
+		public bool ValidateTargetedAbilityUse(int useActorId, AbilityType abilityId, int targetActorId){
+			AbilityInfo info = AbilityInfo.InfoArray [(int)abilityId];
+
+			// Only valid if it's targeted or self
+			if (!(info.IsTargeted || info.IsSelf)) {
+				return false;
+			}
+			// Not valid if the ability targets self and the use and target actor id are not the same
+			if (info.IsSelf && useActorId != targetActorId) {
+				return false;
+			}
+
+			Actor useActor = actors [useActorId];
+			Actor targetActor = actors [targetActorId];
+
+			// If the user and target are on the same and ally target isn't allowed it's invalid
+			if (useActor.Team == targetActor.Team && !info.AllyTargetAllowed) {
+				return false;
+			}
+			// If the user and target anr't on the same time and enemy target itn't allowed it's invalid
+			if (useActor.Team != targetActor.Team && !info.EnemyTargetAllowed) {
+				return false;
+			}
+
+			return useActor.UseAbility (abilityId);
+		}
+
+		public bool ValidateAreaAbilityUse(int useActorId, AbilityType abilityId, float x, float z){
+			Actor useActor = actors [useActorId];
+			return useActor.UseAbility (abilityId);
 		}
 
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
