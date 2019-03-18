@@ -72,7 +72,7 @@ namespace Server
 			collisionBuffer.Insert(new CollisionItem(abilityId, actorHitId, actorCastId, collisionId));
         }
 
-        public void SpawnActor(ActorType actorType, int ActorId, float x, float z)
+		public void SpawnActor(ActorType actorType, int ActorId, int actorTeam, float x, float z)
         {
             //send to all clients 
 
@@ -83,13 +83,19 @@ namespace Server
             //send to all clients 
         }
 
-		public void SetReady(int clientId, bool ready){
+		public void SetReady(int clientId, bool ready, int team){
+			state.ClientManager.Connections [clientId].Team = team;
 			state.ClientManager.Connections [clientId].Ready = ready;
-			Console.WriteLine ("Set ready status of {0} to {1}", clientId, ready);
+
+			Console.WriteLine ("Set ready status of {0} to {1} on team {2}", clientId, ready, team);
 		}
 
 		public void StartGame (int playerNum){
 
+		}
+
+		public void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo){
+			
 		}
 
     }

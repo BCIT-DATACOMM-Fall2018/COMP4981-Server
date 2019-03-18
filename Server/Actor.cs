@@ -31,6 +31,8 @@ namespace GameStateComponents
 
 		public float Speed { get; private set; } = 0.82f;
 
+		public int Team { get; private set; }
+
 		protected AbilityType[] Abilities;
 		protected int[] Cooldowns;
 
@@ -38,9 +40,10 @@ namespace GameStateComponents
 
 		public GameUtility.Coordinate TargetPosition { get; set; }
 
-		public Actor (int actorId)
+		public Actor (int actorId, int team)
 		{
 			ActorId = actorId;
+			Team = team;
 		}
 
 		public void Tick(){

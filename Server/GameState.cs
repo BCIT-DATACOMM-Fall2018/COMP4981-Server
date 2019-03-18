@@ -30,24 +30,24 @@ namespace GameStateComponents
 			return CollisionIdCounter++ % COLLISION_ID_MAX;
 		}
 
-		public int AddPlayer ()
+		public int AddPlayer (int team)
 		{
 			int actorId = CreatedActorsCount++;
-			Player newPlayer = new Player (actorId);
+			Player newPlayer = new Player (actorId, team);
 			if (!actors.TryAdd (actorId, newPlayer)) {
 				//TODO Handle failure
 			}
 			Console.WriteLine ("Adding player actor with id {0}", actorId);
-			OutgoingReliableElements.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, 310f, 90f));
+			OutgoingReliableElements.Enqueue (new SpawnElement (ActorType.AlliedPlayer, actorId, newPlayer.Team, 310f, 90f));
 			actors [actorId].Position = new GameUtility.Coordinate (310, 90);
 			actors [actorId].TargetPosition = new GameUtility.Coordinate (310, 90);
 			return actorId;
 		}
 
-        public int AddCreep()
+		public int AddCreep(int team)
         {
             int actorId = CreatedActorsCount++;
-            Creep newCreep = new Creep(actorId);
+			Creep newCreep = new Creep(actorId, team);
 			if (!actors.TryAdd (actorId, newCreep)) {
 				//TODO Handle failure
 			}            
@@ -56,10 +56,10 @@ namespace GameStateComponents
             return actorId;
         }
 
-        public int AddTower()
+		public int AddTower(int team)
         {
 			int actorId = CreatedActorsCount++;
-            Tower newTower = new Tower(actorId);
+			Tower newTower = new Tower(actorId, team);
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}            

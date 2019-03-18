@@ -4,7 +4,7 @@ using NetworkLibrary;
 namespace GameStateComponents {
     public class Player : Actor {
 
-        public Player(int actorId) : base(actorId) {
+		public Player(int actorId, int team) : base(actorId, team) {
             Health = 1000;
 			Abilities = new AbilityType[] {
 				AbilityType.TestProjectile,
