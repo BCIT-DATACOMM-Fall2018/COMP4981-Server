@@ -64,9 +64,10 @@ namespace Server
 				case PacketType.RequestPacket:
 					Console.WriteLine ("Got request packet");
                         // TODO Catch exception thrown by AddConnection
-					int newClient = state.ClientManager.AddConnection (socket.LastReceivedFrom);
+					string name = ReliableUDPConnection.GetClientNameFromRequestPacket (packet);
+					int newClient = state.ClientManager.AddConnection (socket.LastReceivedFrom, name);
 					socket.Send (ReliableUDPConnection.CreateConfirmationPacket (newClient), state.ClientManager.Connections [newClient].Destination);
-					Console.WriteLine ("Sent confirmation packet to client " + newClient);
+					Console.WriteLine ("Sent confirmation packet to client " + newClient + " with name " + state.ClientManager.Connections [newClient].Name);
 
 					break;
 				default:

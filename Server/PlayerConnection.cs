@@ -15,12 +15,12 @@ namespace GameStateComponents {
 		public int Team { get; set; }
 		public string Name { get; set; }
 
-        public PlayerConnection(int clientId, int actorId, Destination destination, ReliableUDPConnection connection) {
+		public PlayerConnection(int clientId, int actorId, Destination destination, ReliableUDPConnection connection, string name) {
 			this.ClientId = clientId;
 			this.ActorId = actorId;
 			this.Destination = destination;
 			this.Connection = connection;
-			this.Name = "DefaultName";
+			this.Name = name;
         }
     }
 }
