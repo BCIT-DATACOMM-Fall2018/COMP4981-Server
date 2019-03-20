@@ -18,7 +18,7 @@ namespace Server
 		private static System.Timers.Timer sendGameStateTimer;
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
-
+		private static State state;
 		public static void Main (string[] args)
 		{
 			// Create a list of elements to send. Using the same list for unreliable and reliable
@@ -31,18 +31,20 @@ namespace Server
 			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
 
 			// Create a ServerStateMessageBridge to use later
-			ServerStateMessageBridge bridge = new ServerStateMessageBridge ();
 
 			// Create Game State ? 
-			State state = State.Instance;
-            
+			while (true) {
 
-			LobbyState (socket, state, bridge);
+				state = new State();
+				ServerStateMessageBridge bridge = new ServerStateMessageBridge (state);
+
+				LobbyState (socket, state, bridge);
+			}
 		}
-
+			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
-			while (true) {
+			while (state.TimesEndGameSent < 80) {
 				Console.WriteLine ("Waiting for packet in lobby state");
 				Packet packet = socket.Receive ();
 				switch (ReliableUDPConnection.GetPacketType (packet)) {
@@ -79,7 +81,7 @@ namespace Server
 				//TODO If all players ready start game send start packet and go to gamestate.
 				Console.WriteLine ("Checking if all players ready");
 
-				bool allReady = true;
+				bool allReady = state.ClientManager.CountCurrConnections > 0;
 				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 					PlayerConnection client = state.ClientManager.Connections [i];
 					Console.WriteLine ("Client {0}, {1}", i, client.Ready);
@@ -134,7 +136,7 @@ namespace Server
 						}
 					}
 					GameState (socket, state, bridge);
-
+					return;
 
 
 				} else {
@@ -153,17 +155,19 @@ namespace Server
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
 			StartGameStateTimer (socket, state); 
 
-			while (true) {
-				//Console.WriteLine ("Waiting for packet in game state");
-				Packet packet = socket.Receive ();
-				if (ReliableUDPConnection.GetPacketType (packet) != PacketType.GameplayPacket) {
-					continue;
-				}
-				int clientId = ReliableUDPConnection.GetPlayerID (packet);
+			while (state.TimesEndGameSent < 80) {
+				if (!state.GameOver) {
+					//Console.WriteLine ("Waiting for packet in game state");
+					Packet packet = socket.Receive ();
+					if (ReliableUDPConnection.GetPacketType (packet) != PacketType.GameplayPacket) {
+						continue;
+					}
+					int clientId = ReliableUDPConnection.GetPlayerID (packet);
 
-				//TODO Catch exceptions thrown by ProcessPacket. Possibly move processing of packet to threadpool?
-				UnpackedPacket unpacked = state.ClientManager.Connections [clientId].Connection.ProcessPacket (packet, unpackingArr);
-				ThreadPool.QueueUserWorkItem (ProcessIncomingPacket, unpacked);
+					//TODO Catch exceptions thrown by ProcessPacket. Possibly move processing of packet to threadpool?
+					UnpackedPacket unpacked = state.ClientManager.Connections [clientId].Connection.ProcessPacket (packet, unpackingArr);
+					ThreadPool.QueueUserWorkItem (ProcessIncomingPacket, unpacked);
+				}
 			}
 		}
 
@@ -171,10 +175,10 @@ namespace Server
 		{
 			UnpackedPacket up = (UnpackedPacket)packetInfo; //may not work if not serializable, will have to look into that
 			foreach (var element in up.UnreliableElements) {
-				element.UpdateState (new ServerStateMessageBridge ()); //maybe should also keep a single bridge object in state instead of making a new one every time?
+				element.UpdateState (new ServerStateMessageBridge (state)); //maybe should also keep a single bridge object in state instead of making a new one every time?
 			}
 			foreach (var element in up.ReliableElements) {
-				element.UpdateState (new ServerStateMessageBridge ()); //maybe should also keep a single bridge object in state instead of making a new one every time?
+				element.UpdateState (new ServerStateMessageBridge (state)); //maybe should also keep a single bridge object in state instead of making a new one every time?
 			}
 
 
@@ -210,7 +214,17 @@ namespace Server
 
 				gs.TickAllActors ();
 				gs.CollisionBuffer.DecrementTTL ();
-
+				if(state.GameOver || gs.CheckWinCondition()){
+					state.GameOver = true;
+					if(state.TimesEndGameSent++ < 80){
+						//TODO end the game
+						reliable.Add(new GameEndElement(1));
+						Console.WriteLine("Game is over");
+					} else {
+						sendGameStateTimer.Enabled = false;
+					}
+				}
+					
 				// Create unreliable elements that will be sent to all clients
 				int actorId;
 				for (int i = 0; i < gs.CreatedActorsCount; i++) {

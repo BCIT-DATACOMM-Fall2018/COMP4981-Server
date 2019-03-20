@@ -5,7 +5,7 @@ using NetworkLibrary.MessageElements;
 
 
 namespace GameStateComponents {
-    class PlayerConnection {
+    public class PlayerConnection {
 		public int ClientId { get; private set;}
 		public int ActorId { get; private set;}
 		public Destination Destination { get; private set;}

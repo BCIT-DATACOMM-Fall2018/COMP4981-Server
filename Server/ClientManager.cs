@@ -5,7 +5,7 @@ using NetworkLibrary.MessageElements;
 
 
 namespace GameStateComponents {
-    class ClientManager {
+    public class ClientManager {
 		public PlayerConnection[] Connections { get; private set; } = new PlayerConnection[10];
 		public int CountCurrConnections { get; private set; }
 

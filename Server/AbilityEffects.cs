@@ -12,7 +12,7 @@ namespace Server
 			// TestProjectile
 			(useActor, hitActor) => {hitActor.Health-=50;},
 			// TestTargeted
-			(useActor, hitActor) => {hitActor.Health+=100;},
+			(useActor, hitActor) => {hitActor.Health-=500;},
 			// TestHomingTargeted
 			(useActor, hitActor) => {hitActor.Health-=100;},
 			// TestAreaOfEffect

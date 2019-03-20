@@ -16,9 +16,9 @@ namespace Server
         ClientManager clientmanager;
 		readonly CollisionBuffer collisionBuffer;
 
-        public ServerStateMessageBridge ()
+		public ServerStateMessageBridge (State state)
 		{
-            state = State.Instance;
+            this.state = state;
             gamestate = state.GameState;
             clientmanager = state.ClientManager;
 			collisionBuffer = gamestate.CollisionBuffer;
@@ -100,6 +100,10 @@ namespace Server
 
 		public void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo){
 			
+		}
+
+		public void EndGame(int winningTeam){
+
 		}
 
     }

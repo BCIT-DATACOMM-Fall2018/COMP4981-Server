@@ -9,9 +9,10 @@ namespace GameStateComponents
 {
 	public class GameState
 	{
-		
-		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
+		private const int MAXTEAMS = 8;
 
+		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
+		private List<Actor>[] teamActors;
 		public int CreatedActorsCount { get; private set;} = 0;
 		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
 		public CollisionBuffer CollisionBuffer { get; private set; }
@@ -19,10 +20,45 @@ namespace GameStateComponents
 		private int CollisionIdCounter;
 		private const int COLLISION_ID_MAX = 255;
 
+		private int[] teamLives;
+
+
 		public GameState ()
 		{
 			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
 			CollisionBuffer = new CollisionBuffer (this);
+			teamLives = new int[MAXTEAMS];
+			for (int i = 0; i < teamLives.Length; i++) {
+				teamLives [i] = 1;
+			}
+			teamActors = new List<Actor>[MAXTEAMS];
+			for (int i = 0; i < teamActors.Length; i++) {
+				teamActors [i] = new List<Actor> ();
+			}
+		}
+
+		public bool CheckWinCondition(){
+			bool[] eliminated = new bool[MAXTEAMS];
+			for (int i = 0; i < MAXTEAMS; i++) {
+				bool allDead = true;
+				foreach (var actor in teamActors[i]) {
+					allDead &= actor.Health == 0 && !actor.RespawnAllowed;
+				}
+				if (allDead) {
+					eliminated [i] = teamLives [i] <= 0;
+				}
+				if (teamActors [i].Count == 0) {
+					eliminated[i] = true;
+				}
+			}
+			int remainingTeams = 0;
+			for (int i = 0; i < eliminated.Length; i++) {
+				if (!eliminated [i]) {
+					remainingTeams++;
+				}
+			}
+			//TODO Change to remainingTeams == 1
+			return remainingTeams == 1;
 		}
 
 		public int MakeCollisionId(){
@@ -37,6 +73,7 @@ namespace GameStateComponents
 			if (!actors.TryAdd (actorId, newPlayer)) {
 				//TODO Handle failure
 			}
+			teamActors [team].Add (newPlayer);
 			Console.WriteLine ("Adding player actor with id {0}", actorId);
 			OutgoingReliableElements.Enqueue (new SpawnElement (ActorType.Player, actorId, newPlayer.Team, 310f, 90f));
 			actors [actorId].Position = new GameUtility.Coordinate (310, 90);
@@ -107,6 +144,15 @@ namespace GameStateComponents
 		public void TickAllActors(){
 			for (int i = 0; i < CreatedActorsCount; i++) {
 				actors [i].Tick ();
+
+				if (actors [i].HasDied ()) {
+					Console.WriteLine ("Actor {0} has died", actors [i].ActorId);
+					if (teamLives [actors [i].Team]-- > 0) {
+						Console.WriteLine ("Team {0} lives remaining {1}", actors [i].Team, teamLives [actors [i].Team]);
+
+						actors [i].RespawnAllowed = true;
+					}
+				}
 			}
 		}
 
