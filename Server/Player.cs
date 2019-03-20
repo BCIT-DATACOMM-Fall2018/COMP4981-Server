@@ -1,10 +1,11 @@
 using System;
 using NetworkLibrary;
+using Server;
 
 namespace GameStateComponents {
     public class Player : Actor {
 
-		public Player(int actorId, int team) : base(actorId, team) {
+		public Player(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation) {
             Health = 1000;
 			Abilities = new AbilityType[] {
 				AbilityType.TestProjectile,

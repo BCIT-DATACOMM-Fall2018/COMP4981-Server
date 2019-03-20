@@ -6,6 +6,7 @@ namespace GameStateComponents
 {
 	public abstract class Actor
 	{
+		private static readonly GameUtility.Coordinate deadArea = new GameUtility.Coordinate(-10, -10);
 
 		private const int MAX_HEALTH = 1000;
 		private const int RESPAWN_TIME = 100;
@@ -52,6 +53,8 @@ namespace GameStateComponents
 
 		public bool RespawnAllowed { get; set; } = false;
 
+		public GameUtility.Coordinate SpawnLocation { get; private set; }
+
 		protected AbilityType[] Abilities;
 		protected int[] Cooldowns;
 
@@ -59,10 +62,13 @@ namespace GameStateComponents
 
 		public GameUtility.Coordinate TargetPosition { get; set; }
 
-		public Actor (int actorId, int team)
+		public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
 		{
 			ActorId = actorId;
 			Team = team;
+			SpawnLocation = spawnLocation;
+			Position = SpawnLocation;
+			TargetPosition = SpawnLocation;
 		}
 
 		public void Tick ()
@@ -79,8 +85,8 @@ namespace GameStateComponents
 			if (dead) {
 				if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
 					Health = MAX_HEALTH;
-					Position = new GameUtility.Coordinate (310, 90);
-					TargetPosition = new GameUtility.Coordinate (310, 90);
+					Position = SpawnLocation;
+					TargetPosition = SpawnLocation;
 				}
 			}
 			Move ();
@@ -90,8 +96,8 @@ namespace GameStateComponents
 		private void Move ()
 		{
 			if (Health <= 0) {
-				Position = new GameUtility.Coordinate (-10, -10);
-				TargetPosition = new GameUtility.Coordinate (-10, -10);
+				Position = deadArea;
+				TargetPosition = deadArea;
 				return;
 			}
 			Position = GameUtility.FindNewCoordinate (Position, TargetPosition, Speed);
