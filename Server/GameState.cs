@@ -187,6 +187,10 @@ namespace GameStateComponents
 			Actor useActor = actors [useActorId];
 			Actor targetActor = actors [targetActorId];
 
+			if (!(info.Range == 0) && !GameUtility.CoordsWithinDistance(useActor.Position, targetActor.Position, info.Range + 5)) {
+				return false;
+			}
+
 			// If the user and target are on the same and ally target isn't allowed it's invalid
 			if (useActor.Team == targetActor.Team && !info.AllyTargetAllowed) {
 				return false;
@@ -200,7 +204,13 @@ namespace GameStateComponents
 		}
 
 		public bool ValidateAreaAbilityUse(int useActorId, AbilityType abilityId, float x, float z){
+			AbilityInfo info = AbilityInfo.InfoArray [(int)abilityId];
 			Actor useActor = actors [useActorId];
+
+			if (!(info.Range == 0) && !GameUtility.CoordsWithinDistance(useActor.Position, new GameUtility.Coordinate(x, z), info.Range + 5)) {
+				return false;
+			}
+
 			return useActor.UseAbility (abilityId);
 		}
 
