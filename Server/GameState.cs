@@ -75,8 +75,26 @@ namespace GameStateComponents
 			}
 			teamActors [team].Add (newPlayer);
 			Console.WriteLine ("Adding player actor with id {0}", actorId);
-			OutgoingReliableElements.Enqueue (new SpawnElement (ActorType.Player, actorId, newPlayer.Team,  newPlayer.SpawnLocation.x, newPlayer.SpawnLocation.z));
+			ActorType actortype;
+			if(team == 1){
+				actortype = RandomHuman ();
+			} else{
+				actortype = RandomOrc ();
+			}
+
+			OutgoingReliableElements.Enqueue (new SpawnElement (actortype, actorId, newPlayer.Team,  newPlayer.SpawnLocation.x, newPlayer.SpawnLocation.z));
 			return actorId;
+		}
+
+		private ActorType RandomHuman(){
+			Random rand = new Random ();
+			return (ActorType)rand.Next (0, 5);;
+		}
+
+
+		private ActorType RandomOrc(){
+			Random rand = new Random ();
+			return (ActorType)rand.Next (5, 10);;
 		}
 
 		public int AddCreep(int team)
