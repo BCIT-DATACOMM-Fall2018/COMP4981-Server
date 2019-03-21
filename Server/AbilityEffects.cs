@@ -16,7 +16,9 @@ namespace Server
 			// TestHomingTargeted
 			(useActor, hitActor) => {hitActor.Health-=100;},
 			// TestAreaOfEffect
-			(useActor, hitActor) => {hitActor.Health-=200;}
+			(useActor, hitActor) => {hitActor.Health-=200;},
+			// AutoAttack
+			(useActor, hitActor) => {hitActor.Health-=50;}
 		};
 			
 		private AbilityEffects ()

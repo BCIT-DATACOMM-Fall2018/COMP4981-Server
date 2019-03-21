@@ -8,6 +8,7 @@ namespace GameStateComponents {
 		public Player(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation) {
             Health = 1000;
 			Abilities = new AbilityType[] {
+				AbilityType.AutoAttack,
 				AbilityType.TestProjectile,
 				AbilityType.TestTargeted,
 				AbilityType.TestTargetedHoming,
