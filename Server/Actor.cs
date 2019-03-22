@@ -47,7 +47,7 @@ namespace GameStateComponents
 
 		public int ActorId { get; private set; }
 
-		public float Speed { get; private set; } = 0.82f;
+		//public float Speed { get; private set; } = 0.82f;
 
 		public int Team { get; private set; }
 
@@ -62,7 +62,11 @@ namespace GameStateComponents
 
 		public GameUtility.Coordinate TargetPosition { get; set; }
 
-		public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
+        public float Attack { get; set; }
+
+        public float Defense { get; set; }
+
+        public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
 		{
 			ActorId = actorId;
 			Team = team;
@@ -140,5 +144,13 @@ namespace GameStateComponents
 		{
 			AbilityEffects.Apply [(int)abilityId] (this, hitActor);
 		}
+
+        public int TakeDamage(Actor attacker, int baseDamage)
+        {
+            double damageRatio = attacker.Attack / this.Defense;
+            int damage = (int) (baseDamage * damageRatio);
+            this.Health -= damage;
+            return damage;
+        }
 	}
 }

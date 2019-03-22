@@ -9,6 +9,8 @@ namespace GameStateComponents
 		public Creep(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation)
         {
             Health = 25;
+            Attack = 1;
+            Defense = 1;
         }
     }
 }
