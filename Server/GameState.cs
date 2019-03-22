@@ -29,7 +29,7 @@ namespace GameStateComponents
 			CollisionBuffer = new CollisionBuffer (this);
 			teamLives = new int[MAXTEAMS];
 			for (int i = 0; i < teamLives.Length; i++) {
-				teamLives [i] = 1;
+				teamLives [i] = 5;
 			}
 			teamActors = new List<Actor>[MAXTEAMS];
 			for (int i = 0; i < teamActors.Length; i++) {
