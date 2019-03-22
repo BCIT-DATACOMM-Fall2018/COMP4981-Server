@@ -14,25 +14,25 @@ namespace Server
         State state;
         GameState gamestate;
         ClientManager clientmanager;
+		readonly CollisionBuffer collisionBuffer;
 
-        public ServerStateMessageBridge ()
+		public ServerStateMessageBridge (State state)
 		{
-            state = State.Instance;
+            this.state = state;
             gamestate = state.GameState;
-            clientmanager = state.ClientManager; 
+            clientmanager = state.ClientManager;
+			collisionBuffer = gamestate.CollisionBuffer;
         }
 
         public void UpdateActorPosition(int actorId, float x, float z)
         {
             //TARGET POSITION FOR CLIENT TO MOVE TO.
-			Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
+			if (x == 0 && z == 0) {
+				return;
+			}
+			//Console.WriteLine ("Moved actor {0} to x={1} z={2}", actorId, x, z);
             gamestate.UpdateTargetPosition(actorId, x, z);
 
-            //CREATE MOVE FUNCTION FOR THE ACTOR TO DO THE MOVEMENT
-            GameUtility.coordinate start = gamestate.GetPosition(actorId);
-            GameUtility.coordinate target = gamestate.GetTargetPosition(actorId);
-            GameUtility.coordinate result = GameUtility.findNewCoordinate(start, target, (float)0.11);
-            gamestate.UpdatePosition(actorId, result);
         }
 
         public void UpdateActorHealth (int actorId, int newHealth){
@@ -40,22 +40,45 @@ namespace Server
         }
 
 
-        public void UseTargetedAbility(int actorId, AbilityType abilityType, int targetID)
+		public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
         {
-            Console.WriteLine("NOT YET IMPLEMENTED");
+			// Validate that the ability can be used by the actor
+			if (gamestate.ValidateTargetedAbilityUse (actorId, abilityId, targetId)) {
+
+
+				// Check if the ability is instantly applied and apply it if it is
+				if (!AbilityInfo.InfoArray [(int)abilityId].RequiresCollision) {
+					Console.WriteLine ("Instantly activating ability effects {0} used by {1} on {2}", abilityId, actorId, targetId);
+					gamestate.TriggerAbility (abilityId, targetId, actorId);
+				}
+
+
+				// Queue the ability use to be sent to all clients
+				gamestate.OutgoingReliableElements.Enqueue (new TargetedAbilityElement (actorId, abilityId, targetId, gamestate.MakeCollisionId ()));
+			} else {
+				Console.WriteLine ("Invalid ability use {0} by {1} on {2}", abilityId, actorId, targetId);
+			}
         }
 
-        public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z)
+		public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z, int collisionId)
         {
-            Console.WriteLine("NOT YET IMPLEMENTED");
+			// Validate that the ability can be used by the actor
+			if (gamestate.ValidateAreaAbilityUse (actorId, abilityId, x, z)) {
+
+				// Queue the ability use to be sent to all clients
+				gamestate.OutgoingReliableElements.Enqueue (new AreaAbilityElement (actorId, abilityId, x, z, gamestate.MakeCollisionId ()));
+			} else {
+				Console.WriteLine ("Invalid ability use {0} by {1} on location {2},{3}", abilityId, actorId, x, z);
+			}
         }
 
-        public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId)
+		public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
         {
-            Console.WriteLine("NOT YET IMPLEMENTED");
+			Console.WriteLine ("Received Collision {0}, {1}, {2}", abilityId, actorHitId, actorCastId);
+			collisionBuffer.Insert(new CollisionItem(abilityId, actorHitId, actorCastId, collisionId));
         }
 
-        public void SpawnActor(ActorType actorType, int ActorId, float x, float z)
+		public void SpawnActor(ActorType actorType, int ActorId, int actorTeam, float x, float z)
         {
             //send to all clients 
 
@@ -66,12 +89,22 @@ namespace Server
             //send to all clients 
         }
 
-		public void SetReady(int clientId, bool ready){
+		public void SetReady(int clientId, bool ready, int team){
+			state.ClientManager.Connections [clientId].Team = team;
 			state.ClientManager.Connections [clientId].Ready = ready;
-			Console.WriteLine ("Set ready status of {0} to {1}", clientId, ready);
+
+			Console.WriteLine ("Set ready status of {0} to {1} on team {2}", clientId, ready, team);
 		}
 
 		public void StartGame (int playerNum){
+
+		}
+
+		public void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo){
+			
+		}
+
+		public void EndGame(int winningTeam){
 
 		}
 
@@ -90,5 +123,3 @@ namespace Server
 
 //RECEIVE USE ABLILITY (EITHER)
 //validate, then echo to every client
-
-   

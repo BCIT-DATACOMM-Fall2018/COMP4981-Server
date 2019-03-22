@@ -5,7 +5,7 @@ using NetworkLibrary.MessageElements;
 
 
 namespace GameStateComponents {
-    class ClientManager {
+    public class ClientManager {
 		public PlayerConnection[] Connections { get; private set; } = new PlayerConnection[10];
 		public int CountCurrConnections { get; private set; }
 
@@ -14,10 +14,10 @@ namespace GameStateComponents {
         public ClientManager() {
         }
 
-        public int AddConnection(Destination destination) {
+		public int AddConnection(Destination destination, string name) {
             for (int i = 0; i < 10; i++) {
 				if (Connections[i] == null) {
-					PlayerConnection newPlayer = new PlayerConnection(i, i, destination, new ReliableUDPConnection(i));
+					PlayerConnection newPlayer = new PlayerConnection(i, i, destination, new ReliableUDPConnection(i), name);
 					Connections[i] = newPlayer;
 					CountCurrConnections++;
                     return i;

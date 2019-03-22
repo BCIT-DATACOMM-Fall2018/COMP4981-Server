@@ -3,12 +3,12 @@ namespace Server
 {
     public static class GameUtility
     {
-        public struct coordinate
+        public struct Coordinate
         {
             public float x;
             public float z;
 
-            public coordinate(float x, float z)
+            public Coordinate(float x, float z)
             {
                 this.x = x;
                 this.z = z;
@@ -21,22 +21,40 @@ namespace Server
 
         //}
 
-        public static coordinate findNewCoordinate(coordinate c1, coordinate c2, float distance)
+        public static Coordinate FindNewCoordinate(Coordinate c1, Coordinate c2, float distance)
         {
-            float length = (float)Math.Sqrt((c2.x - c1.x) * (c2.x - c1.x) + (c1.z - c2.z * (c1.z - c2.z)));
+			
 
+			float x1 = c1.x;
+			float x2 = c2.x;
+			float y1 = c1.z;
+			float y2 = c2.z;
 
-            float ratioEndToNew = Math.Abs(distance / length);
+			if(CoordsWithinDistance(c1, c2, distance)){
+				return c2;
+			}
 
-            coordinate newCoordinate;
+			if (x1 == x2 && y1 == y2) {
+				return c1;
+			}
 
-            newCoordinate.z = c1.z + Math.Abs(c2.z - c1.z) * ratioEndToNew;
-            newCoordinate.x = c1.x + Math.Abs(c2.x - c1.x) * ratioEndToNew;
-
-
-            return newCoordinate;
-
+			float slope =(float) Math.Sqrt ((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+			float x3;
+			float y3;
+			x3 = x1 + (distance / slope) * (x2 - x1);
+			y3 = y1 + (distance / slope) * (y2 - y1);
+			return new Coordinate (x3, y3);
         }
-    }
 
+		public static float AngleBetweenCoordinates(Coordinate c1, Coordinate c2){
+			float xDiff = c2.x - c1.x;
+			float yDiff = c2.z - c2.z;
+			return (float)Math.Atan2 (yDiff, xDiff);
+		}
+
+		public static bool CoordsWithinDistance(Coordinate c1, Coordinate c2, float distance){
+			return ((c1.x - c2.x) * (c1.x - c2.x) + (c1.z - c2.z) * (c1.z - c2.z)) <= distance * distance;
+		}
+
+    }
 }
