@@ -161,7 +161,7 @@ namespace Server
             //Timer for keeping track of the game progress
             state.GameState.StartGamePlayTimer();
 
-			while (state.TimesEndGameSent < 80) {
+            while (state.TimesEndGameSent < 80) {
 				if (!state.GameOver) {
 					//Console.WriteLine ("Waiting for packet in game state");
 					Packet packet = socket.Receive ();
@@ -202,8 +202,13 @@ namespace Server
 			sendGameStateTimer.Enabled = true; 
 		}
 
+        //added for cleaning up gamestateTimer, also clean up the game state timer
+        private static void EndGameStateTimer() {
+            sendGameStateTimer.Dispose();
+            state.GameState.EndGamePlayTimer(); // used for cleaning up timer
+        }
 
-		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+        private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
 			//Console.WriteLine ("Forming packet");
 			try {

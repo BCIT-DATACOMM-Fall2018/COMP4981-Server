@@ -59,12 +59,6 @@ namespace GameStateComponents
         {
             //We want to update the gameTime here 
             currentTime++;
-            //TODO: need to have a string version of timer tick down for players, ex. 20:00
-
-            //Do a check here to see if currentTime has reached 20 mins
-            if (currentTime >= GAMEPLAY_TIME) { //>= just in case if gets over
-
-            }
 
         }
 
@@ -88,6 +82,15 @@ namespace GameStateComponents
 					remainingTeams++;
 				}
 			}
+
+            if (currentTime >= GAMEPLAY_TIME) {
+                eliminated[0] = false;
+                for (int i = 1; i < eliminated.Length; i++) //skip team 0 since that's server
+                {
+                    eliminated[i] = true;
+                }
+                return true;
+            }
 			//TODO Change to remainingTeams == 1
 			return remainingTeams == 0;
 		}
