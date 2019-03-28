@@ -4,40 +4,71 @@ using System.Collections.Concurrent;
 using NetworkLibrary;
 using NetworkLibrary.MessageElements;
 using Server;
+using System.Timers;
 
 namespace GameStateComponents
 {
-	public class GameState
-	{
-		private const int MAXTEAMS = 8;
+    public class GameState
+    {
+        private const int MAXTEAMS = 8;
+        private const int GAMEPLAY_TIME = 1200000;  //This means 20 mins for a game
+        private static System.Timers.Timer aTimer; //Game Play Timer added
+        private static int currentTime = 0; //start at 0 second
+        private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor>();
+        private List<Actor>[] teamActors;
+        public int CreatedActorsCount { get; private set; } = 0;
+        public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
+        public CollisionBuffer CollisionBuffer { get; private set; }
 
-		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
-		private List<Actor>[] teamActors;
-		public int CreatedActorsCount { get; private set;} = 0;
-		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
-		public CollisionBuffer CollisionBuffer { get; private set; }
+        private int CollisionIdCounter;
+        private const int COLLISION_ID_MAX = 255;
 
-		private int CollisionIdCounter;
-		private const int COLLISION_ID_MAX = 255;
-
-		private int[] teamLives;
+        private int[] teamLives;
 
 
-		public GameState ()
-		{
-			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
-			CollisionBuffer = new CollisionBuffer (this);
-			teamLives = new int[MAXTEAMS];
-			for (int i = 0; i < teamLives.Length; i++) {
-				teamLives [i] = 5;
-			}
-			teamActors = new List<Actor>[MAXTEAMS];
-			for (int i = 0; i < teamActors.Length; i++) {
-				teamActors [i] = new List<Actor> ();
-			}
-		}
+        public GameState()
+        {
+            OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
+            CollisionBuffer = new CollisionBuffer(this);
+            teamLives = new int[MAXTEAMS];
+            for (int i = 0; i < teamLives.Length; i++) {
+                teamLives[i] = 5;
+            }
+            teamActors = new List<Actor>[MAXTEAMS];
+            for (int i = 0; i < teamActors.Length; i++) {
+                teamActors[i] = new List<Actor>();
+            }
+        }
 
-		public bool CheckWinCondition(){
+        //Used for keeping track of game play timer, if 20 mins is up then both team loses
+        public void StartGamePlayTimer() {
+            aTimer = new System.Timers.Timer(1000); //every second we update game time
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true; //We want timer to only run once
+            aTimer.Enabled = true;
+        }
+
+        public void EndGamePlayTimer()
+        {
+            aTimer.Dispose();
+        }
+
+        //Added for updating Game time for the game state. This runs on different thread by the C# Timer
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            //We want to update the gameTime here 
+            currentTime++;
+            //TODO: need to have a string version of timer tick down for players, ex. 20:00
+
+            //Do a check here to see if currentTime has reached 20 mins
+            if (currentTime >= GAMEPLAY_TIME) { //>= just in case if gets over
+
+            }
+
+        }
+
+        public bool CheckWinCondition(){
 			bool[] eliminated = new bool[MAXTEAMS];
 			for (int i = 0; i < MAXTEAMS; i++) {
 				bool allDead = true;

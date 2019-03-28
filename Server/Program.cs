@@ -19,9 +19,11 @@ namespace Server
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
 		private static State state;
-		public static void Main (string[] args)
+        private static Logger Log;
+
+        public static void Main (string[] args)
 		{
-            Log = Logger.Instance;
+            Logger Log = Logger.Instance;
             Log.D("Server started.");
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 			List<UpdateElement> elements = new List<UpdateElement> ();
@@ -155,7 +157,9 @@ namespace Server
 				state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
 			}
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
-			StartGameStateTimer (socket, state); 
+			StartGameStateTimer (socket, state);
+            //Timer for keeping track of the game progress
+            state.GameState.StartGamePlayTimer();
 
 			while (state.TimesEndGameSent < 80) {
 				if (!state.GameOver) {

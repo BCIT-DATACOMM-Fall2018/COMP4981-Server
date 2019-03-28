@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Mar 28 changes to Logging errors
+ */
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -95,8 +98,11 @@ namespace Server
         {
             currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
             string log = "E " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + eString;
-            logQueue.Enqueue(log);
-
+            //logQueue.Enqueue(log); 
+            //No longer enqueue, instead we want to log error immediately
+            Console.WriteLine(log);
+            esw.WriteLine(log);
+            esw.Flush();
         }
 
 
