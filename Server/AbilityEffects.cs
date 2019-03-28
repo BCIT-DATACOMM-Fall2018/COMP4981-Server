@@ -18,7 +18,15 @@ namespace Server
 			// TestAreaOfEffect
 			(useActor, hitActor) => {hitActor.Health-=200;},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;}
+			(useActor, hitActor) => {hitActor.Health-=50;},
+			// Bullet Ability
+			(useActor, hitActor) => {hitActor.Health-=80;},
+			// Pork Chop
+			(useActor, hitActor) => {hitActor.Health-=250;},
+			// Dart
+			(useActor, hitActor) => {hitActor.Health-=20;},
+			// Purification
+			(useActor, hitActor) => {hitActor.Health+=250;}
 		};
 			
 		private AbilityEffects ()
