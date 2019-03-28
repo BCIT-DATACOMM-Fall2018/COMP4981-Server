@@ -1,26 +1,15 @@
 ﻿using System;
 
 namespace GameStateComponents {
-    class State {
-        private static State instance = null;
-        private static readonly object padlock = new object();
+    public class State {
 		public GameState GameState { get; private set; }
 		public ClientManager ClientManager { get; private set; }
+		public bool GameOver { get; set; } = false;
+		public int TimesEndGameSent { get; set; }
 
-        private State() {
-			GameState = new GameState();
-			ClientManager = new ClientManager();
-        }
-
-        public static State Instance {
-            get {
-                lock (padlock) {
-                    if (instance == null) {
-                        instance = new State();
-                    }
-                    return instance;
-                }
-            }
-        }
+        public State() {
+			GameState = new GameState ();
+			ClientManager = new ClientManager ();
+		}
     }
 }

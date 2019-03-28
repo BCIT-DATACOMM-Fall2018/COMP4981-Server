@@ -1,13 +1,16 @@
 ﻿using System;
+using Server;
 
 namespace GameStateComponents
 {
     public class Creep : Actor
     {
 
-        public Creep(int actorId) : base(actorId)
+		public Creep(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation)
         {
             Health = 25;
+            Attack = 1;
+            Defense = 1;
         }
     }
 }
