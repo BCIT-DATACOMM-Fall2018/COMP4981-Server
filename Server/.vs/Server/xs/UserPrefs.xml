@@ -1,0 +1,33 @@
+﻿<Properties StartupConfiguration="{2026E72F-FE77-44BA-9F53-1A57CA93C15C}|Default">
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Program.cs">
+    <Files>
+      <File FileName="Program.cs" Line="180" Column="10" />
+      <File FileName="PlayerConnection.cs" Line="1" Column="1" />
+      <File FileName="Player.cs" Line="1" Column="1" />
+      <File FileName="GameState.cs" Line="1" Column="1" />
+      <File FileName="ClientManager.cs" Line="1" Column="1" />
+      <File FileName="Actor.cs" Line="1" Column="1" />
+      <File FileName="State.cs" Line="1" Column="1" />
+      <File FileName="GameStateTest.cs" Line="1" Column="1" />
+      <File FileName="ServerStateMessageBridge.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Server" expanded="True">
+            <Node name="Server" expanded="True">
+              <Node name="Program.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

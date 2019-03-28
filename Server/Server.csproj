@@ -50,6 +50,7 @@
     <Compile Include="Tower.cs" />
     <Compile Include="CollisionBuffer.cs" />
     <Compile Include="AbilityEffects.cs" />
+    <Compile Include="Exp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
