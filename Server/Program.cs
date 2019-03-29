@@ -16,6 +16,10 @@ namespace Server
 
 		// Timer to send game state
 		private static System.Timers.Timer sendGameStateTimer;
+		private static System.Timers.Timer sendHeartBeatPing;
+		// Send Heart Beat Ping to all connected clients every 5 seconds (lobby state)
+		public const int HeartBeatInterval = 5000;
+
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
 		private static State state;
@@ -41,10 +45,38 @@ namespace Server
 				LobbyState (socket, state, bridge);
 			}
 		}
+
+
+		private static void StartHeartBeat (UDPSocket socket, State state)
+		{
+			// Create Timer with a 1/30 second interval
+			sendHeartBeatPing = new System.Timers.Timer (HeartBeatInterval);
+
+			// Set func on timer event (autoreset for continuous sending)
+			sendHeartBeatPing.Elapsed += (source, e) => SendHeartBeat (source, e, socket, state);
+			sendHeartBeatPing.AutoReset = true;
+			sendHeartBeatPing.Enabled = true; 
+		}
+
+		private static void SendHeartBeat (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+		{
+			for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+						PlayerConnection client = state.ClientManager.Connections [i];
+						Packet startPacket = client.Connection.CreatePacket (unreliableElements, PacketType.HeartbeatPacket);
+						socket.Send (startPacket, client.Destination);
+					}
+		}
 			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
+			// TODO
+			// Send heartbeat ping to connected clients every Heart Beat Ping Interval (5 seconds)
+
+			StartHeartBeat(socket, state);		
+
+
 			while (state.TimesEndGameSent < 80) {
+
 				Console.WriteLine ("Waiting for packet in lobby state");
 				Packet packet = socket.Receive ();
 				switch (ReliableUDPConnection.GetPacketType (packet)) {
@@ -93,6 +125,7 @@ namespace Server
 				if (state.ClientManager.CountCurrConnections < 2) {
 					allReady = false;
 				}
+
 				if (allReady) {
 					Console.WriteLine ("All are ready sending startgame packet");
 					List<UpdateElement> unreliableElements = new List<UpdateElement> ();
