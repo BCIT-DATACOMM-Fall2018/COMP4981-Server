@@ -60,9 +60,12 @@ namespace Server
 
 		private static void SendHeartBeat (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
-			for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+            List<UpdateElement> unreliable = new List<UpdateElement>();
+            List<UpdateElement> reliable = new List<UpdateElement>();
+
+            for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 						PlayerConnection client = state.ClientManager.Connections [i];
-						Packet startPacket = client.Connection.CreatePacket (unreliableElements, PacketType.HeartbeatPacket);
+						Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
 						socket.Send (startPacket, client.Destination);
 					}
 		}
