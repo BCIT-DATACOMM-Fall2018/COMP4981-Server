@@ -1,6 +1,5 @@
 ﻿using System;
 using Server;
-using NetworkLibrary;
 using NetworkLibrary.MessageElements;
 
 namespace GameStateComponents
@@ -30,7 +29,7 @@ namespace GameStateComponents
             {
                 return;
             }
-            state.GameState.OutgoingReliableElements.Enqueue(new TargetedAbilityElement)
+            state.GameState.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(ActorId, NetworkLibrary.AbilityType.TowerAttack, targetActorId));
         }
 
         

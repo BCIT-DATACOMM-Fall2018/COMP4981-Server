@@ -221,7 +221,7 @@ namespace GameStateComponents
 
         //get actor id of closest actor to the specified actor, within a certain distance
         //if no one within distance, return -1
-        //does not consider
+        //does not consider friendly actors
         public int getClosestEnemyActorInRange(int actorId, int distance)
         {
             float minDistance;
@@ -232,7 +232,7 @@ namespace GameStateComponents
             closestActor = 0;
             for (int i = 1; i < CreatedActorsCount; i++)
             {
-                if (i != actorId)
+                if (actors[actorId].Team != actors[i].Team) // also prevents considering distance to self
                 {
                     if ((tempDistance = GameUtility.getDistance(actors[actorId].Position, actors[i].Position)) < minDistance)
                     {
