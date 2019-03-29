@@ -109,15 +109,16 @@ namespace GameStateComponents
             return actorId;
         }
 
-		public int AddTower(int team)
+		public int AddTower(GameUtility.Coordinate spawnLoc)
         {
 			int actorId = CreatedActorsCount++;
-			Tower newTower = new Tower(actorId, team, new GameUtility.Coordinate(310, 90));
+            int team = 0;
+			Tower newTower = new Tower(actorId, team, spawnLoc);
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}            
 			Console.WriteLine("Adding tower actor with id {0}", actorId);
-            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
+            OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.Tower, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;
         }
 
@@ -157,9 +158,9 @@ namespace GameStateComponents
 			return actors [actorId].TargetPosition;
 		}
 
-		public void TickAllActors(){
+		public void TickAllActors(State state){
 			for (int i = 0; i < CreatedActorsCount; i++) {
-				actors [i].Tick ();
+				actors [i].Tick (state);
 
 				if (actors [i].HasDied ()) {
 					Console.WriteLine ("Actor {0} has died", actors [i].ActorId);
@@ -217,5 +218,35 @@ namespace GameStateComponents
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
-	}
+
+        //get actor id of closest actor to the specified actor, within a certain distance
+        //if no one within distance, return -1
+        //does not consider
+        public int getClosestEnemyActorInRange(int actorId, int distance)
+        {
+            float minDistance;
+            float tempDistance;
+            int closestActor;
+
+            minDistance = GameUtility.getDistance(actors[actorId].Position, actors[0].Position);
+            closestActor = 0;
+            for (int i = 1; i < CreatedActorsCount; i++)
+            {
+                if (i != actorId)
+                {
+                    if ((tempDistance = GameUtility.getDistance(actors[actorId].Position, actors[i].Position)) < minDistance)
+                    {
+                        minDistance = tempDistance;
+                        closestActor = i;
+                    }
+                }
+            }
+            if (GameUtility.CoordsWithinDistance(actors[actorId].Position, actors[closestActor].Position, distance))
+            {
+                return closestActor;
+            }
+            return -1;
+            
+        }
+    }
 }
