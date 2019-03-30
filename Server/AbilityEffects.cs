@@ -17,6 +17,11 @@ namespace Server
 			(useActor, hitActor) => {hitActor.Health-=100;},
 			// TestAreaOfEffect
 			(useActor, hitActor) => {hitActor.Health-=200;},
+			// UwuImScared
+			// TODO: useActor doesn't get any damage
+			(useActor, hitActor) => {},
+			// Fireball
+			(useActor, hitActor) => {hitActor.Health-=300;},
 			// AutoAttack
 			(useActor, hitActor) => {hitActor.Health-=50;}
 		};
