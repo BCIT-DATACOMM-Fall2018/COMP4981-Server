@@ -19,10 +19,14 @@ namespace Server
 			(useActor, hitActor) => {hitActor.Health-=200;},
 			// AutoAttack
 			(useActor, hitActor) => {hitActor.Health-=50;},
+			// Wall
+			(useActor, hitActor) => {},
 			// Banish
 			(useActor, hitActor) => {
 				Random rnd = new Random();
-				hitActor.Position = new GameUtility.Coordinate(rnd.Next(1,10), rnd.Next(1,10));
+				GameUtility.Coordinate randomPosition = new GameUtility.Coordinate(rnd.Next(100,400), rnd.Next(100,400));
+				hitActor.Position = randomPosition;
+				hitActor.TargetPosition = randomPosition;
 				}
 		};
 			

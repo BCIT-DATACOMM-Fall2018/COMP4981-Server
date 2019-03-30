@@ -47,7 +47,7 @@ namespace GameStateComponents
 
 		public int ActorId { get; private set; }
 
-		//public float Speed { get; private set; } = 0.82f;
+		public float Speed { get; private set; } = 0.82f;
 
 		public int Team { get; private set; }
 
