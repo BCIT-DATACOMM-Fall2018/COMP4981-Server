@@ -20,6 +20,11 @@ namespace GameStateComponents
 		private int turnsDead;
 		private bool dead;
 
+		public bool invincible {get; set;}
+		private float invincibleTimer;
+		private const float INVINCIBLE_MAX_TIME = 5f;
+		private double lastTick;
+
 		public int Health {
 			get { return _health; } 
 			set { 
@@ -93,8 +98,19 @@ namespace GameStateComponents
 					TargetPosition = SpawnLocation;
 				}
 			}
+			if (invincible) {
+				TimeSpan current = DateTime.UtcNow - new DateTime(1970, 1, 1);
+				float deltaTime = (float)(current.TotalSeconds - lastTick);
+				invincibleTimer += deltaTime;
+				if(invincibleTimer > INVINCIBLE_MAX_TIME){
+					invincible = false;
+				}
+			}
 			Move ();
 			DecrementCooldowns ();
+
+			TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+			lastTick = (float)t.TotalSeconds;
 		}
 
 		private void Move ()
