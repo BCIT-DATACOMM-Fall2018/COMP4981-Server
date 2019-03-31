@@ -17,14 +17,12 @@ namespace Server
 			(useActor, hitActor) => {hitActor.Health-=100;},
 			// TestAreaOfEffect
 			(useActor, hitActor) => {hitActor.Health-=200;},
-			// UwuImScared
-			(useActor, hitActor) => {
-				hitActor.invincible=true;
-				hitActor.Health+=200;},
-			// Fireball
-			(useActor, hitActor) => {hitActor.Health-=300;},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;}
+			(useActor, hitActor) => {hitActor.Health-=50;},
+			// UwuImScared -> will work once TakeDamage() is being used instead for damaging
+			(useActor, hitActor) => {hitActor.invincible=true;},
+			// Fireball
+			(useActor, hitActor) => {hitActor.Health-=300;}
 		};
 
 		private AbilityEffects ()

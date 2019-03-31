@@ -215,8 +215,6 @@ namespace GameStateComponents
 		}
 
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
-			Console.WriteLine("trigger ability");
-			Console.WriteLine("ability num: {0}", (int)abilityType);
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
 	}

@@ -103,13 +103,13 @@ namespace GameStateComponents
 				float deltaTime = (float)(current.TotalSeconds - lastTick);
 				invincibleTimer += deltaTime;
 				if(invincibleTimer > INVINCIBLE_MAX_TIME){
-					//invincible = false;
-					Console.WriteLine ("invincvible timer is done");
+					invincible = false;
 				}
 			}
 			Move ();
 			DecrementCooldowns ();
 
+			// update timer
 			TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
 			lastTick = (float)t.TotalSeconds;
 		}
@@ -162,16 +162,14 @@ namespace GameStateComponents
 			AbilityEffects.Apply [(int)abilityId] (this, hitActor);
 		}
 
+		// not used yet; has logic for whether actor takes damage if they have invincibility
         public int TakeDamage(Actor attacker, int baseDamage)
         {
 			int damage = 0;
 			if (!invincible) {
-				Console.WriteLine("oh no i'm not invincible");
 				double damageRatio = attacker.Attack / this.Defense;
 	            damage = (int) (baseDamage * damageRatio);
 	            this.Health -= damage;
-			} else {
-				Console.WriteLine("i'm invincible!");
 			}
             return damage;
         }
