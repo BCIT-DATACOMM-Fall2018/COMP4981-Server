@@ -1,4 +1,5 @@
 using System;
+using System.Timers;
 using Server;
 using NetworkLibrary;
 
@@ -21,9 +22,6 @@ namespace GameStateComponents
 		private bool dead;
 
 		public bool invincible = false;
-		private float invincibleTimer;
-		private const float INVINCIBLE_MAX_TIME = 5f;
-		private double lastTick;
 
 		public int Health {
 			get { return _health; }
@@ -98,20 +96,10 @@ namespace GameStateComponents
 					TargetPosition = SpawnLocation;
 				}
 			}
-			if (invincible) {
-				TimeSpan current = DateTime.UtcNow - new DateTime(1970, 1, 1);
-				float deltaTime = (float)(current.TotalSeconds - lastTick);
-				invincibleTimer += deltaTime;
-				if(invincibleTimer > INVINCIBLE_MAX_TIME){
-					invincible = false;
-				}
-			}
+
 			Move ();
 			DecrementCooldowns ();
 
-			// update timer
-			TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
-			lastTick = (float)t.TotalSeconds;
 		}
 
 		private void Move ()
@@ -157,12 +145,24 @@ namespace GameStateComponents
 			}
 		}
 
+		// Starts timer of 5 seconds when invincibility ability is used
+		public void startInvincibilityTimer() {
+			Timer timer = new Timer();
+			timer.Elapsed += OnTimedEvent;
+			timer.Interval = 5000;
+			timer.AutoReset = false;
+			timer.Enabled = true;
+		}
+		// Stops invincibility once timer is done
+		public void OnTimedEvent(Object source, ElapsedEventArgs e) {
+			invincible = false;
+		}
+
 		public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
 		{
 			AbilityEffects.Apply [(int)abilityId] (this, hitActor);
 		}
 
-		// not used yet; has logic for whether actor takes damage if they have invincibility
         public int TakeDamage(Actor attacker, int baseDamage)
         {
 			int damage = 0;

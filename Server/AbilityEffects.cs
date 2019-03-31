@@ -10,19 +10,20 @@ namespace Server
 
 		public static ApplyAbilityEffect[] Apply = new ApplyAbilityEffect[] {
 			// TestProjectile
-			(useActor, hitActor) => {hitActor.Health-=50;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
 			// TestTargeted
-			(useActor, hitActor) => {hitActor.Health-=500;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 500);},
 			// TestHomingTargeted
-			(useActor, hitActor) => {hitActor.Health-=100;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 100);},
 			// TestAreaOfEffect
-			(useActor, hitActor) => {hitActor.Health-=200;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 200);},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;},
-			// UwuImScared -> will work once TakeDamage() is being used instead for damaging
-			(useActor, hitActor) => {hitActor.invincible=true;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
+			// UwuImScared
+			(useActor, hitActor) => {hitActor.invincible=true;
+									 hitActor.startInvincibilityTimer();},
 			// Fireball
-			(useActor, hitActor) => {hitActor.Health-=300;}
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);}
 		};
 
 		private AbilityEffects ()
