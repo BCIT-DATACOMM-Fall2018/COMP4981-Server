@@ -217,5 +217,14 @@ namespace GameStateComponents
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
+
+		public void TriggerAbility(AbilityType abilityType, int actorCastId, float x, float z){
+			if (abilityType == AbilityType.Blink) {
+				actors [actorCastId].TargetPosition = new GameUtility.Coordinate(x, z);
+				actors [actorCastId].Position = new GameUtility.Coordinate(x, z);
+
+			}
+
+		}
 	}
 }

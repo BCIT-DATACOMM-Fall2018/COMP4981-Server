@@ -39,6 +39,10 @@ namespace Server
             //send to all clients 
         }
 
+		public void UpdateActorExperience(int actorId, int newExp) {
+		
+		}
+
 
 		public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
         {
@@ -65,6 +69,9 @@ namespace Server
 			// Validate that the ability can be used by the actor
 			if (gamestate.ValidateAreaAbilityUse (actorId, abilityId, x, z)) {
 
+				if (!AbilityInfo.InfoArray [(int)abilityId].RequiresCollision) {
+					gamestate.TriggerAbility (abilityId, actorId, x, z);
+				}
 				// Queue the ability use to be sent to all clients
 				gamestate.OutgoingReliableElements.Enqueue (new AreaAbilityElement (actorId, abilityId, x, z, gamestate.MakeCollisionId ()));
 			} else {
