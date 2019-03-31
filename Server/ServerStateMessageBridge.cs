@@ -36,7 +36,7 @@ namespace Server
         }
 
         public void UpdateActorHealth (int actorId, int newHealth){
-            //send to all clients 
+            //send to all clients
         }
 
 
@@ -80,13 +80,13 @@ namespace Server
 
 		public void SpawnActor(ActorType actorType, int ActorId, int actorTeam, float x, float z)
         {
-            //send to all clients 
+            //send to all clients
 
         }
 
         public void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ)
         {
-            //send to all clients 
+            //send to all clients
         }
 
 		public void SetReady(int clientId, bool ready, int team){
@@ -101,10 +101,14 @@ namespace Server
 		}
 
 		public void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo){
-			
+
 		}
 
 		public void EndGame(int winningTeam){
+
+		}
+
+		public void UpdateActorExperience(int actorId, int experience){
 
 		}
 

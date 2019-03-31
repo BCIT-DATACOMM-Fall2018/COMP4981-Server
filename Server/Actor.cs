@@ -20,15 +20,15 @@ namespace GameStateComponents
 		private int turnsDead;
 		private bool dead;
 
-		public bool invincible {get; set;}
+		public bool invincible = false;
 		private float invincibleTimer;
 		private const float INVINCIBLE_MAX_TIME = 5f;
 		private double lastTick;
 
 		public int Health {
-			get { return _health; } 
-			set { 
-				_health = value; 
+			get { return _health; }
+			set {
+				_health = value;
 				if (_health > 0) {
 					dead = false;
 				}
@@ -37,7 +37,7 @@ namespace GameStateComponents
 				} else if (_health <= 0) {
 					_health = 0;
 				}
-				
+
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace GameStateComponents
 
 		public int ActorId { get; private set; }
 
-		//public float Speed { get; private set; } = 0.82f;
+		public float Speed { get; private set; } = 0.82f;
 
 		public int Team { get; private set; }
 
@@ -103,7 +103,8 @@ namespace GameStateComponents
 				float deltaTime = (float)(current.TotalSeconds - lastTick);
 				invincibleTimer += deltaTime;
 				if(invincibleTimer > INVINCIBLE_MAX_TIME){
-					invincible = false;
+					//invincible = false;
+					Console.WriteLine ("invincvible timer is done");
 				}
 			}
 			Move ();
@@ -163,9 +164,15 @@ namespace GameStateComponents
 
         public int TakeDamage(Actor attacker, int baseDamage)
         {
-            double damageRatio = attacker.Attack / this.Defense;
-            int damage = (int) (baseDamage * damageRatio);
-            this.Health -= damage;
+			int damage = 0;
+			if (!invincible) {
+				Console.WriteLine("oh no i'm not invincible");
+				double damageRatio = attacker.Attack / this.Defense;
+	            damage = (int) (baseDamage * damageRatio);
+	            this.Health -= damage;
+			} else {
+				Console.WriteLine("i'm invincible!");
+			}
             return damage;
         }
 	}

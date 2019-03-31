@@ -18,16 +18,17 @@ namespace Server
 			// TestAreaOfEffect
 			(useActor, hitActor) => {hitActor.Health-=200;},
 			// UwuImScared
-			(useActor, hitActor) => {useActor.invincible=true;},
+			(useActor, hitActor) => {
+				hitActor.invincible=true;
+				hitActor.Health+=200;},
 			// Fireball
 			(useActor, hitActor) => {hitActor.Health-=300;},
 			// AutoAttack
 			(useActor, hitActor) => {hitActor.Health-=50;}
 		};
-			
+
 		private AbilityEffects ()
 		{
 		}
 	}
 }
-
