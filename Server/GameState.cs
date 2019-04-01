@@ -14,20 +14,23 @@ namespace GameStateComponents
         private const int GAMEPLAY_TIME = 1200000;  //This means 20 mins for a game
         private static System.Timers.Timer aTimer; //Game Play Timer added
         private static int currentTime = 0; //start at 0 second
-        private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor>();
+        public ConcurrentDictionary<int, Actor> actors { get; private set; }
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
         public CollisionBuffer CollisionBuffer { get; private set; }
 
-        private int CollisionIdCounter;
-        private const int COLLISION_ID_MAX = 255;
+		private int CollisionIdCounter;
+		private const int COLLISION_ID_MAX = 255;
+        private const int KILL_PLAYER_EXP = 64;
+        private const int KILL_TOWER_EXP = 128;
+
 
         private int[] teamLives;
 
-
         public GameState()
         {
+            actors = new ConcurrentDictionary<int, Actor>();
             OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
             CollisionBuffer = new CollisionBuffer(this);
             teamLives = new int[MAXTEAMS];
@@ -252,6 +255,25 @@ namespace GameStateComponents
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
+
+        public void addEXP(Player killerPlayer, bool isKillPlayer)
+        {//if kill by player, true; if kill by tower , false
+
+            int expAdded = isKillPlayer ? KILL_PLAYER_EXP : KILL_TOWER_EXP;
+
+            for (int i = 0; i < CreatedActorsCount; i++)
+            {
+                if (actors[i].Team == killerPlayer.Team)
+                {
+                    if (i == killerPlayer.ActorId)
+                        GameUtility.addExp((Player)actors[i], expAdded);
+                    else
+                    {
+                        GameUtility.addExp((Player)actors[i], expAdded / 2);
+                    }
+                }
+            }
+        }
 
         //get actor id of closest actor to the specified actor, within a certain distance
         //if no one within distance, return -1
