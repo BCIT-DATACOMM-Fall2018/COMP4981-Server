@@ -59,7 +59,7 @@ namespace Server
         //gets the distance between 2 points
         public static float getDistance(Coordinate c1, Coordinate c2)
         {
-
+            return (float)Math.Sqrt(Math.Abs(((c1.x - c2.x)* (c1.x - c2.x)) + ((c1.z - c2.z) * (c1.z - c2.z))));
         }
 
     }

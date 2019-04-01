@@ -16,11 +16,19 @@ namespace Server
 
 		// Timer to send game state
 		private static System.Timers.Timer sendGameStateTimer;
+		private static System.Timers.Timer sendHeartBeatPing;
+		// Send Heart Beat Ping to all connected clients every 5 seconds (lobby state)
+		public const int HeartBeatInterval = 5000;
+
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
 		private static State state;
-		public static void Main (string[] args)
+        private static Logger Log;
+
+        public static void Main (string[] args)
 		{
+            Logger Log = Logger.Instance;
+            Log.D("Server started.");
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 			List<UpdateElement> elements = new List<UpdateElement> ();
 			elements.Add (new HealthElement (15, 6));
@@ -41,10 +49,41 @@ namespace Server
 				LobbyState (socket, state, bridge);
 			}
 		}
+
+
+		private static void StartHeartBeat (UDPSocket socket, State state)
+		{
+			// Create Timer with a 1/30 second interval
+			sendHeartBeatPing = new System.Timers.Timer (HeartBeatInterval);
+
+			// Set func on timer event (autoreset for continuous sending)
+			sendHeartBeatPing.Elapsed += (source, e) => SendHeartBeat (source, e, socket, state);
+			sendHeartBeatPing.AutoReset = true;
+			sendHeartBeatPing.Enabled = true; 
+		}
+
+		private static void SendHeartBeat (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+		{
+            List<UpdateElement> unreliable = new List<UpdateElement>();
+            List<UpdateElement> reliable = new List<UpdateElement>();
+
+            for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+						PlayerConnection client = state.ClientManager.Connections [i];
+						Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
+						socket.Send (startPacket, client.Destination);
+					}
+		}
 			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
+			// TODO
+			// Send heartbeat ping to connected clients every Heart Beat Ping Interval (5 seconds)
+
+			StartHeartBeat(socket, state);		
+
+
 			while (state.TimesEndGameSent < 80) {
+
 				Console.WriteLine ("Waiting for packet in lobby state");
 				Packet packet = socket.Receive ();
 				switch (ReliableUDPConnection.GetPacketType (packet)) {
@@ -93,6 +132,7 @@ namespace Server
 				if (state.ClientManager.CountCurrConnections < 2) {
 					allReady = false;
 				}
+
 				if (allReady) {
 					Console.WriteLine ("All are ready sending startgame packet");
 					List<UpdateElement> unreliableElements = new List<UpdateElement> ();
@@ -202,8 +242,10 @@ namespace Server
 				Console.WriteLine (ex.Message);
 				Console.WriteLine (ex.StackTrace);
 			}
+            //Timer for keeping track of the game progress
+            state.GameState.StartGamePlayTimer();
 
-			while (state.TimesEndGameSent < 80) {
+            while (state.TimesEndGameSent < 80) {
 				if (!state.GameOver) {
 					//Console.WriteLine ("Waiting for packet in game state");
 					Packet packet = socket.Receive ();
@@ -244,8 +286,13 @@ namespace Server
 			sendGameStateTimer.Enabled = true; 
 		}
 
+        //added for cleaning up gamestateTimer, also clean up the game state timer
+        private static void EndGameStateTimer() {
+            sendGameStateTimer.Dispose();
+            state.GameState.EndGamePlayTimer(); // used for cleaning up timer
+        }
 
-		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+        private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
 			//Console.WriteLine ("Forming packet");
 			try {
@@ -260,7 +307,7 @@ namespace Server
 					reliable.Add (updateElement);
 				}
 
-				gs.TickAllActors ();
+				gs.TickAllActors (state);
 				gs.CollisionBuffer.DecrementTTL ();
 				if(state.GameOver || gs.CheckWinCondition()){
 					state.GameOver = true;
