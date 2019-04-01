@@ -221,21 +221,24 @@ namespace GameStateComponents
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
 
-        public void addEXP(Player killerPlayer, bool isKillPlayer) {//if kill by player, true; if kill by tower , false
+        public void addEXP(Player killerPlayer, bool isKillPlayer)
+        {//if kill by player, true; if kill by tower , false
 
             int expAdded = isKillPlayer ? KILL_PLAYER_EXP : KILL_TOWER_EXP;
 
             for (int i = 0; i < CreatedActorsCount; i++)
             {
-                if (actors[i].Team == killerPlayer.Team) {
+                if (actors[i].Team == killerPlayer.Team)
+                {
                     if (i == killerPlayer.ActorId)
                         GameUtility.addExp((Player)actors[i], expAdded);
-                    else {
-                        GameUtility.addExp((Player)actors[i], expAdded/2);
+                    else
+                    {
+                        GameUtility.addExp((Player)actors[i], expAdded / 2);
                     }
-                } 
                 }
-
+            }
+        }
 
     }
 }
