@@ -305,5 +305,14 @@ namespace GameStateComponents
             return -1;
             
         }
-    }
+
+		public void TriggerAbility(AbilityType abilityType, int actorCastId, float x, float z){
+			if (abilityType == AbilityType.Blink) {
+				actors [actorCastId].TargetPosition = new GameUtility.Coordinate(x, z);
+				actors [actorCastId].Position = new GameUtility.Coordinate(x, z);
+
+			}
+
+		}
+	}
 }
