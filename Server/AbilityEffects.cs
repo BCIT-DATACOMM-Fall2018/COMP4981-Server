@@ -15,25 +15,20 @@ namespace Server
 		public List<Ability> ultimateAbilities { get; }
 		
         private const int TOWER_DAMAGE = 100;
+
 		public delegate void ApplyAbilityEffect(Actor useActor, Actor hitActor);
 
 		public static ApplyAbilityEffect[] Apply = new ApplyAbilityEffect[] {
 			// TestProjectile
-			(useActor, hitActor) => {hitActor.Health-=50;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
 			// TestTargeted
-			(useActor, hitActor) => {hitActor.Health-=500;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 500);},
 			// TestHomingTargeted
-			(useActor, hitActor) => {hitActor.Health-=100;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 100);},
 			// TestAreaOfEffect
-			(useActor, hitActor) => {hitActor.Health-=200;},
-			// UwuImScared
-			(useActor, hitActor) => {
-				hitActor.invincible=true;
-				hitActor.Health+=200;},
-			// Fireball
-			(useActor, hitActor) => {hitActor.Health-=300;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 200);},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
 			// Wall
 			(useActor, hitActor) => {},
 			// Banish
@@ -42,11 +37,28 @@ namespace Server
 				GameUtility.Coordinate randomPosition = new GameUtility.Coordinate(rnd.Next(100,400), rnd.Next(100,400));
 				hitActor.Position = randomPosition;
 				hitActor.TargetPosition = randomPosition;
-				},
-            //TowerAttack
-            (useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); }
-		};
-		
+			},
+			// Bullet Ability
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 80);},
+			// Pork Chop
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 250);},
+			// Dart
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 20);},
+			// Purification
+			(useActor, hitActor) => {hitActor.Health+=250;},
+			// UwuImScared
+			(useActor, hitActor) => {hitActor.invincible=true;
+									 hitActor.startInvincibilityTimer();},
+			// Fireball
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);},
+            //WeebOut
+            (useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
+            //Whale
+            (useActor, hitActor) => {hitActor.Health+=100;},
+			//TowerAttack
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); }
+        };
+
 		private AbilityEffects ()
 		{
 			abilities = new List<Ability>();
