@@ -23,7 +23,9 @@ namespace GameStateComponents {
 				AbilityType.Dart,
 				AbilityType.Purification,
                 AbilityType.UwuImScared,
-                AbilityType.Fireball
+                AbilityType.Fireball,
+                AbilityType.WeebOut,
+                AbilityType.Whale
 			};
 			Cooldowns = new int[Abilities.Length];
             Experience = 0;

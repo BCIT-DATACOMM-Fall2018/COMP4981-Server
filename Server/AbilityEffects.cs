@@ -40,8 +40,13 @@ namespace Server
 			(useActor, hitActor) => {hitActor.invincible=true;
 									 hitActor.startInvincibilityTimer();},
 			// Fireball
-			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);}
-		};
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);},
+
+            //WeebOut
+            (useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
+            //Whale
+            (useActor, hitActor) => {hitActor.Health+=100;}
+        };
 
 		private AbilityEffects ()
 		{
