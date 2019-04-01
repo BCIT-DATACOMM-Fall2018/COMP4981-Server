@@ -21,10 +21,7 @@ namespace GameStateComponents
 		private int turnsDead;
 		private bool dead;
 
-<<<<<<< HEAD
-=======
 		public bool invincible = false;
->>>>>>> 2fd3d64282ba0ea4ce82d04b14148c2f62e624fa
 
 		public int Health {
 			get { return _health; }
