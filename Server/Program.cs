@@ -18,7 +18,7 @@ namespace Server
 		private static System.Timers.Timer sendGameStateTimer;
 		private static System.Timers.Timer sendHeartBeatPing;
 		// Send Heart Beat Ping to all connected clients every 5 seconds (lobby state)
-		public const int HeartBeatInterval = 5000;
+		public const int HeartBeatInterval = 100;
 
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
@@ -66,20 +66,37 @@ namespace Server
 		{
             List<UpdateElement> unreliable = new List<UpdateElement>();
             List<UpdateElement> reliable = new List<UpdateElement>();
+            Console.WriteLine("Count current connections {0}", state.ClientManager.CountCurrConnections);
 
             List<LobbyStatusElement.PlayerInfo> listPI = new List<LobbyStatusElement.PlayerInfo>();
-            for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
+            try
             {
-                PlayerConnection client = state.ClientManager.Connections[i];
-                listPI.Add(new LobbyStatusElement.PlayerInfo(client.ActorId, client.Name, state.GameState.actors[client.ActorId].Team, client.Ready));
+                for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
+                {
+                    Console.WriteLine("Creating LobbyInfo packet");
+                    PlayerConnection client = state.ClientManager.Connections[i];
+                    listPI.Add(new LobbyStatusElement.PlayerInfo(client.ActorId, client.Name, client.Team, client.Ready));
+
+                }
+
+                for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
+                {
+                    Console.WriteLine("Sending Lobby update to client");
+                    PlayerConnection client = state.ClientManager.Connections[i];
+                    unreliable.Add(new LobbyStatusElement(listPI));
+                    Packet startPacket = client.Connection.CreatePacket(unreliable, reliable, PacketType.HeartbeatPacket);
+                    socket.Send(startPacket, client.Destination);
+                    Console.WriteLine("Sent lobby update to client");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
-            for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
-				PlayerConnection client = state.ClientManager.Connections [i];
-                unreliable.Add(new LobbyStatusElement(listPI);
-				Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
-				socket.Send (startPacket, client.Destination);
-			}
+
+            
 		}
 			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)

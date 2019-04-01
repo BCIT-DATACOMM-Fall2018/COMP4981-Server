@@ -100,8 +100,11 @@ namespace Server
         }
 
 		public void SetReady(int clientId, bool ready, int team){
-			state.ClientManager.Connections [clientId].Team = team;
-			state.ClientManager.Connections [clientId].Ready = ready;
+
+            state.ClientManager.Connections [clientId].Team = team;
+            if (team != 0)
+                state.ClientManager.Connections [clientId].Ready = ready;
+
 
 			Console.WriteLine ("Set ready status of {0} to {1} on team {2}", clientId, ready, team);
 		}
