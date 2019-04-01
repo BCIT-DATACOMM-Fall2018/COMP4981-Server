@@ -10,15 +10,15 @@ namespace Server
 
 		public static ApplyAbilityEffect[] Apply = new ApplyAbilityEffect[] {
 			// TestProjectile
-			(useActor, hitActor) => {hitActor.Health-=50;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
 			// TestTargeted
-			(useActor, hitActor) => {hitActor.Health-=500;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 500);},
 			// TestHomingTargeted
-			(useActor, hitActor) => {hitActor.Health-=100;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 100);},
 			// TestAreaOfEffect
-			(useActor, hitActor) => {hitActor.Health-=200;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 200);},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
 			// Wall
 			(useActor, hitActor) => {},
 			// Banish
@@ -35,12 +35,16 @@ namespace Server
 			// Dart
 			(useActor, hitActor) => {hitActor.Health-=20;},
 			// Purification
-			(useActor, hitActor) => {hitActor.Health+=250;}
+			(useActor, hitActor) => {hitActor.Health+=250;},
+			// UwuImScared
+			(useActor, hitActor) => {hitActor.invincible=true;
+									 hitActor.startInvincibilityTimer();},
+			// Fireball
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);}
 		};
-			
+
 		private AbilityEffects ()
 		{
 		}
 	}
 }
-

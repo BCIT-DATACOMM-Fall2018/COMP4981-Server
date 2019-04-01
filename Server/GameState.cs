@@ -103,7 +103,7 @@ namespace GameStateComponents
 			Creep newCreep = new Creep(actorId, team, new GameUtility.Coordinate(310, 90));
 			if (!actors.TryAdd (actorId, newCreep)) {
 				//TODO Handle failure
-			}            
+			}
 			Console.WriteLine("Adding creep actor with id {0}", actorId);
             //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
@@ -115,7 +115,7 @@ namespace GameStateComponents
 			Tower newTower = new Tower(actorId, team, new GameUtility.Coordinate(310, 90));
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
-			}            
+			}
 			Console.WriteLine("Adding tower actor with id {0}", actorId);
             //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
@@ -128,7 +128,7 @@ namespace GameStateComponents
 
 		public void UpdatePosition (int actorId, float x, float z)
 		{
-			
+
 			actors [actorId].Position = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
 		}
 
