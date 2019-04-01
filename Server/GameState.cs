@@ -19,8 +19,11 @@ namespace GameStateComponents
 
 		private int CollisionIdCounter;
 		private const int COLLISION_ID_MAX = 255;
+        private const int KILL_PLAYER_EXP = 64;
+        private const int KILL_TOWER_EXP = 128;
 
-		private int[] teamLives;
+
+        private int[] teamLives;
 
 
 		public GameState ()
@@ -217,5 +220,22 @@ namespace GameStateComponents
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
-	}
+
+        public void addEXP(Player killerPlayer, bool isKillPlayer) {//if kill by player, true; if kill by tower , false
+
+            int expAdded = isKillPlayer ? KILL_PLAYER_EXP : KILL_TOWER_EXP;
+
+            for (int i = 0; i < CreatedActorsCount; i++)
+            {
+                if (actors[i].Team == killerPlayer.Team) {
+                    if (i == killerPlayer.ActorId)
+                        GameUtility.addExp((Player)actors[i], expAdded);
+                    else {
+                        GameUtility.addExp((Player)actors[i], expAdded/2);
+                    }
+                } 
+                }
+
+
+    }
 }
