@@ -47,13 +47,15 @@ namespace GameStateComponents
 
 		public int ActorId { get; private set; }
 
-		//public float Speed { get; private set; } = 0.82f;
+		public float Speed { get; private set; } = 0.82f;
 
 		public int Team { get; private set; }
 
 		public bool RespawnAllowed { get; set; } = false;
 
 		public GameUtility.Coordinate SpawnLocation { get; private set; }
+
+        public int LastDamageSourceActorId { get; private set; }
 
 		protected AbilityType[] Abilities;
 		protected int[] Cooldowns;
@@ -84,6 +86,8 @@ namespace GameStateComponents
 			if (Health == 0 && !dead) {
 				turnsDead = 0;
 				dead = true;
+                //award exp to actor's killer here
+                //seperate case for team 0 to award more
 				deaths++;
 			}
 			if (dead) {
@@ -150,6 +154,7 @@ namespace GameStateComponents
             double damageRatio = attacker.Attack / this.Defense;
             int damage = (int) (baseDamage * damageRatio);
             this.Health -= damage;
+            this.LastDamageSourceActorId = attacker.ActorId;
             return damage;
         }
 	}
