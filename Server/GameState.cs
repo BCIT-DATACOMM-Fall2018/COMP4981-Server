@@ -14,7 +14,7 @@ namespace GameStateComponents
         private const int GAMEPLAY_TIME = 1200000;  //This means 20 mins for a game
         private static System.Timers.Timer aTimer; //Game Play Timer added
         private static int currentTime = 0; //start at 0 second
-        private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor>();
+        public ConcurrentDictionary<int, Actor> actors { get; private set; }
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
@@ -30,6 +30,7 @@ namespace GameStateComponents
 
         public GameState()
         {
+            actors = new ConcurrentDictionary<int, Actor>();
             OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
             CollisionBuffer = new CollisionBuffer(this);
             teamLives = new int[MAXTEAMS];

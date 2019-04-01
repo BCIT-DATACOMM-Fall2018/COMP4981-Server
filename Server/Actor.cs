@@ -88,6 +88,13 @@ namespace GameStateComponents
 				dead = true;
                 //award exp to actor's killer here
                 //seperate case for team 0 to award more
+                if (state.GameState.actors[ActorId].Team == 0) //tower got killed
+                {
+                    state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], false);
+                } else
+                {
+                    state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], true);
+                }
 				deaths++;
             }
 			if (dead) {
