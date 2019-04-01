@@ -76,7 +76,7 @@ namespace Server
 
             for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 				PlayerConnection client = state.ClientManager.Connections [i];
-                unreliable.Add(new LobbyStatusElement(listPI);
+                unreliable.Add(new LobbyStatusElement(listPI));
 				Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
 				socket.Send (startPacket, client.Destination);
 			}
