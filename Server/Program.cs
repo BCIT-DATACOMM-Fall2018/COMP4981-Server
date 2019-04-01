@@ -23,8 +23,12 @@ namespace Server
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
 		private static State state;
-		public static void Main (string[] args)
+        private static Logger Log;
+
+        public static void Main (string[] args)
 		{
+            Logger Log = Logger.Instance;
+            Log.D("Server started.");
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 			List<UpdateElement> elements = new List<UpdateElement> ();
 			elements.Add (new HealthElement (15, 6));
@@ -189,9 +193,11 @@ namespace Server
 				state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
 			}
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
-			StartGameStateTimer (socket, state); 
+			StartGameStateTimer (socket, state);
+            //Timer for keeping track of the game progress
+            state.GameState.StartGamePlayTimer();
 
-			while (state.TimesEndGameSent < 80) {
+            while (state.TimesEndGameSent < 80) {
 				if (!state.GameOver) {
 					//Console.WriteLine ("Waiting for packet in game state");
 					Packet packet = socket.Receive ();
@@ -232,8 +238,13 @@ namespace Server
 			sendGameStateTimer.Enabled = true; 
 		}
 
+        //added for cleaning up gamestateTimer, also clean up the game state timer
+        private static void EndGameStateTimer() {
+            sendGameStateTimer.Dispose();
+            state.GameState.EndGamePlayTimer(); // used for cleaning up timer
+        }
 
-		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+        private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
 			//Console.WriteLine ("Forming packet");
 			try {
