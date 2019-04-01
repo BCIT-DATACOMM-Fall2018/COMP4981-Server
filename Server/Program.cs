@@ -95,8 +95,6 @@ namespace Server
                 Console.WriteLine(ex.StackTrace);
             }
 
-
-            
 		}
 			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
