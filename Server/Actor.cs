@@ -20,6 +20,7 @@ namespace GameStateComponents
 		private int turnsDead;
 		private bool dead;
 
+
 		public int Health {
 			get { return _health; } 
 			set { 

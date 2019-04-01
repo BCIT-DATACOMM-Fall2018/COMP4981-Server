@@ -27,7 +27,15 @@ namespace Server
 				GameUtility.Coordinate randomPosition = new GameUtility.Coordinate(rnd.Next(100,400), rnd.Next(100,400));
 				hitActor.Position = randomPosition;
 				hitActor.TargetPosition = randomPosition;
-				}
+				},
+			// Bullet Ability
+			(useActor, hitActor) => {hitActor.Health-=80;},
+			// Pork Chop
+			(useActor, hitActor) => {hitActor.Health-=250;},
+			// Dart
+			(useActor, hitActor) => {hitActor.Health-=20;},
+			// Purification
+			(useActor, hitActor) => {hitActor.Health+=250;}
 		};
 			
 		private AbilityEffects ()
