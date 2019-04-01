@@ -67,11 +67,19 @@ namespace Server
             List<UpdateElement> unreliable = new List<UpdateElement>();
             List<UpdateElement> reliable = new List<UpdateElement>();
 
+            List<LobbyStatusElement.PlayerInfo> listPI = new List<LobbyStatusElement.PlayerInfo>();
+            for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
+            {
+                PlayerConnection client = state.ClientManager.Connections[i];
+                listPI.Add(new LobbyStatusElement.PlayerInfo(client.ActorId, client.Name, state.GameState.actors[client.ActorId].Team, client.Ready));
+            }
+
             for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
-						PlayerConnection client = state.ClientManager.Connections [i];
-						Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
-						socket.Send (startPacket, client.Destination);
-					}
+				PlayerConnection client = state.ClientManager.Connections [i];
+                unreliable.Add(new LobbyStatusElement(listPI);
+				Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
+				socket.Send (startPacket, client.Destination);
+			}
 		}
 			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
