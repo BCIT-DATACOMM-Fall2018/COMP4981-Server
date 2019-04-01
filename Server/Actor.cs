@@ -55,6 +55,8 @@ namespace GameStateComponents
 
 		public GameUtility.Coordinate SpawnLocation { get; private set; }
 
+        public int LastDamageSourceActorId { get; private set; }
+
 		protected AbilityType[] Abilities;
 		protected int[] Cooldowns;
 
@@ -75,7 +77,7 @@ namespace GameStateComponents
 			TargetPosition = SpawnLocation;
 		}
 
-		public void Tick ()
+		public virtual void Tick (State state)
 		{
 			if (Health > 0) {
 				dead = false;
@@ -84,10 +86,12 @@ namespace GameStateComponents
 			if (Health == 0 && !dead) {
 				turnsDead = 0;
 				dead = true;
+                //award exp to actor's killer here
+                //seperate case for team 0 to award more
 				deaths++;
-			}
+            }
 			if (dead) {
-				if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
+                if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
 					Health = MAX_HEALTH;
 					Position = SpawnLocation;
 					TargetPosition = SpawnLocation;
@@ -150,6 +154,7 @@ namespace GameStateComponents
             double damageRatio = attacker.Attack / this.Defense;
             int damage = (int) (baseDamage * damageRatio);
             this.Health -= damage;
+            this.LastDamageSourceActorId = attacker.ActorId;
             return damage;
         }
 	}
