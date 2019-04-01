@@ -47,7 +47,7 @@ namespace GameStateComponents
 
 		public int ActorId { get; private set; }
 
-		//public float Speed { get; private set; } = 0.82f;
+		public float Speed { get; private set; } = 0.82f;
 
 		public int Team { get; private set; }
 
@@ -75,7 +75,7 @@ namespace GameStateComponents
 			TargetPosition = SpawnLocation;
 		}
 
-		public void Tick ()
+		public virtual void Tick (State state)
 		{
 			if (Health > 0) {
 				dead = false;
@@ -85,9 +85,9 @@ namespace GameStateComponents
 				turnsDead = 0;
 				dead = true;
 				deaths++;
-			}
+            }
 			if (dead) {
-				if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
+                if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
 					Health = MAX_HEALTH;
 					Position = SpawnLocation;
 					TargetPosition = SpawnLocation;

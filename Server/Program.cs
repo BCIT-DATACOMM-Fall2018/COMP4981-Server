@@ -192,8 +192,56 @@ namespace Server
 			for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 				state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
 			}
+            //spawn test tower at 100,100
+            state.GameState.AddTower(new GameUtility.Coordinate(150, 150));
+
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
 			StartGameStateTimer (socket, state);
+
+            //Console.WriteLine ("Forming packet");
+            try {
+				ClientManager cm = state.ClientManager;
+				GameState gs = state.GameState;
+				List<UpdateElement> unreliable = new List<UpdateElement> ();
+				List<UpdateElement> reliable = new List<UpdateElement> ();
+
+				// Get new update elements from game state
+				UpdateElement updateElement;
+				while (gs.OutgoingReliableElements.TryDequeue (out updateElement)) {
+					reliable.Add (updateElement);
+				}
+
+				gs.TickAllActors (state);
+				gs.CollisionBuffer.DecrementTTL ();
+				if(state.GameOver || gs.CheckWinCondition()){
+					state.GameOver = true;
+					if(state.TimesEndGameSent++ < 80){
+						//TODO end the game
+						reliable.Add(new GameEndElement(1));
+						Console.WriteLine("Game is over");
+					} else {
+						sendGameStateTimer.Enabled = false;
+					}
+				}
+					
+				// Create unreliable elements that will be sent to all clients
+				int actorId;
+				for (int i = 0; i < gs.CreatedActorsCount; i++) {
+					actorId = cm.Connections [i].ActorId;
+					unreliable.Add (new HealthElement (actorId, gs.GetHealth (actorId)));
+					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
+				}
+
+				// Create and send packets to all clients
+				for (int i = 0; i < cm.CountCurrConnections; i++) {
+					Packet packet = state.ClientManager.Connections [i].Connection.CreatePacket (unreliable, reliable);
+					socket.Send (packet, cm.Connections [i].Destination);
+				}
+			} catch (Exception ex) {
+				//TODO Add expected exceptions. All exceptions being caught for debugging purposes. 
+				Console.WriteLine (ex.Message);
+				Console.WriteLine (ex.StackTrace);
+			}
             //Timer for keeping track of the game progress
             state.GameState.StartGamePlayTimer();
 
@@ -259,7 +307,7 @@ namespace Server
 					reliable.Add (updateElement);
 				}
 
-				gs.TickAllActors ();
+				gs.TickAllActors (state);
 				gs.CollisionBuffer.DecrementTTL ();
 				if(state.GameOver || gs.CheckWinCondition()){
 					state.GameOver = true;

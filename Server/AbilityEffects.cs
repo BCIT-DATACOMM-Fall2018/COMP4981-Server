@@ -5,7 +5,7 @@ namespace Server
 {
 	public class AbilityEffects
 	{
-
+        private const int TOWER_DAMAGE = 100;
 		public delegate void ApplyAbilityEffect(Actor useActor, Actor hitActor);
 
 		public static ApplyAbilityEffect[] Apply = new ApplyAbilityEffect[] {
@@ -18,7 +18,9 @@ namespace Server
 			// TestAreaOfEffect
 			(useActor, hitActor) => {hitActor.Health-=200;},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;}
+			(useActor, hitActor) => {hitActor.Health-=50;},
+            //TowerAttack
+            (useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); }
 		};
 			
 		private AbilityEffects ()
