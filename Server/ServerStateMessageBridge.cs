@@ -39,6 +39,16 @@ namespace Server
             //send to all clients
         }
 
+        public void UpdateActorExperience(int actorId, int newExp)
+        {
+
+        }
+
+        public void UpdateActorSpeed(int actorId, int newSpeed)
+        {
+
+        }
+
 
 		public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
         {

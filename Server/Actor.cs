@@ -60,6 +60,8 @@ namespace GameStateComponents
 
 		public GameUtility.Coordinate SpawnLocation { get; private set; }
 
+        public int LastDamageSourceActorId { get; private set; }
+
 		protected AbilityType[] Abilities;
 		protected int[] Cooldowns;
 
@@ -80,7 +82,7 @@ namespace GameStateComponents
 			TargetPosition = SpawnLocation;
 		}
 
-		public void Tick ()
+		public virtual void Tick (State state)
 		{
 			if (Health > 0) {
 				dead = false;
@@ -89,10 +91,19 @@ namespace GameStateComponents
 			if (Health == 0 && !dead) {
 				turnsDead = 0;
 				dead = true;
+                //award exp to actor's killer here
+                //seperate case for team 0 to award more
+                if (state.GameState.actors[ActorId].Team == 0) //tower got killed
+                {
+                    state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], false);
+                } else
+                {
+                    state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], true);
+                }
 				deaths++;
-			}
+            }
 			if (dead) {
-				if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
+                if (turnsDead++ == RESPAWN_TIME && RespawnAllowed) {
 					Health = MAX_HEALTH;
 					Position = SpawnLocation;
 					TargetPosition = SpawnLocation;
@@ -167,10 +178,11 @@ namespace GameStateComponents
 			int damage = 0;
 			if (!invincible) {
 				Console.WriteLine("oh no i'm not invincible");
-				double damageRatio = attacker.Attack / this.Defense;
-	            damage = (int) (baseDamage * damageRatio);
-	            this.Health -= damage;
-			} else {
+                double damageRatio = attacker.Attack / this.Defense;
+                damage = (int)(baseDamage * damageRatio);
+                this.Health -= damage;
+                this.LastDamageSourceActorId = attacker.ActorId;
+            } else {
 				Console.WriteLine("i'm invincible!");
 			}
             return damage;

@@ -4,40 +4,68 @@ using System.Collections.Concurrent;
 using NetworkLibrary;
 using NetworkLibrary.MessageElements;
 using Server;
+using System.Timers;
 
 namespace GameStateComponents
 {
-	public class GameState
-	{
-		private const int MAXTEAMS = 8;
-
-		private ConcurrentDictionary<int, Actor> actors = new ConcurrentDictionary<int, Actor> ();
-		private List<Actor>[] teamActors;
-		public int CreatedActorsCount { get; private set;} = 0;
-		public ConcurrentQueue<UpdateElement> OutgoingReliableElements {get; private set;}
-		public CollisionBuffer CollisionBuffer { get; private set; }
+    public class GameState
+    {
+        private const int MAXTEAMS = 8;
+        private const int GAMEPLAY_TIME = 1200000;  //This means 20 mins for a game
+        private static System.Timers.Timer aTimer; //Game Play Timer added
+        private static int currentTime = 0; //start at 0 second
+        public ConcurrentDictionary<int, Actor> actors { get; private set; }
+        private List<Actor>[] teamActors;
+        public int CreatedActorsCount { get; private set; } = 0;
+        public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
+        public CollisionBuffer CollisionBuffer { get; private set; }
 
 		private int CollisionIdCounter;
 		private const int COLLISION_ID_MAX = 255;
+        private const int KILL_PLAYER_EXP = 64;
+        private const int KILL_TOWER_EXP = 128;
 
-		private int[] teamLives;
 
+        private int[] teamLives;
 
-		public GameState ()
-		{
-			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
-			CollisionBuffer = new CollisionBuffer (this);
-			teamLives = new int[MAXTEAMS];
-			for (int i = 0; i < teamLives.Length; i++) {
-				teamLives [i] = 5;
-			}
-			teamActors = new List<Actor>[MAXTEAMS];
-			for (int i = 0; i < teamActors.Length; i++) {
-				teamActors [i] = new List<Actor> ();
-			}
-		}
+        public GameState()
+        {
+            actors = new ConcurrentDictionary<int, Actor>();
+            OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
+            CollisionBuffer = new CollisionBuffer(this);
+            teamLives = new int[MAXTEAMS];
+            for (int i = 0; i < teamLives.Length; i++) {
+                teamLives[i] = 5;
+            }
+            teamActors = new List<Actor>[MAXTEAMS];
+            for (int i = 0; i < teamActors.Length; i++) {
+                teamActors[i] = new List<Actor>();
+            }
+        }
 
-		public bool CheckWinCondition(){
+        //Used for keeping track of game play timer, if 20 mins is up then both team loses
+        public void StartGamePlayTimer() {
+            aTimer = new System.Timers.Timer(1000); //every second we update game time
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true; //We want timer to only run once
+            aTimer.Enabled = true;
+        }
+
+        public void EndGamePlayTimer()
+        {
+            aTimer.Dispose();
+        }
+
+        //Added for updating Game time for the game state. This runs on different thread by the C# Timer
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            //We want to update the gameTime here 
+            currentTime++;
+
+        }
+
+        public bool CheckWinCondition(){
 			bool[] eliminated = new bool[MAXTEAMS];
 			for (int i = 0; i < MAXTEAMS; i++) {
 				bool allDead = true;
@@ -57,6 +85,15 @@ namespace GameStateComponents
 					remainingTeams++;
 				}
 			}
+
+            if (currentTime >= GAMEPLAY_TIME) {
+                eliminated[0] = false;
+                for (int i = 1; i < eliminated.Length; i++) //skip team 0 since that's server
+                {
+                    eliminated[i] = true;
+                }
+                return true;
+            }
 			//TODO Change to remainingTeams == 1
 			return remainingTeams == 0;
 		}
@@ -109,15 +146,16 @@ namespace GameStateComponents
             return actorId;
         }
 
-		public int AddTower(int team)
+		public int AddTower(GameUtility.Coordinate spawnLoc)
         {
 			int actorId = CreatedActorsCount++;
-			Tower newTower = new Tower(actorId, team, new GameUtility.Coordinate(310, 90));
+            int team = 0;
+			Tower newTower = new Tower(actorId, team, spawnLoc);
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}
 			Console.WriteLine("Adding tower actor with id {0}", actorId);
-            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
+            OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;
         }
 
@@ -157,9 +195,9 @@ namespace GameStateComponents
 			return actors [actorId].TargetPosition;
 		}
 
-		public void TickAllActors(){
+		public void TickAllActors(State state){
 			for (int i = 0; i < CreatedActorsCount; i++) {
-				actors [i].Tick ();
+				actors [i].Tick (state);
 
 				if (actors [i].HasDied ()) {
 					Console.WriteLine ("Actor {0} has died", actors [i].ActorId);
@@ -219,5 +257,55 @@ namespace GameStateComponents
 			Console.WriteLine("ability num: {0}", (int)abilityType);
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
-	}
+
+
+        public void addEXP(Player killerPlayer, bool isKillPlayer)
+        {//if kill by player, true; if kill by tower , false
+
+            int expAdded = isKillPlayer ? KILL_PLAYER_EXP : KILL_TOWER_EXP;
+
+            for (int i = 0; i < CreatedActorsCount; i++)
+            {
+                if (actors[i].Team == killerPlayer.Team)
+                {
+                    if (i == killerPlayer.ActorId)
+                        GameUtility.addExp((Player)actors[i], expAdded);
+                    else
+                    {
+                        GameUtility.addExp((Player)actors[i], expAdded / 2);
+                    }
+                }
+            }
+        }
+
+        //get actor id of closest actor to the specified actor, within a certain distance
+        //if no one within distance, return -1
+        //does not consider friendly actors
+        public int getClosestEnemyActorInRange(int actorId, int distance)
+        {
+            float minDistance;
+            float tempDistance;
+            int closestActor;
+
+            minDistance = GameUtility.getDistance(actors[actorId].Position, actors[0].Position);
+            closestActor = 0;
+            for (int i = 1; i < CreatedActorsCount; i++)
+            {
+                if (actors[actorId].Team != actors[i].Team) // also prevents considering distance to self
+                {
+                    if ((tempDistance = GameUtility.getDistance(actors[actorId].Position, actors[i].Position)) < minDistance)
+                    {
+                        minDistance = tempDistance;
+                        closestActor = i;
+                    }
+                }
+            }
+            if (GameUtility.CoordsWithinDistance(actors[actorId].Position, actors[closestActor].Position, distance))
+            {
+                return closestActor;
+            }
+            return -1;
+            
+        }
+    }
 }

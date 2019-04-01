@@ -5,9 +5,8 @@ using GameStateComponents;
 namespace Server
 {
 	public class AbilityEffects
-	{
-		
-		public delegate void Ability();
+	{		
+		public delegate void Ability(Actor useActor, Actor hitActor);
 
 		public List<Ability> abilities { get; }
 		// here in case we need to access from different pool
@@ -15,6 +14,7 @@ namespace Server
 		public List<Ability> normalAbilities { get; }
 		public List<Ability> ultimateAbilities { get; }
 		
+        private const int TOWER_DAMAGE = 100;
 		public delegate void ApplyAbilityEffect(Actor useActor, Actor hitActor);
 
 		public static ApplyAbilityEffect[] Apply = new ApplyAbilityEffect[] {
@@ -42,7 +42,9 @@ namespace Server
 				GameUtility.Coordinate randomPosition = new GameUtility.Coordinate(rnd.Next(100,400), rnd.Next(100,400));
 				hitActor.Position = randomPosition;
 				hitActor.TargetPosition = randomPosition;
-				}
+				},
+            //TowerAttack
+            (useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); }
 		};
 		
 		private AbilityEffects ()
@@ -54,7 +56,7 @@ namespace Server
 			PopulateAbilities();
 		}
 
-		private void PopulateAbilities()
+		private void PopulateAbilities()// when we start using this format, make sure to add to abilityAffects[]
 		{
 			abilities.Add(PewPew);
 			abilities.Add(Sploosh);
@@ -116,39 +118,39 @@ namespace Server
 		}
 
 		//Basic Abilities
-		private static void PewPew(){}
-		private static void Sploosh(){}
-		private static void Dart(){}
-		private static void WeebOut(){}
-		private static void Slash(){}
-		private static void HealHarm(){}
+		private static void PewPew(Actor useActor, Actor hitActor) {}
+		private static void Sploosh(Actor useActor, Actor hitActor) {}
+		private static void Dart(Actor useActor, Actor hitActor) {}
+		private static void WeebOut(Actor useActor, Actor hitActor) {}
+		private static void Slash(Actor useActor, Actor hitActor) {}
+		private static void HealHarm(Actor useActor, Actor hitActor) {}
         
 		//Normal Abilities
-		private static void SonicBoom(){}
-		private static void Purification(){}
-		private static void Blink(){}
-		private static void Charrrge(){}
-		private static void UwuImScared(){}
-		private static void Wall(){}
-		private static void GiveUp(){}
-		private static void GoHome(){}
-		private static void Bullet(){}
-		private static void DarkOrb(){}
-		private static void Banish(){}
-		private static void Bless(){}
-		private static void VampiricLance(){}
-		private static void FrostBurst(){}
-		private static void PorkChop(){}
+		private static void SonicBoom(Actor useActor, Actor hitActor) {}
+		private static void Purification(Actor useActor, Actor hitActor) {}
+		private static void Blink(Actor useActor, Actor hitActor) {}
+		private static void Charrrge(Actor useActor, Actor hitActor) {}
+		private static void UwuImScared(Actor useActor, Actor hitActor) {}
+		private static void Wall(Actor useActor, Actor hitActor) {}
+		private static void GiveUp(Actor useActor, Actor hitActor) {}
+		private static void GoHome(Actor useActor, Actor hitActor) {}
+		private static void Bullet(Actor useActor, Actor hitActor) {}
+		private static void DarkOrb(Actor useActor, Actor hitActor) {}
+		private static void Banish(Actor useActor, Actor hitActor) {}
+		private static void Bless(Actor useActor, Actor hitActor) {}
+		private static void VampiricLance(Actor useActor, Actor hitActor) {}
+		private static void FrostBurst(Actor useActor, Actor hitActor) {}
+		private static void PorkChop(Actor useActor, Actor hitActor) {}
         
 		//Ultimate Abilities
-		private static void Fireball(){}
-		private static void Gungnir(){}
-		private static void SelfSacrifice(){}
-		private static void Whale(){}
-		private static void Curse(){}
-		private static void Hack(){}
-		private static void Rob(){}
-		private static void Refresh(){}
-		private static void MagicalGirlTransform(){}
+		private static void Fireball(Actor useActor, Actor hitActor) {}
+		private static void Gungnir(Actor useActor, Actor hitActor) {}
+		private static void SelfSacrifice(Actor useActor, Actor hitActor) {}
+		private static void Whale(Actor useActor, Actor hitActor) {}
+		private static void Curse(Actor useActor, Actor hitActor) {}
+		private static void Hack(Actor useActor, Actor hitActor) {}
+		private static void Rob(Actor useActor, Actor hitActor) {}
+		private static void Refresh(Actor useActor, Actor hitActor) {}
+		private static void MagicalGirlTransform(Actor useActor, Actor hitActor) {}
 	}
 }
