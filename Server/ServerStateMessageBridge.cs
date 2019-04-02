@@ -118,7 +118,7 @@ namespace Server
 
 		}
 
-		public void UpdateActorExperience(int actorId, int experience){
+		public void UpdateAbilityAssignment(int actorId, int abilityId){
 
 		}
 
