@@ -17,6 +17,8 @@ namespace GameStateComponents
             RespawnAllowed = false;
 			Abilities = new AbilityType[1];
             Abilities[0] = AbilityType.TowerAttack;
+            Cooldowns = new int[1];
+            Cooldowns[0] = AbilityInfo.InfoArray[(int)AbilityType.TowerAttack].Cooldown;
         }
 
         public override void Tick(State state)
