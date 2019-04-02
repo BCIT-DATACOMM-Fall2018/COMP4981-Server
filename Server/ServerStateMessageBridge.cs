@@ -36,7 +36,7 @@ namespace Server
         }
 
         public void UpdateActorHealth (int actorId, int newHealth){
-            //send to all clients 
+            //send to all clients
         }
 
         public void UpdateActorExperience(int actorId, int newExp)
@@ -75,6 +75,9 @@ namespace Server
 			// Validate that the ability can be used by the actor
 			if (gamestate.ValidateAreaAbilityUse (actorId, abilityId, x, z)) {
 
+				if (!AbilityInfo.InfoArray [(int)abilityId].RequiresCollision) {
+					gamestate.TriggerAbility (abilityId, actorId, x, z);
+				}
 				// Queue the ability use to be sent to all clients
 				gamestate.OutgoingReliableElements.Enqueue (new AreaAbilityElement (actorId, abilityId, x, z, gamestate.MakeCollisionId ()));
 			} else {
@@ -90,13 +93,13 @@ namespace Server
 
 		public void SpawnActor(ActorType actorType, int ActorId, int actorTeam, float x, float z)
         {
-            //send to all clients 
+            //send to all clients
 
         }
 
         public void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ)
         {
-            //send to all clients 
+            //send to all clients
         }
 
 		public void SetReady(int clientId, bool ready, int team){
@@ -114,13 +117,16 @@ namespace Server
 		}
 
 		public void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo){
-			
+
 		}
 
 		public void EndGame(int winningTeam){
 
 		}
 
+		public void UpdateAbilityAssignment(int actorId, int abilityId){
+
+		}
     }
 }
 

@@ -17,6 +17,8 @@ namespace GameStateComponents
         public ConcurrentDictionary<int, Actor> actors { get; private set; }
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
+		public int CreatedPlayersCount { get; private set; } = 0;
+
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
         public CollisionBuffer CollisionBuffer { get; private set; }
 
@@ -106,6 +108,7 @@ namespace GameStateComponents
 		public int AddPlayer (int team)
 		{
 			int actorId = CreatedActorsCount++;
+			CreatedPlayersCount++;
 			Player newPlayer = new Player (actorId, team, new GameUtility.Coordinate(310, 90));
 			if (!actors.TryAdd (actorId, newPlayer)) {
 				//TODO Handle failure
@@ -140,7 +143,7 @@ namespace GameStateComponents
 			Creep newCreep = new Creep(actorId, team, new GameUtility.Coordinate(310, 90));
 			if (!actors.TryAdd (actorId, newCreep)) {
 				//TODO Handle failure
-			}            
+			}
 			Console.WriteLine("Adding creep actor with id {0}", actorId);
             //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
@@ -153,7 +156,7 @@ namespace GameStateComponents
 			Tower newTower = new Tower(actorId, team, spawnLoc);
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
-			}            
+			}
 			Console.WriteLine("Adding tower actor with id {0}", actorId);
             OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;
@@ -166,7 +169,7 @@ namespace GameStateComponents
 
 		public void UpdatePosition (int actorId, float x, float z)
 		{
-			
+
 			actors [actorId].Position = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
 		}
 
@@ -256,6 +259,7 @@ namespace GameStateComponents
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
 
+
         public void addEXP(Player killerPlayer, bool isKillPlayer)
         {//if kill by player, true; if kill by tower , false
 
@@ -266,12 +270,26 @@ namespace GameStateComponents
                 if (actors[i].Team == killerPlayer.Team)
                 {
                     if (i == killerPlayer.ActorId)
-                        GameUtility.addExp((Player)actors[i], expAdded);
+                        addExp((Player)actors[i], expAdded);
                     else
                     {
-                        GameUtility.addExp((Player)actors[i], expAdded / 2);
+                        addExp((Player)actors[i], expAdded / 2);
                     }
                 }
+            }
+        }
+
+        public void addExp(Player player, int exp)
+        {
+            int preLevel = GameUtility.currentLevel(player.Experience);
+            player.Experience += exp;
+            int afterLevel = GameUtility.currentLevel(player.Experience);
+            
+            if (preLevel > afterLevel)
+            {
+                //levelUp, skill change
+                int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
+                OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, );
             }
         }
 
@@ -304,5 +322,14 @@ namespace GameStateComponents
             return -1;
             
         }
-    }
+
+		public void TriggerAbility(AbilityType abilityType, int actorCastId, float x, float z){
+			if (abilityType == AbilityType.Blink) {
+				actors [actorCastId].TargetPosition = new GameUtility.Coordinate(x, z);
+				actors [actorCastId].Position = new GameUtility.Coordinate(x, z);
+
+			}
+
+		}
+	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Timers;
 using Server;
 using NetworkLibrary;
 
@@ -20,10 +21,12 @@ namespace GameStateComponents
 		private int turnsDead;
 		private bool dead;
 
+		public bool invincible = false;
+
 		public int Health {
-			get { return _health; } 
-			set { 
-				_health = value; 
+			get { return _health; }
+			set {
+				_health = value;
 				if (_health > 0) {
 					dead = false;
 				}
@@ -32,7 +35,7 @@ namespace GameStateComponents
 				} else if (_health <= 0) {
 					_health = 0;
 				}
-				
+
 			}
 		}
 
@@ -104,8 +107,10 @@ namespace GameStateComponents
 					TargetPosition = SpawnLocation;
 				}
 			}
+
 			Move ();
 			DecrementCooldowns ();
+
 		}
 
 		private void Move ()
@@ -151,6 +156,19 @@ namespace GameStateComponents
 			}
 		}
 
+		// Starts timer of 5 seconds when invincibility ability is used
+		public void startInvincibilityTimer() {
+			Timer timer = new Timer();
+			timer.Elapsed += OnTimedEvent;
+			timer.Interval = 5000;
+			timer.AutoReset = false;
+			timer.Enabled = true;
+		}
+		// Stops invincibility once timer is done
+		public void OnTimedEvent(Object source, ElapsedEventArgs e) {
+			invincible = false;
+		}
+
 		public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
 		{
 			AbilityEffects.Apply [(int)abilityId] (this, hitActor);
@@ -158,10 +176,16 @@ namespace GameStateComponents
 
         public int TakeDamage(Actor attacker, int baseDamage)
         {
-            double damageRatio = attacker.Attack / this.Defense;
-            int damage = (int) (baseDamage * damageRatio);
-            this.Health -= damage;
-            this.LastDamageSourceActorId = attacker.ActorId;
+			int damage = 0;
+			if (!invincible) {
+				Console.WriteLine("oh no i'm not invincible");
+                double damageRatio = attacker.Attack / this.Defense;
+                damage = (int)(baseDamage * damageRatio);
+                this.Health -= damage;
+                this.LastDamageSourceActorId = attacker.ActorId;
+            } else {
+				Console.WriteLine("i'm invincible!");
+			}
             return damage;
         }
 	}
