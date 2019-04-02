@@ -289,7 +289,7 @@ namespace GameStateComponents
             {
                 //levelUp, skill change
                 int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
-                OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, );
+                OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
             }
         }
 
