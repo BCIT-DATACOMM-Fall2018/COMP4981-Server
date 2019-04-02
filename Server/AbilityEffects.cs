@@ -112,7 +112,7 @@ namespace Server
 			}
 		}
 		
-		public int ReturnRamdomAbilityId(Player player)
+		public static int ReturnRandomAbilityId(Player player)
 		{
 			Random random = new Random();
 			switch (player.Level)

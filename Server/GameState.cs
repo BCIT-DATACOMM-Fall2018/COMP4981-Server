@@ -270,12 +270,26 @@ namespace GameStateComponents
                 if (actors[i].Team == killerPlayer.Team)
                 {
                     if (i == killerPlayer.ActorId)
-                        GameUtility.addExp((Player)actors[i], expAdded);
+                        addExp((Player)actors[i], expAdded);
                     else
                     {
-                        GameUtility.addExp((Player)actors[i], expAdded / 2);
+                        addExp((Player)actors[i], expAdded / 2);
                     }
                 }
+            }
+        }
+
+        public void addExp(Player player, int exp)
+        {
+            int preLevel = GameUtility.currentLevel(player.Experience);
+            player.Experience += exp;
+            int afterLevel = GameUtility.currentLevel(player.Experience);
+            
+            if (preLevel > afterLevel)
+            {
+                //levelUp, skill change
+                int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
+                OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, );
             }
         }
 

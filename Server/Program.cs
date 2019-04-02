@@ -192,6 +192,15 @@ namespace Server
 			for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 				state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
 			}
+
+            //give each player their starting ability
+            for (int i = 0; i < state.GameState.CreatedPlayersCount; i++)
+            {
+                Player player = (Player)state.GameState.actors[state.ClientManager.Connections[i].ActorId];
+                int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
+                state.GameState.OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
+            }
+
             //spawn test tower at 100,100
             state.GameState.AddTower(new GameUtility.Coordinate(150, 150));
 

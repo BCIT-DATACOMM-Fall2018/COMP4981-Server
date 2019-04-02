@@ -121,7 +121,9 @@ namespace Server
 
 		}
 
+		public void UpdateAbilityAssignment(int actorId, int abilityId){
 
+		}
     }
 }
 
