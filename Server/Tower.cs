@@ -1,6 +1,7 @@
 ﻿using System;
 using Server;
 using NetworkLibrary.MessageElements;
+using NetworkLibrary;
 
 namespace GameStateComponents
 {
@@ -14,6 +15,7 @@ namespace GameStateComponents
             Attack = 1;
             Defense = 1;
             RespawnAllowed = false;
+			Abilities = new AbilityType[0];
         }
 
         public override void Tick(State state)
@@ -25,6 +27,11 @@ namespace GameStateComponents
         private void attack(State state)
         {
             int targetActorId = state.GameState.getClosestEnemyActorInRange(ActorId, TOWER_RANGE);
+
+			if (targetActorId == -1) {
+				return;
+			}
+
             if (!state.GameState.ValidateTargetedAbilityUse(ActorId, NetworkLibrary.AbilityType.TowerAttack, targetActorId))
             {
                 return;

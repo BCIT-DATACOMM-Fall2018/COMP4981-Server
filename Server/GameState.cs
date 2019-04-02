@@ -17,6 +17,8 @@ namespace GameStateComponents
         public ConcurrentDictionary<int, Actor> actors { get; private set; }
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
+		public int CreatedPlayersCount { get; private set; } = 0;
+
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
         public CollisionBuffer CollisionBuffer { get; private set; }
 
@@ -106,6 +108,7 @@ namespace GameStateComponents
 		public int AddPlayer (int team)
 		{
 			int actorId = CreatedActorsCount++;
+			CreatedPlayersCount++;
 			Player newPlayer = new Player (actorId, team, new GameUtility.Coordinate(310, 90));
 			if (!actors.TryAdd (actorId, newPlayer)) {
 				//TODO Handle failure
@@ -253,8 +256,6 @@ namespace GameStateComponents
 		}
 
 		public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId){
-			Console.WriteLine("trigger ability");
-			Console.WriteLine("ability num: {0}", (int)abilityType);
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
 
@@ -321,5 +322,14 @@ namespace GameStateComponents
             return -1;
             
         }
-    }
+
+		public void TriggerAbility(AbilityType abilityType, int actorCastId, float x, float z){
+			if (abilityType == AbilityType.Blink) {
+				actors [actorCastId].TargetPosition = new GameUtility.Coordinate(x, z);
+				actors [actorCastId].Position = new GameUtility.Coordinate(x, z);
+
+			}
+
+		}
+	}
 }
