@@ -15,7 +15,8 @@ namespace GameStateComponents
             Attack = 1;
             Defense = 1;
             RespawnAllowed = false;
-			Abilities = new AbilityType[0];
+			Abilities = new AbilityType[1];
+            Abilities[0] = AbilityType.TowerAttack;
         }
 
         public override void Tick(State state)
