@@ -62,23 +62,7 @@ namespace Server
 			return ((c1.x - c2.x) * (c1.x - c2.x) + (c1.z - c2.z) * (c1.z - c2.z)) <= distance * distance;
 		}
 
-        public static void killHappen(Player player, bool killPlayer) {
-  
-            //loop all the player,and add EXP
-            //tower 2x EXP
-            //player who get the kill 1x EXP
-            //team get 1/2 EXP
-        }
-
-        public static void addExp(Player player, int exp) {
-            int preLevel = currentLevel(player.Experience);
-            player.Experience += exp;
-            int afterLevel = currentLevel(player.Experience);
-
-            if (preLevel > afterLevel) { 
-                //levelUp, skill change
-            }
-        }
+        
         public static int currentLevel(int exp) {
             if (exp < LEVEL1_EXP)
                 return 1;
