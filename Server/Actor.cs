@@ -16,8 +16,8 @@ namespace GameStateComponents
 		private readonly object abilityLock = new object ();
 
         private ArrayList demageOverTimeList = new ArrayList();
-
-		private int _health;
+        private ArrayList shieldOverTimeList = new ArrayList();
+        private int _health;
 		private int deaths;
 		private int reportedDeaths;
 		private int turnsDead;
@@ -190,8 +190,46 @@ namespace GameStateComponents
 			}
             return damage;
         }
+        public void BoostShieldPerTick(float shield, int duration) {
+            ArrayList removeList = new ArrayList();
+            //
+            foreach (ArrayList eachSOT in shieldOverTimeList)
+            {
+                //if 0 remove the boost
+                if ((int)eachSOT[1] <= 0) {
+                    //add to remove list
+                    this.Defense -= (float)eachSOT[0];
+                    removeList.Add(eachSOT);
+                }
+                else {
+                    //else -- duration
+                    eachSOT[1] = (int)eachSOT[1]-1;
+                }
 
-        public void demageOverTimePerTick()
+
+            }
+
+                //remove
+                foreach (ArrayList remove in removeList)
+            {
+                shieldOverTimeList.Remove(remove);
+            }
+        }
+       
+        public void PushAndBoostShield(float shield, int duration)
+        {
+            this.Defense += shield;
+            shieldOverTimeList.Add(MakePairShieldOverTime(shield, duration-1));
+        }
+        public ArrayList MakePairShieldOverTime(float shield, int duration)
+        {
+            ArrayList pair = new ArrayList();
+            pair.Add(shield);
+            pair.Add(duration);
+ 
+            return pair;
+        }
+        public void DemageOverTimePerTick()
         {
             ArrayList removeList = new ArrayList();
             foreach (ArrayList eachDOT in demageOverTimeList)
@@ -219,16 +257,16 @@ namespace GameStateComponents
 
         public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
         {
-            demageOverTimeList.Add(MakePair(demagePerTick, duration, attacker));
+            demageOverTimeList.Add(MakePairDemageOverTime(demagePerTick, duration, attacker));
         }
 
-        public ArrayList MakePair(int demage, int duration, Actor attacker)
+        public ArrayList MakePairDemageOverTime(int demage, int duration, Actor attacker)
         {
-            ArrayList info = new ArrayList();
-            info.Add(demage);
-            info.Add(duration);
-            info.Add(attacker);
-            return info;
+            ArrayList pair = new ArrayList();
+            pair.Add(demage);
+            pair.Add(duration);
+            pair.Add(attacker);
+            return pair;
         }
 
     }
