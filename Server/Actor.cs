@@ -2,7 +2,7 @@ using System;
 using System.Timers;
 using Server;
 using NetworkLibrary;
-
+using System.Collections;
 namespace GameStateComponents
 {
 	public abstract class Actor
@@ -14,6 +14,8 @@ namespace GameStateComponents
 		// Used to make sure an Actor can only use 1 ability at a time to
 		// prevent race condition with cooldown being set.
 		private readonly object abilityLock = new object ();
+
+        private ArrayList demageOverTimeList = new ArrayList();
 
 		private int _health;
 		private int deaths;
@@ -188,5 +190,46 @@ namespace GameStateComponents
 			}
             return damage;
         }
-	}
+
+        public void demageOverTimePerTick()
+        {
+            ArrayList removeList = new ArrayList();
+            foreach (ArrayList eachDOT in demageOverTimeList)
+            {
+                //do demage
+                TakeDamage((Actor)eachDOT[2],(int)eachDOT[0]);
+                //minus time
+                int tempDuration = (int)eachDOT[1];
+                eachDOT[1] = --tempDuration;
+                //if time is 0, delete the item
+                if ((int)eachDOT[1] <= 0) {
+                    removeList.Add(eachDOT);
+                }
+
+                Console.Write("Demage{0} duration::{1}\n", eachDOT[0], eachDOT[1]);
+                Console.WriteLine();
+            }
+
+            //remove
+            foreach (ArrayList remove in removeList) {
+                demageOverTimeList.Remove(remove);
+            }
+
+        }
+
+        public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
+        {
+            demageOverTimeList.Add(MakePair(demagePerTick, duration, attacker));
+        }
+
+        public ArrayList MakePair(int demage, int duration, Actor attacker)
+        {
+            ArrayList info = new ArrayList();
+            info.Add(demage);
+            info.Add(duration);
+            info.Add(attacker);
+            return info;
+        }
+
+    }
 }
