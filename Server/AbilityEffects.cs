@@ -18,7 +18,12 @@ namespace Server
 			// TestAreaOfEffect
 			(useActor, hitActor) => {hitActor.Health-=200;},
 			// AutoAttack
-			(useActor, hitActor) => {hitActor.Health-=50;}
+			(useActor, hitActor) => {hitActor.Health-=50;},
+            //PewPew
+            (useActor, hitActor) => {hitActor.Health-=150; },
+            //Sploosh
+            //TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
+            (useActor, hitActor) => {hitActor.Health-=75; }
 		};
 			
 		private AbilityEffects ()

@@ -107,6 +107,10 @@ namespace Server
 		public void EndGame(int winningTeam){
 
 		}
+        public void UpdateActorExperience(int actorId, int exp)
+        {
+
+        }
 
     }
 }

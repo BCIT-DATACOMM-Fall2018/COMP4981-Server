@@ -1,0 +1,16 @@
+﻿<Properties StartupConfiguration="{2026E72F-FE77-44BA-9F53-1A57CA93C15C}|Default">
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../../../MOBA_Game/COMP4981-Game/Assets/Scripts/Base/fountain.cs">
+    <Files>
+      <File FileName="Actor.cs" Line="50" Column="3" />
+      <File FileName="Program.cs" Line="29" Column="1" />
+      <File FileName="../../../MOBA_Game/COMP4981-Game/Assets/Scripts/Base/fountain.cs" Line="26" Column="33" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
