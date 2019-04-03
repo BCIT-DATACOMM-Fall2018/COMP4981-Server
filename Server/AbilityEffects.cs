@@ -56,7 +56,11 @@ namespace Server
             //Whale
             (useActor, hitActor) => {hitActor.Health+=100;},
 			//TowerAttack
-			(useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); }
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); },
+			// Gungnir
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);},
+			// Slash
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 400);}
         };
 
 		private AbilityEffects ()
