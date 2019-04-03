@@ -18,7 +18,7 @@ namespace GameStateComponents
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
 		public int CreatedPlayersCount { get; private set; } = 0;
-
+        private static Logger Log;
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
         public CollisionBuffer CollisionBuffer { get; private set; }
 
@@ -32,6 +32,7 @@ namespace GameStateComponents
 
         public GameState()
         {
+            Log = Logger.Instance;
             actors = new ConcurrentDictionary<int, Actor>();
             OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
             CollisionBuffer = new CollisionBuffer(this);
@@ -43,6 +44,7 @@ namespace GameStateComponents
             for (int i = 0; i < teamActors.Length; i++) {
                 teamActors[i] = new List<Actor>();
             }
+            Log.D("Game State created.");
         }
 
         //Used for keeping track of game play timer, if 20 mins is up then both team loses
@@ -101,7 +103,7 @@ namespace GameStateComponents
 		}
 
 		public int MakeCollisionId(){
-			Console.WriteLine("New ability with collision id {0}", CollisionIdCounter + 1);
+			Log.V("New ability with collision id " + (CollisionIdCounter + 1));
 			return CollisionIdCounter++ % COLLISION_ID_MAX;
 		}
 
@@ -114,7 +116,7 @@ namespace GameStateComponents
 				//TODO Handle failure
 			}
 			teamActors [team].Add (newPlayer);
-			Console.WriteLine ("Adding player actor with id {0}", actorId);
+			Log.V("Adding player actor with id " + actorId);
 			ActorType actortype;
 			if(team == 1){
 				actortype = RandomHuman ();
@@ -144,7 +146,7 @@ namespace GameStateComponents
 			if (!actors.TryAdd (actorId, newCreep)) {
 				//TODO Handle failure
 			}
-			Console.WriteLine("Adding creep actor with id {0}", actorId);
+			Log.V("Adding creep actor with id " + actorId);
             //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
         }
@@ -157,7 +159,7 @@ namespace GameStateComponents
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}
-			Console.WriteLine("Adding tower actor with id {0}", actorId);
+            Log.V("Adding tower actor with id " + actorId);
             OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;
         }
@@ -203,10 +205,9 @@ namespace GameStateComponents
 				actors [i].Tick (state);
 
 				if (actors [i].HasDied ()) {
-					Console.WriteLine ("Actor {0} has died", actors [i].ActorId);
+					Log.V("Actor " + actors[i].ActorId + " has died", );
 					if (teamLives [actors [i].Team]-- > 0) {
-						Console.WriteLine ("Team {0} lives remaining {1}", actors [i].Team, teamLives [actors [i].Team]);
-
+                        Log.V("Team " + actors[i].Team + " lives remaining " + teamLives[actors[i].Team]);
 						actors [i].RespawnAllowed = true;
 					}
 				}

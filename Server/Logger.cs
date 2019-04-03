@@ -1,5 +1,6 @@
 ﻿/*
  * Mar 28 changes to Logging errors
+ * Apr 04 change Logging format
  */
 using System;
 using System.IO;
@@ -80,7 +81,7 @@ namespace Server
 
         public void V(string vString)
         {
-            currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
+            currentTime = DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]");
             string log = "V " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + vString;
             logQueue.Enqueue(log);
 
@@ -88,21 +89,24 @@ namespace Server
 
         public void D(string dString)
         {
-            currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
+            currentTime = DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]");
             string log = "D " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + dString;
             logQueue.Enqueue(log);
-
+            Console.WriteLine(log);
         }
 
         public void E(string eString)
         {
-            currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
+            currentTime = DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]");
             string log = "E " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + eString;
-            //logQueue.Enqueue(log); 
+            logQueue.Enqueue(log);
+            Console.WriteLine(log);
+            /*
             //No longer enqueue, instead we want to log error immediately
             Console.WriteLine(log);
             esw.WriteLine(log);
             esw.Flush();
+            */
         }
 
 

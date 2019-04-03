@@ -27,8 +27,9 @@ namespace Server
 
         public static void Main (string[] args)
 		{
-            Logger Log = Logger.Instance;
-            Log.D("Server started.");
+            Log = Logger.Instance;
+            Log.D("Server starting.");
+
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 			List<UpdateElement> elements = new List<UpdateElement> ();
 			elements.Add (new HealthElement (15, 6));
@@ -53,8 +54,9 @@ namespace Server
 
 		private static void StartHeartBeat (UDPSocket socket, State state)
 		{
-			// Create Timer with a 1/30 second interval
-			sendHeartBeatPing = new System.Timers.Timer (HeartBeatInterval);
+            Log.V("Start sending heart beat.");
+            // Create Timer with a 1/30 second interval
+            sendHeartBeatPing = new System.Timers.Timer (HeartBeatInterval);
 
 			// Set func on timer event (autoreset for continuous sending)
 			sendHeartBeatPing.Elapsed += (source, e) => SendHeartBeat (source, e, socket, state);
@@ -66,14 +68,14 @@ namespace Server
 		{
             List<UpdateElement> unreliable = new List<UpdateElement>();
             List<UpdateElement> reliable = new List<UpdateElement>();
-            Console.WriteLine("Count current connections {0}", state.ClientManager.CountCurrConnections);
-
+            Log.V("Count current connections " + state.ClientManager.CountCurrConnections);
+            
             List<LobbyStatusElement.PlayerInfo> listPI = new List<LobbyStatusElement.PlayerInfo>();
             try
             {
                 for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
                 {
-                    Console.WriteLine("Creating LobbyInfo packet");
+                    Log.V("Creating LobbyInfo packet");
                     PlayerConnection client = state.ClientManager.Connections[i];
                     listPI.Add(new LobbyStatusElement.PlayerInfo(client.ActorId, client.Name, client.Team, client.Ready));
 
@@ -81,38 +83,37 @@ namespace Server
 
                 for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
                 {
-                    Console.WriteLine("Sending Lobby update to client");
+                    Log.V("Sending Lobby update to client");
                     PlayerConnection client = state.ClientManager.Connections[i];
                     unreliable.Add(new LobbyStatusElement(listPI));
                     Packet startPacket = client.Connection.CreatePacket(unreliable, reliable, PacketType.HeartbeatPacket);
                     socket.Send(startPacket, client.Destination);
-                    Console.WriteLine("Sent lobby update to client");
+                    Log.V("Sent lobby update to client");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                Log.E(ex.Message);
+                Log.E(ex.StackTrace);
             }
 
 		}
 			
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
-			// TODO
-			// Send heartbeat ping to connected clients every Heart Beat Ping Interval (5 seconds)
-
+            // TODO
+            // Send heartbeat ping to connected clients every Heart Beat Ping Interval (5 seconds)
+            Log.D("Enter Lobby State.");
 			StartHeartBeat(socket, state);		
-
 
 			while (state.TimesEndGameSent < 80) {
 
-				Console.WriteLine ("Waiting for packet in lobby state");
+                Log.V("Waiting for packet in lobby state");
 				Packet packet = socket.Receive ();
 				switch (ReliableUDPConnection.GetPacketType (packet)) {
 				case PacketType.HeartbeatPacket:
                         //TODO Timeout stuff
-					Console.WriteLine ("Got heartbeat packet");
+					Log.V("Got heartbeat packet");
 					int clientId = ReliableUDPConnection.GetPlayerID (packet);
 					UnpackedPacket unpacked = state.ClientManager.Connections [clientId].Connection.ProcessPacket (packet, lobbyUnpackingArr);
 					foreach (var element in unpacked.UnreliableElements) {
@@ -124,32 +125,31 @@ namespace Server
 
 					break;
 
-
 				case PacketType.RequestPacket:
-					Console.WriteLine ("Got request packet");
+					Log.V("Got request packet");
                         // TODO Catch exception thrown by AddConnection
 					string name = ReliableUDPConnection.GetClientNameFromRequestPacket (packet);
 					int newClient = state.ClientManager.AddConnection (socket.LastReceivedFrom, name);
 					socket.Send (ReliableUDPConnection.CreateConfirmationPacket (newClient), state.ClientManager.Connections [newClient].Destination);
-					Console.WriteLine ("Sent confirmation packet to client " + newClient + " with name " + state.ClientManager.Connections [newClient].Name);
+					Log.V("Sent confirmation packet to client " + newClient + " with name " + state.ClientManager.Connections [newClient].Name);
 
 					break;
 				default:
-					Console.WriteLine ("Got unexpected packet type, discarding");
+					Log.V("Got unexpected packet type, discarding");
 					break;
 				}
 				//TODO Check for timeouts
 
 				//TODO If all players ready start game send start packet and go to gamestate.
-				Console.WriteLine ("Checking if all players ready");
+				Log.V("Checking if all players are ready");
 
 				bool allReady = state.ClientManager.CountCurrConnections > 0;
 				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 					PlayerConnection client = state.ClientManager.Connections [i];
-					Console.WriteLine ("Client {0}, {1}", i, client.Ready);
+					Log.V("Client " + i + ", " + client.Ready);
 					allReady &= client.Ready; //bitwise operater to check that every connection is ready
 				}
-				Console.WriteLine ("Current connections {0}", state.ClientManager.CountCurrConnections);
+                Log.V("Current connections " + state.ClientManager.CountCurrConnections);
 
 				// Force game to wait until 2 players have connected
 				if (state.ClientManager.CountCurrConnections < 2) {
@@ -157,7 +157,7 @@ namespace Server
 				}
 
 				if (allReady) {
-					Console.WriteLine ("All are ready sending startgame packet");
+					Log.D("All are ready sending startgame packet");
 					List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 					List<UpdateElement> reliableElements = new List<UpdateElement> ();
 					reliableElements.Add (new GameStartElement (state.ClientManager.CountCurrConnections));
@@ -187,11 +187,11 @@ namespace Server
 							clientId = ReliableUDPConnection.GetPlayerID (packet);
 							state.ClientManager.Connections [clientId].startedGame = true;
 							allSendGame = true;
-							Console.WriteLine ("Received packet from {0}", clientId);
+							Log.V("Received packet from " + clientId);
 							for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 								PlayerConnection client = state.ClientManager.Connections [i];
-								Console.WriteLine ("Client {0}, {1} sent a game packet while server in lobby", i, client.startedGame);
-								allSendGame &= client.startedGame; //bitwise operater to check that every connection is ready
+                                Log.V("Client " + i + ", " + client.startedGame + " sent a game packet while server in lobby");
+                                allSendGame &= client.startedGame; //bitwise operater to check that every connection is ready
 							}
 							break;
 						default:
@@ -203,7 +203,7 @@ namespace Server
 
 
 				} else {
-					Console.WriteLine ("All players not ready");
+					Log.V("All players not ready");
 				}
 			}
 		}
@@ -211,6 +211,7 @@ namespace Server
 
 		private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
+            Log.D("Enter Game state");
 			// Add all players to the game state
 			for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
 				state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
@@ -260,12 +261,11 @@ namespace Server
 				element.UpdateState (new ServerStateMessageBridge (state)); //maybe should also keep a single bridge object in state instead of making a new one every time?
 			}
 
-
-
 		}
 
 		private static void StartGameStateTimer (UDPSocket socket, State state)
 		{
+            Log.V("Start total game timer and game state send timer");
 			// Create Timer with a 1/30 second interval
 			sendGameStateTimer = new System.Timers.Timer (33);
 
@@ -277,6 +277,7 @@ namespace Server
 
         //added for cleaning up gamestateTimer, also clean up the game state timer
         private static void EndGameStateTimer() {
+            Log.V("Disposing total game timer and game state send timer");
             sendGameStateTimer.Dispose();
             state.GameState.EndGamePlayTimer(); // used for cleaning up timer
         }
@@ -303,7 +304,7 @@ namespace Server
 					if(state.TimesEndGameSent++ < 80){
 						//TODO end the game
 						reliable.Add(new GameEndElement(1));
-						Console.WriteLine("Game is over");
+                        Log.D("Game is over");
 					} else {
 						sendGameStateTimer.Enabled = false;
 					}
@@ -324,8 +325,8 @@ namespace Server
 				}
 			} catch (Exception ex) {
 				//TODO Add expected exceptions. All exceptions being caught for debugging purposes. 
-				Console.WriteLine (ex.Message);
-				Console.WriteLine (ex.StackTrace);
+				Log.E(ex.Message);
+				Log.E(ex.StackTrace);
 			}
 
 		}

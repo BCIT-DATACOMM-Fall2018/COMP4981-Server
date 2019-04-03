@@ -14,8 +14,9 @@ namespace GameStateComponents
 		// Used to make sure an Actor can only use 1 ability at a time to
 		// prevent race condition with cooldown being set.
 		private readonly object abilityLock = new object ();
+        private static Logger Log;
 
-		private int _health;
+        private int _health;
 		private int deaths;
 		private int reportedDeaths;
 		private int turnsDead;
@@ -146,7 +147,7 @@ namespace GameStateComponents
 
 				// Check that the ability isn't on cooldown
 				if (Cooldowns [abilityIndex] > 0) {
-					Console.WriteLine ("Attempted to use ability that is on cooldown");
+                    //Log.V("Attempted to use ability that is on cooldown");
 					return false;
 				}
 
@@ -178,13 +179,13 @@ namespace GameStateComponents
         {
 			int damage = 0;
 			if (!invincible) {
-				Console.WriteLine("oh no i'm not invincible");
+				//Console.WriteLine("oh no i'm not invincible");
                 double damageRatio = attacker.Attack / this.Defense;
                 damage = (int)(baseDamage * damageRatio);
                 this.Health -= damage;
                 this.LastDamageSourceActorId = attacker.ActorId;
             } else {
-				Console.WriteLine("i'm invincible!");
+				//Console.WriteLine("i'm invincible!");
 			}
             return damage;
         }
