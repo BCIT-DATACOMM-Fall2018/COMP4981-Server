@@ -190,6 +190,7 @@ namespace GameStateComponents
 			}
             return damage;
         }
+        //you should call this function per tick
         public void BoostShieldPerTick() {
             ArrayList removeList = new ArrayList();
             //
@@ -229,6 +230,7 @@ namespace GameStateComponents
  
             return pair;
         }
+        //you should call this function per tick
         public void DemageOverTimePerTick()
         {
             ArrayList removeList = new ArrayList();
