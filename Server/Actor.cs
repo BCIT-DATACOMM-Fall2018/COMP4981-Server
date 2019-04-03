@@ -190,7 +190,7 @@ namespace GameStateComponents
 			}
             return damage;
         }
-        public void BoostShieldPerTick(float shield, int duration) {
+        public void BoostShieldPerTick() {
             ArrayList removeList = new ArrayList();
             //
             foreach (ArrayList eachSOT in shieldOverTimeList)
@@ -215,7 +215,7 @@ namespace GameStateComponents
                 shieldOverTimeList.Remove(remove);
             }
         }
-       
+        //you should call this function if someone cast the shield skill
         public void PushAndBoostShield(float shield, int duration)
         {
             this.Defense += shield;
@@ -254,7 +254,7 @@ namespace GameStateComponents
             }
 
         }
-
+        //you should call this function if someone cast the DOT skill
         public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
         {
             demageOverTimeList.Add(MakePairDemageOverTime(demagePerTick, duration, attacker));
