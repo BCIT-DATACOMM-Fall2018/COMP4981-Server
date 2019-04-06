@@ -111,7 +111,12 @@ namespace GameStateComponents
 		{
 			int actorId = CreatedActorsCount++;
 			CreatedPlayersCount++;
-			Player newPlayer = new Player (actorId, team, new GameUtility.Coordinate(310, 90));
+			Player newPlayer;
+			if (team == 2) {
+				newPlayer = new Player (actorId, team, new GameUtility.Coordinate (250, 70));
+			} else {
+				newPlayer = new Player (actorId, team, new GameUtility.Coordinate (250, 430));
+			}
 			if (!actors.TryAdd (actorId, newPlayer)) {
 				//TODO Handle failure
 			}
