@@ -19,7 +19,7 @@ namespace GameStateComponents
 		private int deaths;
 		private int reportedDeaths;
 		private int turnsDead;
-		private bool dead;
+		protected bool dead;
 
 		public bool invincible = false;
 
@@ -89,15 +89,20 @@ namespace GameStateComponents
 			if (Health == 0 && !dead) {
 				turnsDead = 0;
 				dead = true;
-                //award exp to actor's killer here
-                //seperate case for team 0 to award more
-                if (state.GameState.actors[ActorId].Team == 0) //tower got killed
-                {
-                    state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], false);
-                } else
-                {
-                    state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], true);
-                }
+                
+				Actor killer = state.GameState.actors [state.GameState.actors [ActorId].LastDamageSourceActorId];
+				if (killer.Team != 0) {
+					//award exp to actor's killer here
+					//seperate case for team 0 to award more
+					if (state.GameState.actors[ActorId].Team == 0) //tower got killed
+					{
+						state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], false);
+					} else
+					{
+						state.GameState.addEXP((Player)state.GameState.actors[state.GameState.actors[ActorId].LastDamageSourceActorId], true);
+					}
+				}
+			
 				deaths++;
             }
 			if (dead) {
@@ -146,7 +151,7 @@ namespace GameStateComponents
 
 				// Check that the ability isn't on cooldown
 				if (Cooldowns [abilityIndex] > 0) {
-					Console.WriteLine ("Attempted to use ability that is on cooldown");
+					//Console.WriteLine ("Attempted to use ability that is on cooldown");
 					return false;
 				}
 

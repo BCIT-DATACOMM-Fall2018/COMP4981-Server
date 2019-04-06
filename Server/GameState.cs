@@ -18,6 +18,7 @@ namespace GameStateComponents
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
 		public int CreatedPlayersCount { get; private set; } = 0;
+		public List<Tower> Towers;
 
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
         public CollisionBuffer CollisionBuffer { get; private set; }
@@ -32,11 +33,12 @@ namespace GameStateComponents
 
         public GameState()
         {
+			Towers = new List<Tower>();
             actors = new ConcurrentDictionary<int, Actor>();
             OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
             CollisionBuffer = new CollisionBuffer(this);
             teamLives = new int[MAXTEAMS];
-            for (int i = 0; i < teamLives.Length; i++) {
+            for (int i = 1; i < teamLives.Length; i++) {
                 teamLives[i] = 5;
             }
             teamActors = new List<Actor>[MAXTEAMS];
@@ -157,6 +159,7 @@ namespace GameStateComponents
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}
+			Towers.Add(newTower);
 			Console.WriteLine("Adding tower actor with id {0}", actorId);
             OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;

@@ -218,12 +218,15 @@ namespace Server
                 state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
             }
 
+			state.GameState.CollisionBuffer.requiredValidity = Math.Max((int)(state.ClientManager.CountCurrConnections * 0.8), 1);
+			Console.WriteLine("set required validity to {0}", state.GameState.CollisionBuffer.requiredValidity);
+
             //give each player their starting ability
             for (int i = 0; i < state.GameState.CreatedPlayersCount; i++)
             {
                 Player player = (Player)state.GameState.actors[state.ClientManager.Connections[i].ActorId];
                 int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
-                state.GameState.OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
+                //state.GameState.OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
             }
 
             //spawn test tower at 100,100
@@ -295,6 +298,7 @@ namespace Server
                 // Get new update elements from game state
                 UpdateElement updateElement;
                 while (gs.OutgoingReliableElements.TryDequeue (out updateElement)) {
+					Console.WriteLine("Dequeue and send reliable element");
                     reliable.Add (updateElement);
                 }
 
@@ -310,6 +314,8 @@ namespace Server
                         sendGameStateTimer.Enabled = false;
                     }
                 }
+
+
                     
                 // Create unreliable elements that will be sent to all clients
                 int actorId;
@@ -318,6 +324,12 @@ namespace Server
                     unreliable.Add (new HealthElement (actorId, gs.GetHealth (actorId)));
                     unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
                 }
+
+				var towerInfo = new List<TowerHealthElement.TowerInfo>();
+				foreach(var tower in state.GameState.Towers){
+					towerInfo.Add(new TowerHealthElement.TowerInfo(tower.ActorId, tower.Health));
+				}
+				unreliable.Add(new TowerHealthElement(towerInfo));
 
                 // Create and send packets to all clients
                 for (int i = 0; i < cm.CountCurrConnections; i++) {
