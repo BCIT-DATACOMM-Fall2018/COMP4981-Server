@@ -102,6 +102,27 @@ namespace GameStateComponents
 			return remainingTeams == 0;
 		}
 
+		public int CheckWinningTeam(){
+			for (int i = 1; i < MAXTEAMS; i++) {
+				bool eliminated = false;
+
+				bool allDead = true;
+				foreach (var actor in teamActors[i]) {
+					allDead &= actor.Health == 0 && !actor.RespawnAllowed;
+				}
+				if (allDead) {
+					eliminated = teamLives [i] <= 0;
+				}
+				if (teamActors [i].Count == 0) {
+					eliminated = true;
+				}
+				if(!eliminated){
+					return i;
+				}
+			}
+			return 0;
+		}
+
 		public int MakeCollisionId(){
 			Console.WriteLine("New ability with collision id {0}", CollisionIdCounter + 1);
 			return CollisionIdCounter++ % COLLISION_ID_MAX;
@@ -152,7 +173,6 @@ namespace GameStateComponents
 				//TODO Handle failure
 			}
 			Console.WriteLine("Adding creep actor with id {0}", actorId);
-            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
         }
 
@@ -297,7 +317,7 @@ namespace GameStateComponents
             {
                 //levelUp, skill change
                 int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
-                OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
+                //OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
             }
         }
 
