@@ -18,6 +18,7 @@ namespace GameStateComponents
         private List<Actor>[] teamActors;
         public int CreatedActorsCount { get; private set; } = 0;
 		public int CreatedPlayersCount { get; private set; } = 0;
+		public List<Tower> Towers;
 
         public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
         public CollisionBuffer CollisionBuffer { get; private set; }
@@ -28,16 +29,17 @@ namespace GameStateComponents
         private const int KILL_TOWER_EXP = 128;
 
 
-        private int[] teamLives;
+        public int[] teamLives;
 
         public GameState()
         {
+			Towers = new List<Tower>();
             actors = new ConcurrentDictionary<int, Actor>();
             OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
             CollisionBuffer = new CollisionBuffer(this);
             teamLives = new int[MAXTEAMS];
-            for (int i = 0; i < teamLives.Length; i++) {
-                teamLives[i] = 5;
+            for (int i = 1; i < teamLives.Length; i++) {
+                teamLives[i] = 20;
             }
             teamActors = new List<Actor>[MAXTEAMS];
             for (int i = 0; i < teamActors.Length; i++) {
@@ -100,6 +102,27 @@ namespace GameStateComponents
 			return remainingTeams == 0;
 		}
 
+		public int CheckWinningTeam(){
+			for (int i = 1; i < MAXTEAMS; i++) {
+				bool eliminated = false;
+
+				bool allDead = true;
+				foreach (var actor in teamActors[i]) {
+					allDead &= actor.Health == 0 && !actor.RespawnAllowed;
+				}
+				if (allDead) {
+					eliminated = teamLives [i] <= 0;
+				}
+				if (teamActors [i].Count == 0) {
+					eliminated = true;
+				}
+				if(!eliminated){
+					return i;
+				}
+			}
+			return 0;
+		}
+
 		public int MakeCollisionId(){
 			Console.WriteLine("New ability with collision id {0}", CollisionIdCounter + 1);
 			return CollisionIdCounter++ % COLLISION_ID_MAX;
@@ -109,7 +132,12 @@ namespace GameStateComponents
 		{
 			int actorId = CreatedActorsCount++;
 			CreatedPlayersCount++;
-			Player newPlayer = new Player (actorId, team, new GameUtility.Coordinate(310, 90));
+			Player newPlayer;
+			if (team == 2) {
+				newPlayer = new Player (actorId, team, new GameUtility.Coordinate (250, 70));
+			} else {
+				newPlayer = new Player (actorId, team, new GameUtility.Coordinate (250, 430));
+			}
 			if (!actors.TryAdd (actorId, newPlayer)) {
 				//TODO Handle failure
 			}
@@ -145,7 +173,6 @@ namespace GameStateComponents
 				//TODO Handle failure
 			}
 			Console.WriteLine("Adding creep actor with id {0}", actorId);
-            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
             return actorId;
         }
 
@@ -157,6 +184,7 @@ namespace GameStateComponents
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}
+			Towers.Add(newTower);
 			Console.WriteLine("Adding tower actor with id {0}", actorId);
             OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;
@@ -229,15 +257,26 @@ namespace GameStateComponents
 			Actor targetActor = actors [targetActorId];
 
 			if (!(info.Range == 0) && !GameUtility.CoordsWithinDistance(useActor.Position, targetActor.Position, info.Range + 5)) {
+				Console.WriteLine ("Out Of range");
 				return false;
 			}
 
 			// If the user and target are on the same and ally target isn't allowed it's invalid
 			if (useActor.Team == targetActor.Team && !info.AllyTargetAllowed) {
+				Console.WriteLine ("cant target allies");
+
 				return false;
 			}
 			// If the user and target anr't on the same time and enemy target itn't allowed it's invalid
 			if (useActor.Team != targetActor.Team && !info.EnemyTargetAllowed) {
+				Console.WriteLine ("cant target enemies");
+
+				return false;
+			}
+
+			if (abilityId == AbilityType.Banish && targetActor.Stationary) {
+				Console.WriteLine ("cant banish stationary targets");
+
 				return false;
 			}
 

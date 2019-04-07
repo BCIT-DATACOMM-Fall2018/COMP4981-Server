@@ -27,6 +27,8 @@ namespace GameStateComponents {
                 AbilityType.WeebOut,
                 AbilityType.Whale,
 				AbilityType.Blink,
+				AbilityType.PewPew,
+				AbilityType.Sploosh,
 				AbilityType.Gungnir,
 				AbilityType.Slash
 			};

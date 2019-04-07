@@ -1,43 +1,19 @@
 ﻿<Properties StartupConfiguration="{2026E72F-FE77-44BA-9F53-1A57CA93C15C}|Default">
   <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="MonoDevelop.Default" />
-<<<<<<< Updated upstream
-  <MonoDevelop.Ide.Workbench ActiveDocument="Server/ServerStateMessageBridge.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Server/ClientManager.cs">
     <Files>
-      <File FileName="Server/Program.cs" Line="110" Column="41" />
-      <File FileName="Server/Tower.cs" Line="21" Column="27" />
+      <File FileName="Server/Program.cs" Line="110" Column="2" />
       <File FileName="Server/ClientManager.cs" Line="1" Column="1" />
-      <File FileName="Server/PlayerConnection.cs" Line="15" Column="17" />
-      <File FileName="Server/ServerStateMessageBridge.cs" Line="103" Column="59" />
-=======
-  <MonoDevelop.Ide.Workbench ActiveDocument="Server/Logger.cs">
-    <Files>
-      <File FileName="Server/Program.cs" Line="301" Column="42" />
-      <File FileName="Server/Tower.cs" Line="1" Column="1" />
-      <File FileName="Server/ClientManager.cs" Line="1" Column="1" />
-      <File FileName="Server/PlayerConnection.cs" Line="15" Column="17" />
-      <File FileName="Server/ServerStateMessageBridge.cs" Line="7" Column="1" />
-      <File FileName="Server/GameState.cs" Line="301" Column="31" />
-      <File FileName="Server/State.cs" Line="11" Column="33" />
-      <File FileName="Server/Logger.cs" Line="124" Column="1" />
->>>>>>> Stashed changes
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="game_server" expanded="True">
             <Node name="Server" expanded="True">
-<<<<<<< Updated upstream
-              <Node name="References" expanded="True" />
-              <Node name="ServerStateMessageBridge.cs" selected="True" />
-=======
-              <Node name="Logger.cs" selected="True" />
->>>>>>> Stashed changes
+              <Node name="ClientManager.cs" selected="True" />
             </Node>
           </Node>
         </State>
-      </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>

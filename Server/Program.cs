@@ -23,18 +23,18 @@ namespace Server
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
 		private static State state;
-        private static Logger Log;
+		private static Logger Log;
 
-        public static void Main (string[] args)
+		public static void Main (string[] args)
 		{
-            Logger Log = Logger.Instance;
-            Log.D("Server started.");
+			Logger Log = Logger.Instance;
+			Log.D ("Server started.");
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 			List<UpdateElement> elements = new List<UpdateElement> ();
 			elements.Add (new HealthElement (15, 6));
 
 			// Create a UDPSocket
-			UDPSocket socket = new UDPSocket (0);
+			UDPSocket socket = new UDPSocket (4);
 			// Bind the socket. Address must be in network byte order
 			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
 
@@ -43,7 +43,7 @@ namespace Server
 			// Create Game State ? 
 			while (true) {
 
-				state = new State();
+				state = new State ();
 				ServerStateMessageBridge bridge = new ServerStateMessageBridge (state);
 
 				LobbyState (socket, state, bridge);
@@ -64,56 +64,71 @@ namespace Server
 
 		private static void SendHeartBeat (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
-            List<UpdateElement> unreliable = new List<UpdateElement>();
-            List<UpdateElement> reliable = new List<UpdateElement>();
-            Console.WriteLine("Count current connections {0}", state.ClientManager.CountCurrConnections);
+			List<UpdateElement> unreliable = new List<UpdateElement> ();
+			List<UpdateElement> reliable = new List<UpdateElement> ();
+			Console.WriteLine ("Count current connections {0}", state.ClientManager.CountCurrConnections);
 
-            List<LobbyStatusElement.PlayerInfo> listPI = new List<LobbyStatusElement.PlayerInfo>();
-            try
-            {
-                for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
-                {
-                    Console.WriteLine("Creating LobbyInfo packet");
-                    PlayerConnection client = state.ClientManager.Connections[i];
-                    listPI.Add(new LobbyStatusElement.PlayerInfo(client.ActorId, client.Name, client.Team, client.Ready));
 
-                }
+			List<LobbyStatusElement.PlayerInfo> listPI = new List<LobbyStatusElement.PlayerInfo> ();
+			try {
+				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+					if (state.ClientManager.Connections [i] == null) {
+						continue;
+					}
+					Console.WriteLine ("Creating LobbyInfo packet");
+					PlayerConnection client = state.ClientManager.Connections [i];
+					listPI.Add (new LobbyStatusElement.PlayerInfo (client.ActorId, client.Name, client.Team, client.Ready));
 
-                for (int i = 0; i < state.ClientManager.CountCurrConnections; i++)
-                {
-                    Console.WriteLine("Sending Lobby update to client");
-                    PlayerConnection client = state.ClientManager.Connections[i];
-                    unreliable.Add(new LobbyStatusElement(listPI));
-                    Packet startPacket = client.Connection.CreatePacket(unreliable, reliable, PacketType.HeartbeatPacket);
-                    socket.Send(startPacket, client.Destination);
-                    Console.WriteLine("Sent lobby update to client");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-            }
+				}
+
+				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+					if (state.ClientManager.Connections [i] == null) {
+						continue;
+					}
+					Console.WriteLine ("Sending Lobby update to client");
+					PlayerConnection client = state.ClientManager.Connections [i];
+					if (client.Disconnected ()) {
+						state.ClientManager.Connections [i] = null;
+					}
+					unreliable.Add (new LobbyStatusElement (listPI));
+					Packet startPacket = client.Connection.CreatePacket (unreliable, reliable, PacketType.HeartbeatPacket);
+					socket.Send (startPacket, client.Destination);
+					Console.WriteLine ("Sent lobby update to client");
+				}
+			} catch (Exception ex) {
+				Console.WriteLine (ex.Message);
+				Console.WriteLine (ex.StackTrace);
+			}
 
 		}
-			
+
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
 			// TODO
 			// Send heartbeat ping to connected clients every Heart Beat Ping Interval (5 seconds)
 
-			StartHeartBeat(socket, state);		
+			StartHeartBeat (socket, state);        
 
 
 			while (state.TimesEndGameSent < 80) {
 
-				Console.WriteLine ("Waiting for packet in lobby state");
-				Packet packet = socket.Receive ();
+				Packet packet;
+				try {
+					Console.WriteLine ("Waiting for packet in lobby state");
+					packet = socket.Receive ();
+				} catch (TimeoutException e){
+					Console.WriteLine ("Timeout");
+					continue;
+				}
 				switch (ReliableUDPConnection.GetPacketType (packet)) {
 				case PacketType.HeartbeatPacket:
                         //TODO Timeout stuff
 					Console.WriteLine ("Got heartbeat packet");
 					int clientId = ReliableUDPConnection.GetPlayerID (packet);
+					state.ClientManager.Connections [clientId].MarkPacketReceive ();
+					if (state.ClientManager.Connections [clientId] == null) {
+						continue;
+					}
 					UnpackedPacket unpacked = state.ClientManager.Connections [clientId].Connection.ProcessPacket (packet, lobbyUnpackingArr);
 					foreach (var element in unpacked.UnreliableElements) {
 						element.UpdateState (bridge);
@@ -145,6 +160,9 @@ namespace Server
 
 				bool allReady = state.ClientManager.CountCurrConnections > 0;
 				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+					if (state.ClientManager.Connections [i] == null) {
+						continue;
+					}
 					PlayerConnection client = state.ClientManager.Connections [i];
 					Console.WriteLine ("Client {0}, {1}", i, client.Ready);
 					allReady &= client.Ready; //bitwise operater to check that every connection is ready
@@ -153,51 +171,74 @@ namespace Server
 
 				// Force game to wait until 2 players have connected
 				if (state.ClientManager.CountCurrConnections < 2) {
-					allReady = false;
+					//allReady = false;
 				}
 
 				if (allReady) {
 					Console.WriteLine ("All are ready sending startgame packet");
 					List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 					List<UpdateElement> reliableElements = new List<UpdateElement> ();
-					reliableElements.Add (new GameStartElement (state.ClientManager.CountCurrConnections));
+					int players = 0;
+					for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+						if (state.ClientManager.Connections [i] == null) {
+							continue;
+						}
+						state.ClientManager.Connections [i].ActorId = state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
+						players++;
+					}
+
+					reliableElements.Add (new GameStartElement (players));
 					var playerInfo = new List<LobbyStatusElement.PlayerInfo> ();
 					for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+						if (state.ClientManager.Connections [i] == null) {
+							continue;
+						}
 						playerInfo.Add (new LobbyStatusElement.PlayerInfo (state.ClientManager.Connections [i].ClientId,
-							state.ClientManager.Connections [i].Name, 
-							state.ClientManager.Connections [i].Team, 
+							state.ClientManager.Connections [i].Name,
+							state.ClientManager.Connections [i].Team,
 							state.ClientManager.Connections [i].Ready));
 					}
-					unreliableElements.Add(new LobbyStatusElement(playerInfo));
+					unreliableElements.Add (new LobbyStatusElement (playerInfo));
 
 					for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+						if (state.ClientManager.Connections [i] == null) {
+							continue;
+						}
 						PlayerConnection client = state.ClientManager.Connections [i];
 						Packet startPacket = client.Connection.CreatePacket (unreliableElements, reliableElements, PacketType.HeartbeatPacket);
 						socket.Send (startPacket, client.Destination);
 					}
-                    
+
 					//wait for each client to start sending gameplay packets, which indicates
 					//that each client has received the gamestart Message
 					bool allSendGame = false;
-					int clientId;
+					int playerId;
 					while (!allSendGame) {
-						packet = socket.Receive ();
-						switch (ReliableUDPConnection.GetPacketType (packet)) {
-						case PacketType.GameplayPacket:
-							clientId = ReliableUDPConnection.GetPlayerID (packet);
-							state.ClientManager.Connections [clientId].startedGame = true;
-							allSendGame = true;
-							Console.WriteLine ("Received packet from {0}", clientId);
-							for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
-								PlayerConnection client = state.ClientManager.Connections [i];
-								Console.WriteLine ("Client {0}, {1} sent a game packet while server in lobby", i, client.startedGame);
-								allSendGame &= client.startedGame; //bitwise operater to check that every connection is ready
+						try{
+							packet = socket.Receive ();
+							switch (ReliableUDPConnection.GetPacketType (packet)) {
+								case PacketType.GameplayPacket:
+								playerId = ReliableUDPConnection.GetPlayerID (packet);
+								state.ClientManager.FindClientByActorId(playerId).startedGame = true;
+								allSendGame = true;
+								Console.WriteLine ("Received packet from {0}", playerId);
+								for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+									if (state.ClientManager.Connections [i] == null) {
+										continue;
+									}
+									PlayerConnection client = state.ClientManager.Connections [i];
+									Console.WriteLine ("Client {0}, {1} sent a game packet while server in lobby", i, client.startedGame);
+									allSendGame &= client.startedGame; //bitwise operater to check that every connection is ready
+								}
+								break;
+								default:
+								break;
 							}
-							break;
-						default:
-							break;
+						} catch (TimeoutException e) {
+							continue;
 						}
 					}
+					sendHeartBeatPing.Enabled = false;
 					GameState (socket, state, bridge);
 					return;
 
@@ -211,41 +252,47 @@ namespace Server
 
 		private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
-			// Add all players to the game state
-			for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
-				state.GameState.AddPlayer (state.ClientManager.Connections [i].Team);
+
+
+
+			state.GameState.CollisionBuffer.requiredValidity = Math.Max ((int)(state.ClientManager.CountCurrConnections * 0.8), 1);
+			Console.WriteLine ("set required validity to {0}", state.GameState.CollisionBuffer.requiredValidity);
+
+			//give each player their starting ability
+			for (int i = 0; i < state.GameState.CreatedPlayersCount; i++) {
+				Player player = (Player)state.GameState.actors [i];
+				int newSkillId = AbilityEffects.ReturnRandomAbilityId (player);
+				state.GameState.OutgoingReliableElements.Enqueue (new AbilityAssignmentElement (i, newSkillId));
 			}
 
-            //give each player their starting ability
-            for (int i = 0; i < state.GameState.CreatedPlayersCount; i++)
-            {
-                Player player = (Player)state.GameState.actors[state.ClientManager.Connections[i].ActorId];
-                int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
-                state.GameState.OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));
-            }
-
-            //spawn test tower at 100,100
-            state.GameState.AddTower(new GameUtility.Coordinate(150, 150));
+			//spawn test tower at 100,100
+			state.GameState.AddTower (new GameUtility.Coordinate (150, 150));
 
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
 			StartGameStateTimer (socket, state);
 
             
-            //Timer for keeping track of the game progress
-            state.GameState.StartGamePlayTimer();
+			//Timer for keeping track of the game progress
+			state.GameState.StartGamePlayTimer ();
 
-            while (state.TimesEndGameSent < 80) {
+			while (state.TimesEndGameSent < 80) {
 				if (!state.GameOver) {
 					//Console.WriteLine ("Waiting for packet in game state");
-					Packet packet = socket.Receive ();
-					if (ReliableUDPConnection.GetPacketType (packet) != PacketType.GameplayPacket) {
+					try {
+						Packet packet = socket.Receive ();
+						if (ReliableUDPConnection.GetPacketType (packet) != PacketType.GameplayPacket) {
+							continue;
+						}
+						int actorId = ReliableUDPConnection.GetPlayerID (packet);
+						state.ClientManager.FindClientByActorId (actorId).MarkPacketReceive ();
+
+						//TODO Catch exceptions thrown by ProcessPacket. Possibly move processing of packet to threadpool?
+						UnpackedPacket unpacked = state.ClientManager.FindClientByActorId (actorId).Connection.ProcessPacket (packet, unpackingArr);
+						ThreadPool.QueueUserWorkItem (ProcessIncomingPacket, unpacked);
+					} catch (Exception e) {
+						Console.WriteLine (e);
 						continue;
 					}
-					int clientId = ReliableUDPConnection.GetPlayerID (packet);
-
-					//TODO Catch exceptions thrown by ProcessPacket. Possibly move processing of packet to threadpool?
-					UnpackedPacket unpacked = state.ClientManager.Connections [clientId].Connection.ProcessPacket (packet, unpackingArr);
-					ThreadPool.QueueUserWorkItem (ProcessIncomingPacket, unpacked);
 				}
 			}
 		}
@@ -275,13 +322,14 @@ namespace Server
 			sendGameStateTimer.Enabled = true; 
 		}
 
-        //added for cleaning up gamestateTimer, also clean up the game state timer
-        private static void EndGameStateTimer() {
-            sendGameStateTimer.Dispose();
-            state.GameState.EndGamePlayTimer(); // used for cleaning up timer
-        }
+		//added for cleaning up gamestateTimer, also clean up the game state timer
+		private static void EndGameStateTimer ()
+		{
+			sendGameStateTimer.Dispose ();
+			state.GameState.EndGamePlayTimer (); // used for cleaning up timer
+		}
 
-        private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
 			//Console.WriteLine ("Forming packet");
 			try {
@@ -293,22 +341,37 @@ namespace Server
 				// Get new update elements from game state
 				UpdateElement updateElement;
 				while (gs.OutgoingReliableElements.TryDequeue (out updateElement)) {
+					Console.WriteLine ("Dequeue and send reliable element");
 					reliable.Add (updateElement);
 				}
 
 				gs.TickAllActors (state);
 				gs.CollisionBuffer.DecrementTTL ();
-				if(state.GameOver || gs.CheckWinCondition()){
+				if (state.GameOver || gs.CheckWinCondition ()) {
 					state.GameOver = true;
-					if(state.TimesEndGameSent++ < 80){
+					if (state.TimesEndGameSent++ < 80) {
 						//TODO end the game
-						reliable.Add(new GameEndElement(1));
-						Console.WriteLine("Game is over");
+						reliable.Add (new GameEndElement (gs.CheckWinningTeam ()));
+						Console.WriteLine ("Game is over");
 					} else {
 						sendGameStateTimer.Enabled = false;
 					}
 				}
-					
+
+				// Check if all players are not connected
+				bool allDisconnected = true;
+				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
+					if (state.ClientManager.Connections [i] == null) {
+						continue;
+					}
+					allDisconnected &= state.ClientManager.Connections [i].Disconnected ();
+				}
+				if (allDisconnected) {
+					state.TimesEndGameSent = 80;
+					state.GameOver = true;
+					sendGameStateTimer.Enabled = false;
+				}
+
 				// Create unreliable elements that will be sent to all clients
 				int actorId;
 				for (int i = 0; i < gs.CreatedPlayersCount; i++) {
@@ -317,8 +380,22 @@ namespace Server
 					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
 				}
 
+				var livesInfo = new List<RemainingLivesElement.LivesInfo> ();
+				livesInfo.Add (new RemainingLivesElement.LivesInfo (1, state.GameState.teamLives[1]));
+				livesInfo.Add (new RemainingLivesElement.LivesInfo (2, state.GameState.teamLives[2]));
+				unreliable.Add (new RemainingLivesElement (livesInfo));
+
+				var towerInfo = new List<TowerHealthElement.TowerInfo> ();
+				foreach (var tower in state.GameState.Towers) {
+					towerInfo.Add (new TowerHealthElement.TowerInfo (tower.ActorId, tower.Health));
+				}
+				unreliable.Add (new TowerHealthElement (towerInfo));
+
 				// Create and send packets to all clients
 				for (int i = 0; i < cm.CountCurrConnections; i++) {
+					if (state.ClientManager.Connections [i] == null) {
+						continue;
+					}
 					Packet packet = state.ClientManager.Connections [i].Connection.CreatePacket (unreliable, reliable);
 					socket.Send (packet, cm.Connections [i].Destination);
 				}
