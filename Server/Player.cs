@@ -28,7 +28,9 @@ namespace GameStateComponents {
                 AbilityType.Whale,
 				AbilityType.Blink,
 				AbilityType.PewPew,
-				AbilityType.Sploosh
+				AbilityType.Sploosh,
+				AbilityType.Gungnir,
+				AbilityType.Slash
 			};
 			Cooldowns = new int[Abilities.Length];
             Experience = 0;

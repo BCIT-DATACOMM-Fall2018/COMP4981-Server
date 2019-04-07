@@ -62,7 +62,11 @@ namespace Server
 			//PewPew
 			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 100);},
 			//Sploosh
-			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 75);}
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 75);},
+			// Gungnir
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 300);},
+			// Slash
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 400);}
         };
 
 		private AbilityEffects ()
@@ -121,6 +125,7 @@ namespace Server
 		public static int ReturnRandomAbilityId(Player player)
 		{
 			Random random = new Random();
+			return 19;
 			switch (player.Level)
 			{
 				case 1:
