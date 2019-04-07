@@ -19,6 +19,7 @@ namespace GameStateComponents
 		private int deaths;
 		private int reportedDeaths;
 		private int turnsDead;
+		public bool Stationary { get; protected set; }
 		protected bool dead;
 
 		public bool invincible = false;

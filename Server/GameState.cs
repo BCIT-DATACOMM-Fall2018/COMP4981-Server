@@ -269,6 +269,10 @@ namespace GameStateComponents
 				return false;
 			}
 
+			if (abilityId == AbilityType.Banish && targetActor.Stationary) {
+				return false;
+			}
+
 			return useActor.UseAbility (abilityId);
 		}
 

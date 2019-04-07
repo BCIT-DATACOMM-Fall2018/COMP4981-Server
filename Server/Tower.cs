@@ -19,6 +19,7 @@ namespace GameStateComponents
             Abilities[0] = AbilityType.TowerAttack;
             Cooldowns = new int[1];
             Cooldowns[0] = AbilityInfo.InfoArray[(int)AbilityType.TowerAttack].Cooldown;
+			Stationary = true;
         }
 
         public override void Tick(State state)
