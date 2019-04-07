@@ -28,7 +28,7 @@ namespace GameStateComponents {
 		}
 
 		public bool Disconnected(){
-			return timeSinceLastPacket++ > 30;
+			return timeSinceLastPacket++ > 120;
 		}
     }
 }

@@ -34,7 +34,7 @@ namespace Server
 			elements.Add (new HealthElement (15, 6));
 
 			// Create a UDPSocket
-			UDPSocket socket = new UDPSocket (3);
+			UDPSocket socket = new UDPSocket (4);
 			// Bind the socket. Address must be in network byte order
 			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
 
@@ -289,7 +289,8 @@ namespace Server
 						//TODO Catch exceptions thrown by ProcessPacket. Possibly move processing of packet to threadpool?
 						UnpackedPacket unpacked = state.ClientManager.FindClientByActorId (actorId).Connection.ProcessPacket (packet, unpackingArr);
 						ThreadPool.QueueUserWorkItem (ProcessIncomingPacket, unpacked);
-					} catch (TimeoutException e) {
+					} catch (Exception e) {
+						Console.WriteLine (e);
 						continue;
 					}
 				}

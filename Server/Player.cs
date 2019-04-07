@@ -26,7 +26,9 @@ namespace GameStateComponents {
                 AbilityType.Fireball,
                 AbilityType.WeebOut,
                 AbilityType.Whale,
-				AbilityType.Blink
+				AbilityType.Blink,
+				AbilityType.PewPew,
+				AbilityType.Sploosh
 			};
 			Cooldowns = new int[Abilities.Length];
             Experience = 0;

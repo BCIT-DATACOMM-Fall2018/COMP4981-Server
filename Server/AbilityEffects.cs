@@ -39,7 +39,7 @@ namespace Server
 				hitActor.TargetPosition = randomPosition;
 			},
 			// Bullet Ability
-			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 80);},
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 250);},
 			// Pork Chop
 			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 250);},
 			// Dart
@@ -54,9 +54,15 @@ namespace Server
             //WeebOut
             (useActor, hitActor) => {hitActor.TakeDamage(useActor, 50);},
             //Whale
-            (useActor, hitActor) => {hitActor.Health+=100;},
+            (useActor, hitActor) => {hitActor.Health+=400;},
 			//TowerAttack
-			(useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); }
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, TOWER_DAMAGE); },
+			//Blink
+			(useActor, hitActor) => {},
+			//PewPew
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 100);},
+			//Sploosh
+			(useActor, hitActor) => {hitActor.TakeDamage(useActor, 75);}
         };
 
 		private AbilityEffects ()

@@ -166,7 +166,7 @@ namespace GameStateComponents
 		public void startInvincibilityTimer() {
 			Timer timer = new Timer();
 			timer.Elapsed += OnTimedEvent;
-			timer.Interval = 5000;
+			timer.Interval = 3000;
 			timer.AutoReset = false;
 			timer.Enabled = true;
 		}
