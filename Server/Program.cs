@@ -379,6 +379,11 @@ namespace Server
 					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
 				}
 
+				var livesInfo = new List<RemainingLivesElement.LivesInfo> ();
+				livesInfo.Add (new RemainingLivesElement.LivesInfo (1, state.GameState.teamLives[1]));
+				livesInfo.Add (new RemainingLivesElement.LivesInfo (2, state.GameState.teamLives[2]));
+				unreliable.Add (new RemainingLivesElement (livesInfo));
+
 				var towerInfo = new List<TowerHealthElement.TowerInfo> ();
 				foreach (var tower in state.GameState.Towers) {
 					towerInfo.Add (new TowerHealthElement.TowerInfo (tower.ActorId, tower.Health));

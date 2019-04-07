@@ -29,7 +29,7 @@ namespace GameStateComponents
         private const int KILL_TOWER_EXP = 128;
 
 
-        private int[] teamLives;
+        public int[] teamLives;
 
         public GameState()
         {
@@ -39,7 +39,7 @@ namespace GameStateComponents
             CollisionBuffer = new CollisionBuffer(this);
             teamLives = new int[MAXTEAMS];
             for (int i = 1; i < teamLives.Length; i++) {
-                teamLives[i] = 5;
+                teamLives[i] = 20;
             }
             teamActors = new List<Actor>[MAXTEAMS];
             for (int i = 0; i < teamActors.Length; i++) {
