@@ -324,8 +324,10 @@ namespace GameStateComponents
             player.Experience += exp;
             int afterLevel = GameUtility.currentLevel(player.Experience);
             
-            if (preLevel > afterLevel)
+			Console.WriteLine("Add exp to player {0} + {1}. Old level {2}, new level {3}", player, exp, preLevel, afterLevel);
+			if (afterLevel > preLevel)
             {
+				Console.WriteLine("Granting new Ability");
                 //levelUp, skill change
                 int newSkillId = AbilityEffects.ReturnRandomAbilityId(player);
                 OutgoingReliableElements.Enqueue(new AbilityAssignmentElement(player.ActorId, newSkillId));

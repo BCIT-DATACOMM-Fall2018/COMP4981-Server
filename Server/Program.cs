@@ -378,6 +378,7 @@ namespace Server
 					actorId = cm.Connections [i].ActorId;
 					unreliable.Add (new HealthElement (actorId, gs.GetHealth (actorId)));
 					unreliable.Add (new MovementElement (actorId, gs.GetPosition (actorId).x, gs.GetPosition (actorId).z, gs.GetTargetPosition (actorId).x, gs.GetTargetPosition (actorId).z));
+					unreliable.Add (new ExperienceElement(actorId, ((Player)gs.actors[actorId]).Experience));
 				}
 
 				var livesInfo = new List<RemainingLivesElement.LivesInfo> ();

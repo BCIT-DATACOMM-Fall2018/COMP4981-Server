@@ -125,7 +125,6 @@ namespace Server
 		public static int ReturnRandomAbilityId(Player player)
 		{
 			Random random = new Random();
-			return 19;
 			switch (player.Level)
 			{
 				case 1:
