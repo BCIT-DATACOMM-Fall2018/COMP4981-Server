@@ -2,7 +2,7 @@ using System;
 using System.Timers;
 using Server;
 using NetworkLibrary;
-
+using System.Collections;
 namespace GameStateComponents
 {
 	public abstract class Actor
@@ -15,7 +15,9 @@ namespace GameStateComponents
 		// prevent race condition with cooldown being set.
 		private readonly object abilityLock = new object ();
 
-		private int _health;
+        private ArrayList demageOverTimeList = new ArrayList();
+        private ArrayList shieldOverTimeList = new ArrayList();
+        private int _health;
 		private int deaths;
 		private int reportedDeaths;
 		private int turnsDead;
@@ -194,5 +196,86 @@ namespace GameStateComponents
 			}
             return damage;
         }
-	}
+        //you should call this function per tick
+        public void BoostShieldPerTick() {
+            ArrayList removeList = new ArrayList();
+            //
+            foreach (ArrayList eachSOT in shieldOverTimeList)
+            {
+                //if 0 remove the boost
+                if ((int)eachSOT[1] <= 0) {
+                    //add to remove list
+                    this.Defense -= (float)eachSOT[0];
+                    removeList.Add(eachSOT);
+                }
+                else {
+                    //else -- duration
+                    eachSOT[1] = (int)eachSOT[1]-1;
+                }
+
+
+            }
+
+                //remove
+                foreach (ArrayList remove in removeList)
+            {
+                shieldOverTimeList.Remove(remove);
+            }
+        }
+        //you should call this function if someone cast the shield skill
+        public void PushAndBoostShield(float shield, int duration)
+        {
+            this.Defense += shield;
+            shieldOverTimeList.Add(MakePairShieldOverTime(shield, duration-1));
+        }
+        public ArrayList MakePairShieldOverTime(float shield, int duration)
+        {
+            ArrayList pair = new ArrayList();
+            pair.Add(shield);
+            pair.Add(duration);
+ 
+            return pair;
+        }
+        //you should call this function per tick
+        public void DemageOverTimePerTick()
+        {
+            ArrayList removeList = new ArrayList();
+            foreach (ArrayList eachDOT in demageOverTimeList)
+            {
+                //do demage
+                TakeDamage((Actor)eachDOT[2],(int)eachDOT[0]);
+                //minus time
+                int tempDuration = (int)eachDOT[1];
+                eachDOT[1] = --tempDuration;
+                //if time is 0, delete the item
+                if ((int)eachDOT[1] <= 0) {
+                    removeList.Add(eachDOT);
+                }
+
+                Console.Write("Demage{0} duration::{1}\n", eachDOT[0], eachDOT[1]);
+                Console.WriteLine();
+            }
+
+            //remove
+            foreach (ArrayList remove in removeList) {
+                demageOverTimeList.Remove(remove);
+            }
+
+        }
+        //you should call this function if someone cast the DOT skill
+        public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
+        {
+            demageOverTimeList.Add(MakePairDemageOverTime(demagePerTick, duration, attacker));
+        }
+
+        public ArrayList MakePairDemageOverTime(int demage, int duration, Actor attacker)
+        {
+            ArrayList pair = new ArrayList();
+            pair.Add(demage);
+            pair.Add(duration);
+            pair.Add(attacker);
+            return pair;
+        }
+
+    }
 }
