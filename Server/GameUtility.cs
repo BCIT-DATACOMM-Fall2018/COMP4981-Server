@@ -1,4 +1,6 @@
 ﻿using System;
+using GameStateComponents;
+
 namespace Server
 {
     public static class GameUtility
@@ -15,11 +17,11 @@ namespace Server
             }
 
         }
+        const int LEVEL1_EXP = 128;
+        const int LEVEL2_EXP = 256;
+        const int LEVEL3_EXP = 512;
 
-        //public GameUtility()
-        //{
-
-        //}
+        const int KILL_EXP = 64;
 
         public static Coordinate FindNewCoordinate(Coordinate c1, Coordinate c2, float distance)
         {
@@ -55,6 +57,23 @@ namespace Server
 		public static bool CoordsWithinDistance(Coordinate c1, Coordinate c2, float distance){
 			return ((c1.x - c2.x) * (c1.x - c2.x) + (c1.z - c2.z) * (c1.z - c2.z)) <= distance * distance;
 		}
+
+        
+        public static int currentLevel(int exp) {
+            if (exp < LEVEL1_EXP)
+                return 1;
+            if (exp < LEVEL2_EXP)
+                return 2;
+            if (exp < LEVEL3_EXP)
+                return 3;
+            return 4;
+        }
+
+        //gets the distance between 2 points
+        public static float getDistance(Coordinate c1, Coordinate c2)
+        {
+            return (float)Math.Sqrt(Math.Abs(((c1.x - c2.x)* (c1.x - c2.x)) + ((c1.z - c2.z) * (c1.z - c2.z))));
+        }
 
     }
 }

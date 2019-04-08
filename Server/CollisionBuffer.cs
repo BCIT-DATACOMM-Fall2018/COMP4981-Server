@@ -14,7 +14,7 @@ namespace Server
         public int actorHitId { get; }
         public int actorCastId { get; }
         public int validity { get; set; }
-        public int timeToLive { get; set; } 
+        public int timeToLive { get; set; }
 		public int collisionId { get; }
 
         public bool isSignalSent;
@@ -43,7 +43,7 @@ namespace Server
 
 			return abilityId == other.abilityId && actorHitId == other.actorHitId && actorCastId == other.actorCastId && collisionId == other.collisionId;
     	}
-    	
+
 
     	public override int GetHashCode ()
     	{
@@ -51,15 +51,15 @@ namespace Server
     			return abilityId.GetHashCode () ^ actorHitId.GetHashCode () ^ actorCastId.GetHashCode ();
     		}
     	}
-    	
+
     }
 
 
     public class CollisionBuffer
     {
         private const int MaxBufferSize = 1024;
-		private const int maxValidity = 2;
-	
+		public int requiredValidity = 1;
+
 		private readonly object padlock = new object();
 		private CollisionItem[] buffer;
 		private GameState gameState;
@@ -74,7 +74,7 @@ namespace Server
 		}
 
         public void Insert(CollisionItem toAdd)
-        {	
+        {
 			lock (padlock) {
 				if (!IsFull())
 				{
@@ -91,7 +91,7 @@ namespace Server
 					{
 						Console.WriteLine ("Incrementing validity of existing collision item. Validity {0}", cur.validity);
 					}
-					if (++cur.validity == maxValidity && !cur.isSignalSent) {
+					if (++cur.validity == requiredValidity && !cur.isSignalSent) {
 						SignalCollision(cur);
 					}
 				}

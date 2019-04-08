@@ -6,7 +6,8 @@ using NetworkLibrary.MessageElements;
 
 namespace GameStateComponents {
     public class ClientManager {
-		public PlayerConnection[] Connections { get; private set; } = new PlayerConnection[10];
+        public const int MAX_PLAYERS = 40;
+		public PlayerConnection[] Connections { get; private set; } = new PlayerConnection[MAX_PLAYERS];
 		public int CountCurrConnections { get; private set; }
 
         //when checking connections elswhere in the code, we are looking at connections[i] where 0 <= i < countCurrConnections 
@@ -15,11 +16,13 @@ namespace GameStateComponents {
         }
 
 		public int AddConnection(Destination destination, string name) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < MAX_PLAYERS; i++) {
 				if (Connections[i] == null) {
-					PlayerConnection newPlayer = new PlayerConnection(i, i, destination, new ReliableUDPConnection(i), name);
+					PlayerConnection newPlayer = new PlayerConnection(i, destination, new ReliableUDPConnection(i), name);
 					Connections[i] = newPlayer;
-					CountCurrConnections++;
+					if (i == CountCurrConnections) {
+						CountCurrConnections++;
+					}
                     return i;
                 }
             }
@@ -31,7 +34,10 @@ namespace GameStateComponents {
         }
 
         public int GetClientId(int actorId) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < MAX_PLAYERS; i++) {
+				if (Connections [i] == null) {
+					continue;
+				}
 				if (Connections[i].ActorId == actorId) {
 					return Connections[i].ClientId;
                 }
@@ -47,5 +53,11 @@ namespace GameStateComponents {
             int clientId = GetClientId(actorId);
 			return Connections[clientId].Destination;
         }
+
+		public PlayerConnection FindClientByActorId(int actorId){
+			int clientId = GetClientId(actorId);
+			return Connections [clientId];;
+
+		}
     }
 }

@@ -15,7 +15,22 @@ namespace GameStateComponents {
 				AbilityType.TestProjectile,
 				AbilityType.TestTargeted,
 				AbilityType.TestTargetedHoming,
-				AbilityType.TestAreaOfEffect
+				AbilityType.TestAreaOfEffect,
+				AbilityType.Wall,
+				AbilityType.Banish,
+				AbilityType.BulletAbility,
+				AbilityType.PorkChop,
+				AbilityType.Dart,
+				AbilityType.Purification,
+                AbilityType.UwuImScared,
+                AbilityType.Fireball,
+                AbilityType.WeebOut,
+                AbilityType.Whale,
+				AbilityType.Blink,
+				AbilityType.PewPew,
+				AbilityType.Sploosh,
+				AbilityType.Gungnir,
+				AbilityType.Slash
 			};
 			Cooldowns = new int[Abilities.Length];
             Experience = 0;
