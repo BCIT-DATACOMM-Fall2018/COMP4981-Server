@@ -13,7 +13,7 @@ namespace GameStateComponents
         {
             Health = 1000;
             Attack = 1;
-            Defense = 1;
+            Defense = 1.5f;
             RespawnAllowed = false;
 			Abilities = new AbilityType[1];
             Abilities[0] = AbilityType.TowerAttack;
