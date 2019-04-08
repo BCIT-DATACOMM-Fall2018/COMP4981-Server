@@ -22,10 +22,6 @@ namespace Server
         const int LEVEL3_EXP = 512;
 
         const int KILL_EXP = 64;
-        //public GameUtility()
-        //{
-
-        //}
 
         public static Coordinate FindNewCoordinate(Coordinate c1, Coordinate c2, float distance)
         {

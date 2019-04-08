@@ -7,24 +7,27 @@ namespace GameStateComponents
 {
     public class Tower : Actor
     {
-        private const int TOWER_RANGE = 200;
+        private const int TOWER_RANGE = 50;
 
 		public Tower(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation)
         {
             Health = 1000;
             Attack = 1;
-            Defense = 1;
+            Defense = 1.5f;
             RespawnAllowed = false;
 			Abilities = new AbilityType[1];
             Abilities[0] = AbilityType.TowerAttack;
             Cooldowns = new int[1];
             Cooldowns[0] = AbilityInfo.InfoArray[(int)AbilityType.TowerAttack].Cooldown;
+			Stationary = true;
         }
 
         public override void Tick(State state)
         {
-            attack(state);
-
+				base.Tick(state);
+			if (!dead) {
+				attack (state);
+			}
         }
 
         private void attack(State state)
@@ -39,7 +42,8 @@ namespace GameStateComponents
             {
                 return;
             }
-            state.GameState.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(ActorId, NetworkLibrary.AbilityType.TowerAttack, targetActorId));
+			Console.WriteLine("Tower Attack");
+			state.GameState.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(ActorId, NetworkLibrary.AbilityType.TowerAttack, targetActorId, state.GameState.MakeCollisionId()));
         }
 
         

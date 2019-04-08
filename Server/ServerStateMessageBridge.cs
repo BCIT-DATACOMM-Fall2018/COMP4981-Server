@@ -127,6 +127,10 @@ namespace Server
 		public void UpdateAbilityAssignment(int actorId, int abilityId){
 
 		}
+
+		public void UpdateLifeCount (List<RemainingLivesElement.LivesInfo> livesInfo){
+
+		}
     }
 }
 
