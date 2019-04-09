@@ -30,8 +30,6 @@ namespace Server
 			Logger Log = Logger.Instance;
 			Log.D ("Server started.");
 			// Create a list of elements to send. Using the same list for unreliable and reliable
-			List<UpdateElement> elements = new List<UpdateElement> ();
-			elements.Add (new HealthElement (15, 6));
 
 			// Create a UDPSocket
 			UDPSocket socket = new UDPSocket (4);
@@ -418,14 +416,3 @@ namespace Server
 		}
 	}
 }
-
-//SENDING UNRELIABLE
-// numPlayers * (HEALTH, POSTION) , RELIABLE ELEMENTS (WILL BE PROCESSED IN THE ORDER WE ADD THEM)
-
-//STARTING GAME
-//send gameStart packet
-//send packet with spawn info
-//no longer receive new connections requests
-
-
-//
