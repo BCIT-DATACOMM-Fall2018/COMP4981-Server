@@ -133,16 +133,3 @@ namespace Server
 		}
     }
 }
-
-//SERVER ONLY SENDS MOVEMENT (UNRELIABLE)
-// -- calculate distance moved per tick along a straight line
-// send updated postion + target position every tick
-// if a player doesnt request movement then target pos will be same as current position
-
-//HEALTH (UNRELIABLE)
-
-//SPAWN (RELIABLE)
-//send at start of game right now
-
-//RECEIVE USE ABLILITY (EITHER)
-//validate, then echo to every client

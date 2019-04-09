@@ -211,7 +211,7 @@ namespace GameStateComponents
 		public void UpdatePosition (int actorId, float x, float z)
 		{
 			try {
-				actors [actorId].Position = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
+				actors [actorId].Position = new GameUtility.Coordinate (x, z);
 			} catch (KeyNotFoundException e) {
 
 			}
@@ -230,7 +230,7 @@ namespace GameStateComponents
 		public void UpdateTargetPosition (int actorId, float x, float z)
 		{
 			try {
-				actors [actorId].TargetPosition = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
+				actors [actorId].TargetPosition = new GameUtility.Coordinate (x, z);
 			} catch (KeyNotFoundException e) {
 
 			}
@@ -301,25 +301,21 @@ namespace GameStateComponents
 			Actor targetActor = actors [targetActorId];
 
 			if (!(info.Range == 0) && !GameUtility.CoordsWithinDistance (useActor.Position, targetActor.Position, info.Range + 5)) {
-				Console.WriteLine ("Out Of range");
 				return false;
 			}
 
 			// If the user and target are on the same and ally target isn't allowed it's invalid
 			if (useActor.Team == targetActor.Team && !info.AllyTargetAllowed) {
-				Console.WriteLine ("cant target allies");
 
 				return false;
 			}
 			// If the user and target anr't on the same time and enemy target itn't allowed it's invalid
 			if (useActor.Team != targetActor.Team && !info.EnemyTargetAllowed) {
-				Console.WriteLine ("cant target enemies");
 
 				return false;
 			}
 
 			if (abilityId == AbilityType.Banish && targetActor.Stationary) {
-				Console.WriteLine ("cant banish stationary targets");
 
 				return false;
 			}
@@ -408,9 +404,7 @@ namespace GameStateComponents
 			player.Experience += exp;
 			int afterLevel = GameUtility.currentLevel (player.Experience);
             
-			Console.WriteLine ("Add exp to player {0} + {1}. Old level {2}, new level {3}", player, exp, preLevel, afterLevel);
 			if (afterLevel > preLevel) {
-				Console.WriteLine ("Granting new Ability");
 				//levelUp, skill change
 				player.Level++;
 				int newSkillId = AbilityEffects.ReturnRandomAbilityId (player);
