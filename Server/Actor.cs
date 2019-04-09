@@ -337,7 +337,30 @@ namespace GameStateComponents
 			}
             return damage;
         }
-        //you should call this function per tick
+
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   BoostShieldPerTick
+--
+--  DATE:       April 3, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:   public void BoostShieldPerTick()
+--                  
+--
+--  RETURNS:    void
+--
+--  NOTES:  This function check shieldPerTick queue, if it have message in
+--          queue, it will apply the shield to the Actor by increast defense
+--          and decrese duration by 1. If the duration of specific skill is 0,
+--          the skill will remove from queue.
+--          Should call this function per tick.
+--
+---------------------------------------------------------------------------------------*/
         public void BoostShieldPerTick() {
             ArrayList removeList = new ArrayList();
             //
@@ -363,12 +386,54 @@ namespace GameStateComponents
                 shieldOverTimeList.Remove(remove);
             }
         }
-        //you should call this function if someone cast the shield skill
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   PushAndBoostShield
+--
+--  DATE:       April 3, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:   public void PushAndBoostShield(float shield, int duration)
+--                      shield: how much defense need to increase.
+--                      duration: how long will the skill last.
+--                  
+--
+--  RETURNS:    void
+--
+--  NOTES:  This function will simply push the incoming skill with duration to queue.
+--          This function should be call if someone cast the shield skill.
+--
+---------------------------------------------------------------------------------------*/
         public void PushAndBoostShield(float shield, int duration)
         {
             this.Defense += shield;
             shieldOverTimeList.Add(MakePairShieldOverTime(shield, duration-1));
         }
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   MakePairShieldOverTime
+--
+--  DATE:       April 3, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:   public ArrayList MakePairShieldOverTime(float shield, int duration)
+--                      shield: how much defense need to increase.
+--                      duration: how long will the skill last.
+--                  
+--
+--  RETURNS:    void
+--
+--  NOTES:  This function will pair shield with duration.
+--
+---------------------------------------------------------------------------------------*/
         public ArrayList MakePairShieldOverTime(float shield, int duration)
         {
             ArrayList pair = new ArrayList();
@@ -377,7 +442,29 @@ namespace GameStateComponents
  
             return pair;
         }
-        //you should call this function per tick
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   DemageOverTimePerTick
+--
+--  DATE:       April 3, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:   public void DemageOverTimePerTick()
+--                  
+--
+--  RETURNS:    void
+--
+--  NOTES:  This function do demage each tick. This function check DemagePerTick
+--          queue, if it have message in queue, it will apply the demage to the 
+--          Actor by decrease health and decrese duration by 1. If the duration 
+--          of specific skill is 0, the skill will remove from queue.
+--          This function should be called each tick.
+--
+---------------------------------------------------------------------------------------*/
         public void DemageOverTimePerTick()
         {
             ArrayList removeList = new ArrayList();
@@ -402,6 +489,29 @@ namespace GameStateComponents
 
         }
         //you should call this function if someone cast the DOT skill
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   PushToDemageOverTime
+--
+--  DATE:       April 3, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:   public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
+--                      demagePerTick: how much demage.
+--                      duration: how long will the skill last.
+--                      attacker: the accacker actor.
+--                  
+--
+--  RETURNS:    void
+--
+--  NOTES:  This function will simply push the incoming skill with duration to queue.
+--          This function should be call if someone cast the skill.
+--
+---------------------------------------------------------------------------------------*/
         public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
         {
             demageOverTimeList.Add(MakePairDemageOverTime(demagePerTick, duration, attacker));

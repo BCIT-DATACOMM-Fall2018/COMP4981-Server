@@ -5,6 +5,7 @@ namespace Server
 {
     public static class GameUtility
     {
+
         public struct Coordinate
         {
             public float x;
@@ -22,7 +23,27 @@ namespace Server
         const int LEVEL3_EXP = 512;
 
         const int KILL_EXP = 64;
-
+        /*---------------------------------------------------------------------------------------
+        --  FUNCTION:   FindNewCoordinate
+        --
+        --  DATE:       March 25, 2019
+        --
+        --  REVISIONS:  March 28, 2019
+        --
+        --  DESIGNER:   Ziqian Zhang, Kieran Lee 
+        --
+        --  PROGRAMMER: Ziqian Zhang, Kieran Lee 
+        --
+        --  INTERFACE:  public static Coordinate FindNewCoordinate(Coordinate c1, Coordinate c2, float distance)
+        --                               c1: the first coordinate
+        --                               c2: the second coordinate.      
+        --                               distance: The distance at direction of c1 to c2.
+        --
+        --  RETURNS:    Coordinate: the new coordination.
+        --
+        --  NOTES:  This function are given 2 coordinate and at that direction distance to find a new coordinate.
+        --
+        ---------------------------------------------------------------------------------------*/
         public static Coordinate FindNewCoordinate(Coordinate c1, Coordinate c2, float distance)
         {
 			
@@ -47,14 +68,59 @@ namespace Server
 			y3 = y1 + (distance / slope) * (y2 - y1);
 			return new Coordinate (x3, y3);
         }
-
-		public static float AngleBetweenCoordinates(Coordinate c1, Coordinate c2){
+        /*---------------------------------------------------------------------------------------
+        --  FUNCTION:   AngleBetweenCoordinates
+        --
+        --  DATE:       March 25, 2019
+        --
+        --  REVISIONS:  March 28, 2019
+        --
+        --  DESIGNER:   Ziqian Zhang, Kieran Lee 
+        --
+        --  PROGRAMMER: Ziqian Zhang, Kieran Lee 
+        --
+        --  INTERFACE:  public static float AngleBetweenCoordinates(Coordinate c1, Coordinate c2)
+        --                               c1: the first coordinate
+        --                               c2: the second coordinate.
+        --          
+        --                               
+        --
+        --  RETURNS:    float: the angle in float
+        --
+        --  NOTES:  This function are given 2 coordinate and find the angle between coordinates.
+        --
+        ---------------------------------------------------------------------------------------*/
+        public static float AngleBetweenCoordinates(Coordinate c1, Coordinate c2){
 			float xDiff = c2.x - c1.x;
 			float yDiff = c2.z - c2.z;
 			return (float)Math.Atan2 (yDiff, xDiff);
 		}
 
-		public static bool CoordsWithinDistance(Coordinate c1, Coordinate c2, float distance){
+        /*---------------------------------------------------------------------------------------
+--  FUNCTION:   AngleBetweenCoordinates
+--
+--  DATE:       March 25, 2019
+--
+--  REVISIONS:  March 28, 2019
+--
+--  DESIGNER:   Ziqian Zhang, Kieran Lee 
+--
+--  PROGRAMMER: Ziqian Zhang, Kieran Lee 
+--
+--  INTERFACE:  public static bool CoordsWithinDistance(Coordinate c1, Coordinate c2, float distance)
+--                               c1: the first coordinate
+--                               c2: the second coordinate.   
+--                               distance: The distance at direction of c1 to c2.
+--                               
+--
+--  RETURNS:    bool:
+--                  True: the new coordinate is within the 2 coordinate.
+--                  False: the new coordinate is not within the 2 coordinate.
+--
+--  NOTES:  This function are given 2 coordinate and find the angle between coordinates.
+--
+---------------------------------------------------------------------------------------*/
+        public static bool CoordsWithinDistance(Coordinate c1, Coordinate c2, float distance){
 			return ((c1.x - c2.x) * (c1.x - c2.x) + (c1.z - c2.z) * (c1.z - c2.z)) <= distance * distance;
 		}
 

@@ -344,8 +344,29 @@ namespace GameStateComponents
 			actors [actorCastId].ApplyAbilityEffects (abilityType, actors [actorHitId]);
 		}
 
-
-		public void addEXP (Player killerPlayer, bool isKillPlayer)
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   addExp
+--
+--  DATE:       March 28, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:  public void addEXP (Player killerPlayer, bool isKillPlayer)
+--                  killerPlayer: The play who kill the enemy
+--                  isKillPlayer: true: kill a player
+--                                false: kill a tower       
+--
+--  RETURNS:    void
+--
+--  NOTES:  This function add EXP to player who get the kill, and all other 
+--          team member with half EXP.
+--
+---------------------------------------------------------------------------------------*/
+        public void addEXP (Player killerPlayer, bool isKillPlayer)
 		{//if kill by player, true; if kill by tower , false
 
 			int expAdded = isKillPlayer ? KILL_PLAYER_EXP : KILL_TOWER_EXP;
@@ -360,8 +381,28 @@ namespace GameStateComponents
 				}
 			}
 		}
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:   addExp
+--
+--  DATE:       March 28, 2019
+--
+--  REVISIONS:
+--
+--  DESIGNER:   Ziqian Zhang
+--
+--  PROGRAMMER: Ziqian Zhang
+--
+--  INTERFACE:  public void addExp (Player player, int exp)
+--                  player: the player who need to add EXP
+--                  exp: the exp need to be added
+--
+--  RETURNS:    void
+--
+--  NOTES:  This is helper function to add exp to player
+--
+---------------------------------------------------------------------------------------*/
 
-		public void addExp (Player player, int exp)
+        public void addExp (Player player, int exp)
 		{
 			int preLevel = GameUtility.currentLevel (player.Experience);
 			player.Experience += exp;
