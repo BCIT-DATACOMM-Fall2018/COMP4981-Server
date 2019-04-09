@@ -284,7 +284,6 @@ namespace Server
 
 			while (state.TimesEndGameSent < 80) {
 				if (!state.GameOver) {
-					//Console.WriteLine ("Waiting for packet in game state");
 					try {
 						Packet packet = socket.Receive ();
 						if (ReliableUDPConnection.GetPacketType (packet) != PacketType.GameplayPacket) {
@@ -293,7 +292,6 @@ namespace Server
 						int actorId = ReliableUDPConnection.GetPlayerID (packet);
 						state.ClientManager.FindClientByActorId (actorId).MarkPacketReceive ();
 
-						//TODO Catch exceptions thrown by ProcessPacket. Possibly move processing of packet to threadpool?
 						UnpackedPacket unpacked = state.ClientManager.FindClientByActorId (actorId).Connection.ProcessPacket (packet, unpackingArr);
 						ThreadPool.QueueUserWorkItem (ProcessIncomingPacket, unpacked);
 					} catch (Exception e) {
@@ -338,7 +336,6 @@ namespace Server
 
 		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
-			//Console.WriteLine ("Forming packet");
 			try {
 				ClientManager cm = state.ClientManager;
 				GameState gs = state.GameState;
@@ -348,7 +345,6 @@ namespace Server
 				// Get new update elements from game state
 				UpdateElement updateElement;
 				while (gs.OutgoingReliableElements.TryDequeue (out updateElement)) {
-					Console.WriteLine ("Dequeue and send reliable element");
 					reliable.Add (updateElement);
 				}
 
