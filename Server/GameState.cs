@@ -19,6 +19,7 @@ namespace GameStateComponents
 		//start at 0 second
 		public ConcurrentDictionary<int, Actor> actors { get; private set; }
 
+
 		private List<Actor>[] teamActors;
 
 		public int CreatedActorsCount { get; private set; } = 0;
@@ -47,13 +48,14 @@ namespace GameStateComponents
 			CollisionBuffer = new CollisionBuffer (this);
 			teamLives = new int[MAXTEAMS];
 			for (int i = 1; i < teamLives.Length; i++) {
-				teamLives [i] = 2;
+				teamLives [i] = 20;
 			}
 			teamActors = new List<Actor>[MAXTEAMS];
 			for (int i = 0; i < teamActors.Length; i++) {
 				teamActors [i] = new List<Actor> ();
 			}
 		}
+
 
 		//Used for keeping track of game play timer, if 20 mins is up then both team loses
 		public void StartGamePlayTimer ()
@@ -171,17 +173,13 @@ namespace GameStateComponents
 
 		private ActorType RandomHuman ()
 		{
-			Random rand = new Random ();
-			return (ActorType)rand.Next (0, 5);
-			;
+			return (ActorType)GameUtility.RandomNum (0, 5);
 		}
 
 
 		private ActorType RandomOrc ()
 		{
-			Random rand = new Random ();
-			return (ActorType)rand.Next (5, 10);
-			;
+			return (ActorType)GameUtility.RandomNum (5, 10);
 		}
 
 

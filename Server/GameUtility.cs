@@ -23,6 +23,16 @@ namespace Server
         const int LEVEL3_EXP = 512;
 
         const int KILL_EXP = 64;
+
+		private static Random random = new Random();
+		private static Object _randomLock = new object ();
+
+		public static int RandomNum(int minValue, int maxValue){
+			lock (_randomLock) {
+				return random.Next (minValue, maxValue);
+			}
+		}
+
 /*---------------------------------------------------------------------------------------
 --  FUNCTION:   FindNewCoordinate
 --

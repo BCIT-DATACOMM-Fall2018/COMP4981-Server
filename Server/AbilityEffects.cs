@@ -93,16 +93,15 @@ namespace Server
 		
 		public static int ReturnRandomAbilityId(Player player)
 		{
-			Random random = new Random();
 			switch (player.Level)
 			{
 				case 1:
-					return random.Next(BASIC_ABILITIES_START, BASIC_ABILITIES_START+BASIC_ABILITIES_NUMBER);
+				return GameUtility.RandomNum(BASIC_ABILITIES_START, BASIC_ABILITIES_START+BASIC_ABILITIES_NUMBER);
 				case 2:
 				case 3:
-					return random.Next(NORMAL_ABILITIES_START, NORMAL_ABILITIES_START+NORMAL_ABILITIES_NUMBER);
+				return GameUtility.RandomNum(NORMAL_ABILITIES_START, NORMAL_ABILITIES_START+NORMAL_ABILITIES_NUMBER);
 				case 4:
-					return random.Next(ULTIMATE_ABILITIES_START, ULTIMATE_ABILITIES_START+ULTIMATE_ABILITIES_NUMBER);
+				return GameUtility.RandomNum(ULTIMATE_ABILITIES_START, ULTIMATE_ABILITIES_START+ULTIMATE_ABILITIES_NUMBER);
 				default:
 					return -1;
 			}
