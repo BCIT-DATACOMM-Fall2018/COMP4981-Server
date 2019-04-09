@@ -211,7 +211,7 @@ namespace GameStateComponents
 		public void UpdatePosition (int actorId, float x, float z)
 		{
 			try {
-				actors [actorId].Position = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
+				actors [actorId].Position = new GameUtility.Coordinate (x, z);
 			} catch (KeyNotFoundException e) {
 
 			}
@@ -230,7 +230,7 @@ namespace GameStateComponents
 		public void UpdateTargetPosition (int actorId, float x, float z)
 		{
 			try {
-				actors [actorId].TargetPosition = new GameUtility.Coordinate (x, z); //is this a memory leak waiting to happen?
+				actors [actorId].TargetPosition = new GameUtility.Coordinate (x, z);
 			} catch (KeyNotFoundException e) {
 
 			}

@@ -107,9 +107,6 @@ namespace Server
 
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
-			// TODO
-			// Send heartbeat ping to connected clients every Heart Beat Ping Interval (5 seconds)
-
 			StartHeartBeat (socket, state);        
 
 
@@ -125,7 +122,6 @@ namespace Server
 				}
 				switch (ReliableUDPConnection.GetPacketType (packet)) {
 				case PacketType.HeartbeatPacket:
-                        //TODO Timeout stuff
 					Console.WriteLine ("Got heartbeat packet");
 					int clientId = ReliableUDPConnection.GetPlayerID (packet);
 					state.ClientManager.Connections [clientId].MarkPacketReceive ();
@@ -145,20 +141,21 @@ namespace Server
 
 				case PacketType.RequestPacket:
 					Console.WriteLine ("Got request packet");
-                        // TODO Catch exception thrown by AddConnection
-					string name = ReliableUDPConnection.GetClientNameFromRequestPacket (packet);
-					int newClient = state.ClientManager.AddConnection (socket.LastReceivedFrom, name);
-					socket.Send (ReliableUDPConnection.CreateConfirmationPacket (newClient), state.ClientManager.Connections [newClient].Destination);
-					Console.WriteLine ("Sent confirmation packet to client " + newClient + " with name " + state.ClientManager.Connections [newClient].Name);
+					try {
+						string name = ReliableUDPConnection.GetClientNameFromRequestPacket (packet);
+						int newClient = state.ClientManager.AddConnection (socket.LastReceivedFrom, name);
+						socket.Send (ReliableUDPConnection.CreateConfirmationPacket (newClient), state.ClientManager.Connections [newClient].Destination);
+						Console.WriteLine ("Sent confirmation packet to client " + newClient + " with name " + state.ClientManager.Connections [newClient].Name);
+					} catch (OutOfMemoryException e) {
+
+					}
 
 					break;
 				default:
 					Console.WriteLine ("Got unexpected packet type, discarding");
 					break;
 				}
-				//TODO Check for timeouts
 
-				//TODO If all players ready start game send start packet and go to gamestate.
 				Console.WriteLine ("Checking if all players ready");
 
 				bool allReady = state.ClientManager.CountCurrConnections > 0;
@@ -172,10 +169,6 @@ namespace Server
 				}
 				Console.WriteLine ("Current connections {0}", state.ClientManager.CountCurrConnections);
 
-				// Force game to wait until 2 players have connected
-				if (state.ClientManager.CountCurrConnections < 2) {
-					//allReady = false;
-				}
 
 				if (allReady) {
 					Console.WriteLine ("All are ready sending startgame packet");
@@ -404,7 +397,6 @@ namespace Server
 					socket.Send (packet, cm.Connections [i].Destination);
 				}
 			} catch (Exception ex) {
-				//TODO Add expected exceptions. All exceptions being caught for debugging purposes. 
 				Console.WriteLine (ex.Message);
 				Console.WriteLine (ex.StackTrace);
 			}
