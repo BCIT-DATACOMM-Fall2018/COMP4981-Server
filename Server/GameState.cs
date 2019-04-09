@@ -47,7 +47,7 @@ namespace GameStateComponents
 			CollisionBuffer = new CollisionBuffer (this);
 			teamLives = new int[MAXTEAMS];
 			for (int i = 1; i < teamLives.Length; i++) {
-				teamLives [i] = 20;
+				teamLives [i] = 2;
 			}
 			teamActors = new List<Actor>[MAXTEAMS];
 			for (int i = 0; i < teamActors.Length; i++) {
@@ -108,8 +108,8 @@ namespace GameStateComponents
 					}
 					return true;
 				}
-				//TODO Change to remainingTeams == 1
-				return remainingTeams == 0;
+
+				return remainingTeams == 1;
 			} catch (KeyNotFoundException e) {
 				return false;
 			}
@@ -184,16 +184,6 @@ namespace GameStateComponents
 			;
 		}
 
-		public int AddCreep (int team)
-		{
-			int actorId = CreatedActorsCount++;
-			Creep newCreep = new Creep (actorId, team, new GameUtility.Coordinate (310, 90));
-			if (!actors.TryAdd (actorId, newCreep)) {
-				//TODO Handle failure
-			}
-			Console.WriteLine ("Adding creep actor with id {0}", actorId);
-			return actorId;
-		}
 
 		public int AddTower (GameUtility.Coordinate spawnLoc)
 		{
@@ -381,7 +371,12 @@ namespace GameStateComponents
 			if (afterLevel > preLevel) {
 				Console.WriteLine ("Granting new Ability");
 				//levelUp, skill change
+				player.Level++;
 				int newSkillId = AbilityEffects.ReturnRandomAbilityId (player);
+				while (player.HasAbility((AbilityType)newSkillId)){
+					newSkillId = AbilityEffects.ReturnRandomAbilityId (player);
+				}
+				player.AddAbility(afterLevel, (AbilityType)newSkillId);
 				OutgoingReliableElements.Enqueue (new AbilityAssignmentElement (player.ActorId, newSkillId));
 			}
 		}

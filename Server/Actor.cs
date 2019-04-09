@@ -5,6 +5,40 @@ using NetworkLibrary;
 using System.Collections;
 namespace GameStateComponents
 {
+	/// ----------------------------------------------
+	/// Abstract Class: Actor - An abstract actor class
+	/// 
+	/// PROGRAM: NetworkLibrary
+	///
+	/// CONSTRUCTORS:	public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
+	/// 
+	/// FUNCTIONS:	public virtual void Tick (State state)
+	/// 			private void Move ()
+	/// 			private void DecrementCooldowns ()
+	/// 			public bool UseAbility (AbilityType abilityId)
+	/// 			public void startInvincibilityTimer()
+	/// 			public void OnTimedEvent(Object source, ElapsedEventArgs e)
+	/// 			public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
+	/// 			public int TakeDamage(Actor attacker, int baseDamage)
+	/// 			public void BoostShieldPerTick() 
+	/// 			public void PushAndBoostShield(float shield, int duration)
+	/// 			public ArrayList MakePairShieldOverTime(float shield, int duration)
+	/// 			public void DemageOverTimePerTick()
+	/// 			public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
+	/// 			public ArrayList MakePairDemageOverTime(int demage, int duration, Actor attacker)
+	/// 
+	/// 
+	/// 
+	/// DATE: 		March 11th, 2019
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Cameron Roberts
+	///
+	/// PROGRAMMER: Cameron Roberts
+	///
+	/// NOTES:	
+	/// ----------------------------------------------
 	public abstract class Actor
 	{
 		private static readonly GameUtility.Coordinate deadArea = new GameUtility.Coordinate(-10, -10);
@@ -74,6 +108,21 @@ namespace GameStateComponents
 
         public float Defense { get; set; }
 
+		/// ----------------------------------------------
+		/// CONSTRUCTOR: Actor
+		/// 
+		/// DATE:		March 11th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
+		/// 
+		/// NOTES: 	
+		/// ----------------------------------------------
         public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
 		{
 			ActorId = actorId;
@@ -83,6 +132,25 @@ namespace GameStateComponents
 			TargetPosition = SpawnLocation;
 		}
 
+
+		/// ----------------------------------------------
+		/// FUNCTION:	Tick
+		/// 
+		/// DATE:		March 17th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	private virtual void Tick ()
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Calls all other functions that should activate every
+		/// 			server tick.
+		/// ----------------------------------------------
 		public virtual void Tick (State state)
 		{
 			if (Health > 0) {
@@ -118,9 +186,29 @@ namespace GameStateComponents
 
 			Move ();
 			DecrementCooldowns ();
+			BoostShieldPerTick();
+			DemageOverTimePerTick();
 
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Move
+		/// 
+		/// DATE:		March 13th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	private void Move ()
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Moves the actor towards their target position.
+		/// 			To be called every tick.
+		/// ----------------------------------------------
 		private void Move ()
 		{
 			if (Health <= 0) {
@@ -131,6 +219,23 @@ namespace GameStateComponents
 			Position = GameUtility.FindNewCoordinate (Position, TargetPosition, Speed);
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	DecrementCooldowns
+		/// 
+		/// DATE:		March 17th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	private void DecrementCooldowns ()
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Decrements ability cooldowns
+		/// ----------------------------------------------
 		private void DecrementCooldowns ()
 		{
 			for (int i = 0; i < Cooldowns.Length; i++) {
@@ -140,6 +245,25 @@ namespace GameStateComponents
 			}
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	UseAbility
+		/// 
+		/// DATE:		March 17th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public bool UseAbility (AbilityType abilityId)
+		/// 				AbilityType abilityId: The ability to be used
+		/// 
+		/// RETURNS: 	True if the ability could be used. False if the abiliy
+		/// 			could not be used.
+		/// 
+		/// NOTES:		Uses the given ability.
+		/// ----------------------------------------------
 		public bool UseAbility (AbilityType abilityId)
 		{
 			if (Health <= 0) {
@@ -177,6 +301,25 @@ namespace GameStateComponents
 			invincible = false;
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	ApplyAbilityEffects
+		/// 
+		/// DATE:		March 17th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
+		/// 				AbilityType abilityId: The ability to apply the effect of
+		/// 				Actor hitActor: The actor to use the ability on
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Applies the given ability to the given user.
+		/// ----------------------------------------------
 		public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
 		{
 			AbilityEffects.Apply [(int)abilityId] (this, hitActor);
@@ -186,13 +329,11 @@ namespace GameStateComponents
         {
 			int damage = 0;
 			if (!invincible) {
-				Console.WriteLine("oh no i'm not invincible");
                 double damageRatio = attacker.Attack / this.Defense;
                 damage = (int)(baseDamage * damageRatio);
                 this.Health -= damage;
                 this.LastDamageSourceActorId = attacker.ActorId;
             } else {
-				Console.WriteLine("i'm invincible!");
 			}
             return damage;
         }
@@ -252,8 +393,6 @@ namespace GameStateComponents
                     removeList.Add(eachDOT);
                 }
 
-                Console.Write("Demage{0} duration::{1}\n", eachDOT[0], eachDOT[1]);
-                Console.WriteLine();
             }
 
             //remove

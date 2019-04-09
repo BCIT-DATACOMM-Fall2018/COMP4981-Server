@@ -10,33 +10,24 @@ namespace GameStateComponents {
 
         public Player(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation) {
             Health = 1000;
-			Abilities = new AbilityType[] {
-				AbilityType.AutoAttack,
-				AbilityType.TestProjectile,
-				AbilityType.TestTargeted,
-				AbilityType.TestTargetedHoming,
-				AbilityType.TestAreaOfEffect,
-				AbilityType.Wall,
-				AbilityType.Banish,
-				AbilityType.BulletAbility,
-				AbilityType.PorkChop,
-				AbilityType.Dart,
-				AbilityType.Purification,
-                AbilityType.UwuImScared,
-                AbilityType.Fireball,
-                AbilityType.WeebOut,
-                AbilityType.Whale,
-				AbilityType.Blink,
-				AbilityType.PewPew,
-				AbilityType.Sploosh,
-				AbilityType.Gungnir,
-				AbilityType.Slash
-			};
+			Abilities = new AbilityType[5];
+			Abilities[0] = AbilityType.AutoAttack;
 			Cooldowns = new int[Abilities.Length];
             Experience = 0;
             Level = 1;
             Attack = 1;
             Defense = 1;
         }
+
+		public void AddAbility(int slot, AbilityType abilityId){
+			if(slot < 0 || slot > Abilities.Length){
+				return;
+			}
+			Abilities[slot] = abilityId;
+		}
+
+		public bool HasAbility(AbilityType abilityId){
+			return Array.IndexOf(Abilities, abilityId) != -1;
+		}
     }
 }

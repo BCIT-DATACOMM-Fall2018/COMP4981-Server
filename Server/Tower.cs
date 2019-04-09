@@ -7,7 +7,7 @@ namespace GameStateComponents
 {
     public class Tower : Actor
     {
-        private const int TOWER_RANGE = 50;
+        private const int TOWER_RANGE = 45;
 
 		public Tower(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation)
         {
@@ -45,7 +45,5 @@ namespace GameStateComponents
 			Console.WriteLine("Tower Attack");
 			state.GameState.OutgoingReliableElements.Enqueue(new TargetedAbilityElement(ActorId, NetworkLibrary.AbilityType.TowerAttack, targetActorId, state.GameState.MakeCollisionId()));
         }
-
-        
     }
 }

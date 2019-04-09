@@ -36,7 +36,12 @@ namespace Server
 			// Create a UDPSocket
 			UDPSocket socket = new UDPSocket (4);
 			// Bind the socket. Address must be in network byte order
-			socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
+			try{
+				socket.Bind ((ushort)System.Net.IPAddress.HostToNetworkOrder ((short)8000));
+			} catch (System.IO.IOException e) {
+				Console.WriteLine("Error binding port. Please retry.");
+				Environment.Exit(0);
+			}
 
 			// Create a ServerStateMessageBridge to use later
 
@@ -263,10 +268,14 @@ namespace Server
 				Player player = (Player)state.GameState.actors [i];
 				int newSkillId = AbilityEffects.ReturnRandomAbilityId (player);
 				state.GameState.OutgoingReliableElements.Enqueue (new AbilityAssignmentElement (i, newSkillId));
+				player.AddAbility(1, (AbilityType)newSkillId);
 			}
 
 			//spawn test tower at 100,100
-			state.GameState.AddTower (new GameUtility.Coordinate (150, 150));
+			state.GameState.AddTower (new GameUtility.Coordinate (355, 187));
+			state.GameState.AddTower (new GameUtility.Coordinate (356, 302));
+			state.GameState.AddTower (new GameUtility.Coordinate (150, 312));
+			state.GameState.AddTower (new GameUtility.Coordinate (152, 193));
 
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
 			StartGameStateTimer (socket, state);
@@ -382,8 +391,8 @@ namespace Server
 				}
 
 				var livesInfo = new List<RemainingLivesElement.LivesInfo> ();
-				livesInfo.Add (new RemainingLivesElement.LivesInfo (1, state.GameState.teamLives[1]));
-				livesInfo.Add (new RemainingLivesElement.LivesInfo (2, state.GameState.teamLives[2]));
+				livesInfo.Add (new RemainingLivesElement.LivesInfo (1, Math.Max(state.GameState.teamLives[1], 0)));
+				livesInfo.Add (new RemainingLivesElement.LivesInfo (2, Math.Max(state.GameState.teamLives[2], 0)));
 				unreliable.Add (new RemainingLivesElement (livesInfo));
 
 				var towerInfo = new List<TowerHealthElement.TowerInfo> ();
