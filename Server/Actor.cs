@@ -488,7 +488,6 @@ namespace GameStateComponents
             }
 
         }
-        //you should call this function if someone cast the DOT skill
 /*---------------------------------------------------------------------------------------
 --  FUNCTION:   PushToDemageOverTime
 --
