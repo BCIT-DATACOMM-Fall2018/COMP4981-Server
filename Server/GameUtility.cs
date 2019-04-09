@@ -97,7 +97,7 @@ namespace Server
 		}
 
 /*---------------------------------------------------------------------------------------
---  FUNCTION:   AngleBetweenCoordinates
+--  FUNCTION:   CoordsWithinDistance
 --
 --  DATE:       March 25, 2019
 --
