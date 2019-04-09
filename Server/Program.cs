@@ -43,7 +43,7 @@ namespace Server
 
 			// Create a ServerStateMessageBridge to use later
 
-			// Create Game State ? 
+			// Create Game State ?
 			while (true) {
 
 				state = new State ();
@@ -54,6 +54,26 @@ namespace Server
 		}
 
 
+		/*================================================================
+		Author : Segal Au
+
+		Date : April 9, 2019
+
+		Function: StartHeartBeat
+
+		Params :
+			UDPSocket socket
+				- Socket to send heart beat Packet
+			State state
+				- Game state and client manager
+
+		Purpose :
+			Starts timer to periodically send heart beat ping while in lobby state.
+			Notifies client and server that connection is still valid until
+			game start
+
+		=================================================================*/
+
 		private static void StartHeartBeat (UDPSocket socket, State state)
 		{
 			// Create Timer with a 1/30 second interval
@@ -62,9 +82,30 @@ namespace Server
 			// Set func on timer event (autoreset for continuous sending)
 			sendHeartBeatPing.Elapsed += (source, e) => SendHeartBeat (source, e, socket, state);
 			sendHeartBeatPing.AutoReset = true;
-			sendHeartBeatPing.Enabled = true; 
+			sendHeartBeatPing.Enabled = true;
 		}
 
+		/*================================================================
+		Author : Segal Au
+
+		Date : April 9, 2019
+
+		Function: SendHeartBeat
+
+		Params :
+			Object source
+				- object source
+			ElapsedEventArgs e
+				- event arguments
+			UDPSocket Socket
+				- Socket to send heart beat Packet
+			State state
+				- Game state and client manager
+
+		Purpose :
+			Sends heart beat packet function (triggered by timer).
+
+		=================================================================*/
 		private static void SendHeartBeat (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
 			List<UpdateElement> unreliable = new List<UpdateElement> ();
@@ -105,9 +146,29 @@ namespace Server
 
 		}
 
+
+		/*================================================================
+		Co-Author : Segal Au
+
+		Date : April 9, 2019
+
+		Function: Lobby State
+
+		Params :
+			UDPSocket Socket
+				- Socket to send heart beat Packet
+			State state
+				- Game state and client manager
+			ServerStateMessageBridge bridge
+				- Proccesses different packages
+
+		Purpose :
+			Lobby State (before all players connect)
+
+		=================================================================*/
 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
-			StartHeartBeat (socket, state);        
+			StartHeartBeat (socket, state);
 
 
 			while (state.TimesEndGameSent < 80) {
@@ -271,7 +332,7 @@ namespace Server
 			// Fire Timer.Elapsed event every 1/30th second (sending Game State at 30 fps)
 			StartGameStateTimer (socket, state);
 
-            
+
 			//Timer for keeping track of the game progress
 			state.GameState.StartGamePlayTimer ();
 
@@ -309,6 +370,24 @@ namespace Server
 
 		}
 
+		/*================================================================
+		Author : Segal Au
+
+		Date : April 9, 2019
+
+		Function: StartGameStateTimer
+
+		Params :
+
+			UDPSocket Socket
+				- Socket to send heart beat Packet
+			State state
+				- Game state and client manager
+
+		Purpose :
+			Starts timer to periodically send game state packets (30 frames per second)
+
+		=================================================================*/
 		private static void StartGameStateTimer (UDPSocket socket, State state)
 		{
 			// Create Timer with a 1/30 second interval
@@ -317,7 +396,7 @@ namespace Server
 			// Set func on timer event (autoreset for continuous sending)
 			sendGameStateTimer.Elapsed += (source, e) => SendGameState (source, e, socket, state);
 			sendGameStateTimer.AutoReset = true;
-			sendGameStateTimer.Enabled = true; 
+			sendGameStateTimer.Enabled = true;
 		}
 
 		//added for cleaning up gamestateTimer, also clean up the game state timer
