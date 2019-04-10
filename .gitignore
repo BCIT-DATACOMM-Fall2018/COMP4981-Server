@@ -28,6 +28,7 @@ tarballs/
 test-results/
 Thumbs.db
 
+
 #Mac bundle stuff
 *.dmg
 *.app
@@ -38,3 +39,7 @@ Thumbs.db
 
 #dotCover
 *.dotCover
+
+\.idea/\.idea\.game_server/\.idea/
+
+\.idea/\.idea\.game_server/

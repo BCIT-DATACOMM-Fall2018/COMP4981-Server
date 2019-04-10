@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{2026E72F-FE77-44BA-9F53-1A57CA93C15C}|Default">
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Server/Actor.cs">
+    <Files>
+      <File FileName="Server/Program.cs" Line="1" Column="1" />
+      <File FileName="Server/ClientManager.cs" Line="1" Column="1" />
+      <File FileName="Server/Actor.cs" Line="362" Column="3" />
+      <File FileName="Server/GameUtility.cs" Line="54" Column="20" />
+      <File FileName="Server/GameState.cs" Line="356" Column="29" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="game_server" expanded="True">
+            <Node name="Server" expanded="True">
+              <Node name="Actor.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
