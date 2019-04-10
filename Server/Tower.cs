@@ -21,7 +21,7 @@ namespace GameStateComponents
     ///
     /// DESIGNER: 	    Wayne Huang
     ///
-    /// PROGRAMMER:     Wayne Huang
+    /// PROGRAMMER:     Wayne Huang, Kieran Lee
     ///
     /// NOTES:		    Extends from the Actor class.
     /// -------------------------------------------------------------------------------------------
@@ -53,7 +53,25 @@ namespace GameStateComponents
 			}
         }
 
-        // Call for tower to attack
+        /// ----------------------------------------------
+        /// FUNCTION:		attack
+        /// 
+        /// DATE:			Feburaury 5, 2019
+        /// 
+        /// REVISIONS:		
+        /// 
+        /// DESIGNER: 	Kieran Lee
+        ///
+        /// PROGRAMMER: Kieran Lee
+        /// 
+        /// INTERFACE: 		private void attack(State state)
+        ///                 state: gets the game state so the tower can choose a target
+        /// 
+        /// RETURNS: 		void
+        /// 
+        /// NOTES:		  	tower finds closest target in range and attempts to use
+        ///                 it's attack ability
+        /// ----------------------------------------------
         private void attack(State state)
         {
             int targetActorId = state.GameState.getClosestEnemyActorInRange(ActorId, TOWER_RANGE);

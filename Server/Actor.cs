@@ -5,43 +5,6 @@ using NetworkLibrary;
 using System.Collections;
 namespace GameStateComponents
 {
-<<<<<<< HEAD
-	/// ----------------------------------------------
-	/// Abstract Class: Actor - An abstract actor class
-	/// 
-	/// PROGRAM: NetworkLibrary
-	///
-	/// CONSTRUCTORS:	public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
-	/// 
-	/// FUNCTIONS:	public virtual void Tick (State state)
-	/// 			private void Move ()
-	/// 			private void DecrementCooldowns ()
-	/// 			public bool UseAbility (AbilityType abilityId)
-	/// 			public void startInvincibilityTimer()
-	/// 			public void OnTimedEvent(Object source, ElapsedEventArgs e)
-	/// 			public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
-	/// 			public int TakeDamage(Actor attacker, int baseDamage)
-	/// 			public void BoostShieldPerTick() 
-	/// 			public void PushAndBoostShield(float shield, int duration)
-	/// 			public ArrayList MakePairShieldOverTime(float shield, int duration)
-	/// 			public void DemageOverTimePerTick()
-	/// 			public void PushToDemageOverTime(int demagePerTick, int duration, Actor attacker)
-	/// 			public ArrayList MakePairDemageOverTime(int demage, int duration, Actor attacker)
-	/// 
-	/// 
-	/// 
-	/// DATE: 		March 11th, 2019
-	///
-	/// REVISIONS: 
-	///
-	/// DESIGNER: 	Cameron Roberts
-	///
-	/// PROGRAMMER: Cameron Roberts
-	///
-	/// NOTES:	
-	/// ----------------------------------------------
-	public abstract class Actor
-=======
     /// -------------------------------------------------------------------------------------------
     /// Class:          Actor - An abstract class for actor game objects.
     /// 
@@ -58,18 +21,17 @@ namespace GameStateComponents
     ///                 public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
     ///                 public int TakeDamage(Actor attacker, int baseDamage)                
     ///
-    /// DATE: 		    April 8, 2019
+    /// DATE: 		    March 11, 2019
     ///
     /// REVISIONS: 
     ///
-    /// DESIGNER: 	    Wayne Huang
+    /// DESIGNER: 	    Wayne Huang, Cameron Roberts
     ///
-    /// PROGRAMMER:     Wayne Huang
+    /// PROGRAMMER:     Wayne Huang, Cameron Roberts
     ///
     /// NOTES:		    Abstract class for all actors.
     /// -------------------------------------------------------------------------------------------
     public abstract class Actor
->>>>>>> wayne_dev
 	{
         // Actor parameters
 		private static readonly GameUtility.Coordinate deadArea = new GameUtility.Coordinate(-10, -10);
@@ -139,7 +101,6 @@ namespace GameStateComponents
 
         public float Defense { get; set; }
 
-<<<<<<< HEAD
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Actor
 		/// 
@@ -155,9 +116,6 @@ namespace GameStateComponents
 		/// 
 		/// NOTES: 	
 		/// ----------------------------------------------
-=======
-        // Actor constructor
->>>>>>> wayne_dev
         public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
 		{
 			ActorId = actorId;
@@ -360,6 +318,26 @@ namespace GameStateComponents
 			AbilityEffects.Apply [(int)abilityId] (this, hitActor);
 		}
 
+        /// ----------------------------------------------
+		/// FUNCTION:	ApplyAbilityEffects
+		/// 
+		/// DATE:		March 25th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Wayne Huang
+		/// 
+		/// PROGRAMMER:	Wayne Huang
+		/// 
+		/// INTERFACE: 	public void TakeDamage (Actor attacker, int baseDamage)
+		/// 				Actor attacker: the actor who is dealing damage
+		/// 				int baseDamage: the amount of damage the ability does before modifiers
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		decreases the actor's health based on the base damage, 
+        ///             the attacker's attack stat, and the actor's defense stat
+		/// ----------------------------------------------
         public int TakeDamage(Actor attacker, int baseDamage)
         {
 			int damage = 0;

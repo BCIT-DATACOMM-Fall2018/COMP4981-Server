@@ -9,6 +9,39 @@ using GameStateComponents;
 
 namespace Server
 {
+    /// ----------------------------------------------
+    /// Class: 		ServerStateMessageBridge - provides implementations of functions for message elements to call
+    /// 
+    /// PROGRAM:	Server
+    ///
+    /// 
+    /// FUNCTIONS:	public ServerStateMessageBridge (State state)
+    ///             public void UpdateActorPosition(int actorId, float x, float z)
+    ///             public void UpdateActorHealth (int actorId, int newHealth)
+    ///             public void UpdateActorExperience(int actorId, int newExp)
+    ///             public void UpdateActorSpeed(int actorId, int newSpeed)
+    ///             public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
+    ///             public void UseAreaAbility(int actorId, AbilityType abilityId, float x, float z, int collisionId)
+    ///             public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+    ///             public void SpawnActor(ActorType actorType, int ActorId, int actorTeam, float x, float z)
+    ///             public void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ)
+    ///             public void SetReady(int clientId, bool ready, int team)
+    ///             public void StartGame (int playerNum)
+    ///             public void EndGame(int winningTeam)
+    ///             public void UpdateAbilityAssignment(int actorId, int abilityId)
+    ///             public void UpdateLifeCount (List<RemainingLivesElement.LivesInfo> livesInfo)
+    /// 
+    /// DATE: 		March 5, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	Kieran Lee, Cameron Roberts
+    ///
+    /// PROGRAMMER: Kieran Lee, Cameron Roberts
+    /// 
+    /// NOTES:		Implementation of the iStateMessageBridge in the c# networking library
+    ///				
+    /// ----------------------------------------------
 	public class ServerStateMessageBridge : IStateMessageBridge
 	{
         State state;
@@ -48,7 +81,6 @@ namespace Server
         {
 
         }
-
 
 		public void UseTargetedAbility(int actorId, AbilityType abilityId, int targetId, int collisionId)
         {

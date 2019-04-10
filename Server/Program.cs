@@ -10,6 +10,33 @@ using GameStateComponents;
 
 namespace Server
 {
+    /// ----------------------------------------------
+    /// Class: 		Main - Drives the program
+    /// 
+    /// PROGRAM:	Server
+    ///
+    /// 
+    /// FUNCTIONS:	public static void Main (string[] args)
+    ///             private static void StartHeartBeat (UDPSocket socket, State state)
+    ///             private static void SendHeartBeat (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+    ///             private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
+    ///             private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
+    ///             static void ProcessIncomingPacket (Object packetInfo)
+    ///             private static void StartGameStateTimer (UDPSocket socket, State state)
+    ///             private static void EndGameStateTimer ()
+    ///             private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+    /// 
+    /// DATE: 		Febuary 5, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	Kieran Lee, Cameron Roberts
+    ///
+    /// PROGRAMMER: Kieran Lee, Cameron Roberts, Wayne Huang, Segal Au, Allan Hsu
+    ///
+    /// NOTES:		Entry point and driver for the program	
+    ///				
+    /// ----------------------------------------------
 	class MainClass
 	{
 
@@ -25,7 +52,24 @@ namespace Server
 		private static State state;
 		private static Logger Log;
 
-		public static void Main (string[] args)
+        /// ----------------------------------------------
+        /// FUNCTION:		Main
+        /// 
+        /// DATE:			Feburaury 5, 2019
+        /// 
+        /// REVISIONS:		
+        /// 
+        /// DESIGNER: 	Kieran Lee, Cameron Roberts
+        ///
+        /// PROGRAMMER: Kieran Lee, Cameron Roberts, Wayne Huang, Segal Au, Allan Hsu
+        /// 
+        /// INTERFACE: 		public static void Main (string[] args)
+        /// 
+        /// RETURNS: 		void
+        /// 
+        /// NOTES:		  	entry point and drives the program
+        /// ----------------------------------------------
+        public static void Main (string[] args)
 		{
 			Logger Log = Logger.Instance;
 			Log.D ("Server started.");
@@ -147,26 +191,31 @@ namespace Server
 		}
 
 
-		/*================================================================
-		Co-Author : Segal Au
-
-		Date : April 9, 2019
-
-		Function: Lobby State
-
-		Params :
-			UDPSocket Socket
-				- Socket to send heart beat Packet
-			State state
-				- Game state and client manager
-			ServerStateMessageBridge bridge
-				- Proccesses different packages
-
-		Purpose :
-			Lobby State (before all players connect)
-
-		=================================================================*/
-		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
+      
+        /// ----------------------------------------------
+        /// FUNCTION:		LobbyState
+        /// 
+        /// DATE:			April 2 , 2019
+        /// 
+        /// REVISIONS:		
+        /// 
+        /// DESIGNER:  Cameron Roberts, Kieran Lee
+        ///
+        /// PROGRAMMER: Cameron Roberts, Kieran Lee, Segal Au
+        /// 
+        /// INTERFACE: 		private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
+        ///                 socket: socket to send and receive from
+        ///                 state:  gives access to client manager
+        ///                 ServerStateMessageBridge: allows packets to be processed properly
+        /// 
+        /// RETURNS: 		void
+        /// 
+        /// NOTES:		  	function that server remains in until lobyy is left and game is started.
+        ///                 Expect request packets and hearbeat packets, discard all else.
+        ///                 waits until all players are ready, then sends start game message.
+        ///                 does not move to game state until all clients have started sending game packets
+        /// ----------------------------------------------
+        private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
 			StartHeartBeat (socket, state);
 
@@ -306,7 +355,29 @@ namespace Server
 			}
 		}
 
-
+        /// ----------------------------------------------
+        /// FUNCTION:		GameState
+        /// 
+        /// DATE:			April 2 , 2019
+        /// 
+        /// REVISIONS:		
+        /// 
+        /// DESIGNER:  Cameron Roberts, Kieran Lee
+        ///
+        /// PROGRAMMER: Cameron Roberts, Kieran Lee
+        /// 
+        /// INTERFACE: 		private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
+        ///                 socket: socket to send and receive from
+        ///                 state:  gives access to client manager
+        ///                 ServerStateMessageBridge: allows packets to be processed properly
+        /// 
+        /// RETURNS: 		void
+        /// 
+        /// NOTES:		  	function that server remains while game is in progress
+        ///                 Expect gameplay packets, discard all else.
+        ///                 does initial game setup then
+        ///                 receives and processes packets
+        /// ----------------------------------------------
 		private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
 
@@ -356,6 +427,23 @@ namespace Server
 			}
 		}
 
+        /// ----------------------------------------------
+        /// FUNCTION:		Process Incoming packet
+        /// 
+        /// DATE:			March 5 , 2019
+        /// 
+        /// REVISIONS:		
+        /// 
+        /// DESIGNER:  Cameron Roberts,
+        ///
+        /// PROGRAMMER: Kieran Lee
+        /// 
+        /// INTERFACE: 		static void ProcessIncomingPacket (Object packetInfo)
+        /// 
+        /// RETURNS: 		void
+        /// 
+        /// NOTES:		  	
+        /// ----------------------------------------------
 		static void ProcessIncomingPacket (Object packetInfo)
 		{
 			UnpackedPacket up = (UnpackedPacket)packetInfo; //may not work if not serializable, will have to look into that
@@ -406,7 +494,30 @@ namespace Server
 			state.GameState.EndGamePlayTimer (); // used for cleaning up timer
 		}
 
-		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+        /// ----------------------------------------------
+        /// FUNCTION:		Send Game State
+        /// 
+        /// DATE:			March 12 , 2019
+        /// 
+        /// REVISIONS:		
+        /// 
+        /// DESIGNER:  Cameron Roberts, Kieran Lee
+        ///
+        /// PROGRAMMER: Kieran Lee
+        /// 
+        /// INTERFACE: 		private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
+        ///                 source: needed for execution on timer thread
+        ///                 e: needed for execution on timer thread
+        ///                 socket: socket for sending the game state on
+        ///                 state: to access the game state and client manager
+        /// 
+        /// RETURNS: 		void
+        /// 
+        /// NOTES:		  	Takes reliable elements from reliable element queue, 
+        ///                 generate unreliable elements from the game state
+        ///                 
+        /// ----------------------------------------------
+        private static void SendGameState (Object source, ElapsedEventArgs e, UDPSocket socket, State state)
 		{
 			try {
 				ClientManager cm = state.ClientManager;
