@@ -79,12 +79,9 @@ namespace GameStateComponents
 		public int CreatedActorsCount { get; private set; } = 0;
 
 		public int CreatedPlayersCount { get; private set; } = 0;
-<<<<<<< HEAD
-
+		private static Logger Log = Logger.Instance;
 		public List<Tower> Towers;
-
 		public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
-
 		public CollisionBuffer CollisionBuffer { get; private set; }
 
 		private int CollisionIdCounter;
@@ -96,40 +93,40 @@ namespace GameStateComponents
 		public int[] teamLives;
 
         // GameState constructor
-		public GameState ()
+		public GameState()
 		{
 			Towers = new List<Tower> ();
-			actors = new ConcurrentDictionary<int, Actor> ();
-			OutgoingReliableElements = new ConcurrentQueue<UpdateElement> ();
-			CollisionBuffer = new CollisionBuffer (this);
+			actors = new ConcurrentDictionary<int, Actor>();
+			OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
+			CollisionBuffer = new CollisionBuffer(this);
 			teamLives = new int[MAXTEAMS];
-			for (int i = 1; i < teamLives.Length; i++) {
-				teamLives [i] = 20;
+			for (int i = 0; i < teamLives.Length; i++) {
+				teamLives[i] = 5;
 			}
 			teamActors = new List<Actor>[MAXTEAMS];
 			for (int i = 0; i < teamActors.Length; i++) {
-				teamActors [i] = new List<Actor> ();
+				teamActors[i] = new List<Actor>();
 			}
+			Log.D("Game State created.");
 		}
 
 
 		//Used for keeping track of game play timer, if 20 mins is up then both team loses
-		public void StartGamePlayTimer ()
-		{
-			aTimer = new System.Timers.Timer (1000); //every second we update game time
+		public void StartGamePlayTimer() {
+			aTimer = new System.Timers.Timer(1000); //every second we update game time
 			// Hook up the Elapsed event for the timer. 
 			aTimer.Elapsed += OnTimedEvent;
 			aTimer.AutoReset = true; //We want timer to only run once
 			aTimer.Enabled = true;
 		}
 
-		public void EndGamePlayTimer ()
+		public void EndGamePlayTimer()
 		{
-			aTimer.Dispose ();
+			aTimer.Dispose();
 		}
 
 		//Added for updating Game time for the game state. This runs on different thread by the C# Timer
-		private static void OnTimedEvent (Object source, ElapsedEventArgs e)
+		private static void OnTimedEvent(Object source, ElapsedEventArgs e)
 		{
 			//We want to update the gameTime here 
 			currentTime++;
@@ -177,63 +174,6 @@ namespace GameStateComponents
 		{
 			for (int i = 1; i < MAXTEAMS; i++) {
 				bool eliminated = false;
-
-=======
-        private static Logger Log;
-        public ConcurrentQueue<UpdateElement> OutgoingReliableElements { get; private set; }
-        public CollisionBuffer CollisionBuffer { get; private set; }
-
-		private int CollisionIdCounter;
-		private const int COLLISION_ID_MAX = 255;
-        private const int KILL_PLAYER_EXP = 64;
-        private const int KILL_TOWER_EXP = 128;
-
-
-        private int[] teamLives;
-
-        public GameState()
-        {
-            Log = Logger.Instance;
-            actors = new ConcurrentDictionary<int, Actor>();
-            OutgoingReliableElements = new ConcurrentQueue<UpdateElement>();
-            CollisionBuffer = new CollisionBuffer(this);
-            teamLives = new int[MAXTEAMS];
-            for (int i = 0; i < teamLives.Length; i++) {
-                teamLives[i] = 5;
-            }
-            teamActors = new List<Actor>[MAXTEAMS];
-            for (int i = 0; i < teamActors.Length; i++) {
-                teamActors[i] = new List<Actor>();
-            }
-            Log.D("Game State created.");
-        }
-
-        //Used for keeping track of game play timer, if 20 mins is up then both team loses
-        public void StartGamePlayTimer() {
-            aTimer = new System.Timers.Timer(1000); //every second we update game time
-            // Hook up the Elapsed event for the timer. 
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true; //We want timer to only run once
-            aTimer.Enabled = true;
-        }
-
-        public void EndGamePlayTimer()
-        {
-            aTimer.Dispose();
-        }
-
-        //Added for updating Game time for the game state. This runs on different thread by the C# Timer
-        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            //We want to update the gameTime here 
-            currentTime++;
-
-        }
-
-        public bool CheckWinCondition(){
-			bool[] eliminated = new bool[MAXTEAMS];
-			for (int i = 0; i < MAXTEAMS; i++) {
->>>>>>> allanHsu
 				bool allDead = true;
 				foreach (var actor in teamActors[i]) {
 					allDead &= actor.Health == 0 && !actor.RespawnAllowed;
@@ -251,14 +191,8 @@ namespace GameStateComponents
 			return 0;
 		}
 
-<<<<<<< HEAD
-		public int MakeCollisionId ()
-		{
-			Console.WriteLine ("New ability with collision id {0}", CollisionIdCounter + 1);
-=======
 		public int MakeCollisionId(){
 			Log.V("New ability with collision id " + (CollisionIdCounter + 1));
->>>>>>> allanHsu
 			return CollisionIdCounter++ % COLLISION_ID_MAX;
 		}
 
@@ -299,20 +233,6 @@ namespace GameStateComponents
 			return (ActorType)GameUtility.RandomNum (5, 10);
 		}
 
-<<<<<<< HEAD
-=======
-		public int AddCreep(int team)
-        {
-            int actorId = CreatedActorsCount++;
-			Creep newCreep = new Creep(actorId, team, new GameUtility.Coordinate(310, 90));
-			if (!actors.TryAdd (actorId, newCreep)) {
-				//TODO Handle failure
-			}
-			Log.V("Adding creep actor with id " + actorId);
-            //SpawnQueue.Enqueue(new SpawnElement(ActorType.AlliedPlayer, actorId, 0, 0));
-            return actorId;
-        }
->>>>>>> allanHsu
 
 		public int AddTower (GameUtility.Coordinate spawnLoc)
 		{
@@ -322,18 +242,10 @@ namespace GameStateComponents
 			if (!actors.TryAdd (actorId, newTower)) {
 				//TODO Handle failure
 			}
-<<<<<<< HEAD
-			Towers.Add (newTower);
-			Console.WriteLine ("Adding tower actor with id {0}", actorId);
-			OutgoingReliableElements.Enqueue (new SpawnElement (ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
-			return actorId;
-		}
-=======
             Log.V("Adding tower actor with id " + actorId);
             OutgoingReliableElements.Enqueue(new SpawnElement(ActorType.TowerA, actorId, team, newTower.SpawnLocation.x, newTower.SpawnLocation.z));
             return actorId;
         }
->>>>>>> allanHsu
 
 		public void UpdateHealth (int actorId, int health)
 		{
@@ -403,24 +315,16 @@ namespace GameStateComponents
 		{
 			for (int i = 0; i < CreatedActorsCount; i++) {
 
-<<<<<<< HEAD
 				try {
 					actors [i].Tick (state);
 
 					if (actors [i].HasDied ()) {
-						Console.WriteLine ("Actor {0} has died", actors [i].ActorId);
+						Log.V("Actor " + actors[i].ActorId + " has died");
 						if (teamLives [actors [i].Team]-- > 0) {
-							Console.WriteLine ("Team {0} lives remaining {1}", actors [i].Team, teamLives [actors [i].Team]);
+							Log.V("Team " + actors[i].Team + " lives remaining " + teamLives[actors[i].Team]);
 
 							actors [i].RespawnAllowed = true;
 						}
-=======
-				if (actors [i].HasDied ()) {
-					Log.V("Actor " + actors[i].ActorId + " has died", );
-					if (teamLives [actors [i].Team]-- > 0) {
-                        Log.V("Team " + actors[i].Team + " lives remaining " + teamLives[actors[i].Team]);
-						actors [i].RespawnAllowed = true;
->>>>>>> allanHsu
 					}
 				} catch (KeyNotFoundException e) {
 

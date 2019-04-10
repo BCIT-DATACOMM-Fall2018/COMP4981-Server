@@ -58,7 +58,7 @@ namespace Server
 		private static ElementId[] lobbyUnpackingArr = new ElementId[]{ ElementId.ReadyElement };
 		private static ElementId[] unpackingArr = new ElementId[]{ ElementId.PositionElement };
 		private static State state;
-		private static Logger Log;
+		private static Logger Log = Logger.Instance;
 
         /// ----------------------------------------------
         /// FUNCTION:		Main
@@ -79,7 +79,6 @@ namespace Server
         /// ----------------------------------------------
         public static void Main (string[] args)
 		{
-			Logger Log = Logger.Instance;
 			Log.D ("Server started.");
 
 			// Create a list of elements to send. Using the same list for unreliable and reliable

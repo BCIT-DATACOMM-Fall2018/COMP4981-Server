@@ -41,7 +41,7 @@ namespace GameStateComponents
 		// Used to make sure an Actor can only use 1 ability at a time to
 		// prevent race condition with cooldown being set.
 		private readonly object abilityLock = new object ();
-        private static Logger Log;
+		private static Logger Log = Logger.Instance;
 
         private ArrayList demageOverTimeList = new ArrayList();
         private ArrayList shieldOverTimeList = new ArrayList();

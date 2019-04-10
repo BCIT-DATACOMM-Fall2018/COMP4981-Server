@@ -48,7 +48,7 @@ namespace Server
         GameState gamestate;
         ClientManager clientmanager;
 		readonly CollisionBuffer collisionBuffer;
-        private static Logger Log;
+		private static Logger Log = Logger.Instance;
 
         public ServerStateMessageBridge (State state)
 		{

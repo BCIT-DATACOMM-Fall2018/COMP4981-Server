@@ -37,7 +37,7 @@ namespace Server
         public int validity { get; set; }
         public int timeToLive { get; set; }
 		public int collisionId { get; }
-        private static Logger Log;
+		private static Logger Log = Logger.Instance;
 
         public bool isSignalSent;
 
@@ -165,7 +165,7 @@ namespace Server
 		private readonly object padlock = new object();
 		private CollisionItem[] buffer;
 		private GameState gameState;
-        private static Logger Log;
+		private static Logger Log = Logger.Instance;
 
         private int currentBufferSize;
         private int tailPtr;
