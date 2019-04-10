@@ -3,6 +3,30 @@ using GameStateComponents;
 
 namespace Server
 {
+    /// ----------------------------------------------
+    /// Class: 		GameUtility - Class for misc math functions
+    /// 
+    /// PROGRAM:	Server
+    ///
+    /// 
+    /// FUNCTIONS:	public static int RandomNum(int minValue, int maxValue)
+    ///             public static Coordinate FindNewCoordinate(Coordinate c1, Coordinate c2, float distance)
+    ///             public static float AngleBetweenCoordinates(Coordinate c1, Coordinate c2)
+    ///             public static bool CoordsWithinDistance(Coordinate c1, Coordinate c2, float distance)
+    ///             public static int currentLevel(int exp)
+    ///             public static float getDistance(Coordinate c1, Coordinate c2)
+    /// 
+    /// DATE: 		March 25, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	Ziqian Zhang, Kieran Lee
+    ///
+    /// PROGRAMMER: Ziqian Zhang, Kieran Lee
+    ///
+    /// NOTES:			
+    ///				
+    /// ----------------------------------------------		
     public static class GameUtility
     {
 
