@@ -1,3 +1,11 @@
+/*---------------------------------------------------------------------------------------
+--	SOURCE FILE:		GameState.cs - Game state of the game
+--
+--	PROGRAM:		    program
+--
+--  Mar 28, 2019	added logger, total game timer, both team loses logic, timer cleanup
+--
+---------------------------------------------------------------------------------------*/
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;

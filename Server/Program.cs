@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*---------------------------------------------------------------------------------------
+--	SOURCE FILE:		Program.cs - server of the game
+--
+--	PROGRAM:		    program
+--  Allan Hsu
+--	Mar 28, 2019 added Logger to server, cleanup for timer
+--	Apr 03, 2019 changed console.log to logging, removed unimportant logging		
+---------------------------------------------------------------------------------------*/
+using System;
 using System.Timers;
 using NetworkLibrary;
 using NetworkLibrary.CWrapper;
