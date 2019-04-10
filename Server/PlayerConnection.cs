@@ -5,7 +5,28 @@ using NetworkLibrary.MessageElements;
 
 
 namespace GameStateComponents {
+    /// -------------------------------------------------------------------------------------------
+    /// Class:          PlayerConnection - A class to track player connection parameters.
+    /// 
+    /// PROGRAM:        Server
+    ///
+    ///	CONSTRUCTORS:	public PlayerConnection(int clientId, Destination destination, ReliableUDPConnection connection, string name)
+    /// 
+    /// FUNCTIONS:	    public void MarkPacketReceive()
+    ///                 public bool Disconnected()
+    ///
+    /// DATE: 		    April 8, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	    Wayne Huang
+    ///
+    /// PROGRAMMER:     Wayne Huang
+    ///
+    /// NOTES:		    Holds all the connection parameters for one client/player.
+    /// -------------------------------------------------------------------------------------------
     public class PlayerConnection {
+        // PlayerConnection attributes
 		public int ClientId { get; private set;}
 		public int ActorId { get; set;}
 		public Destination Destination { get; private set;}
@@ -16,6 +37,7 @@ namespace GameStateComponents {
 		public string Name { get; set; }
 		private int timeSinceLastPacket;
 
+        // PlayerConnection constructor
 		public PlayerConnection(int clientId, Destination destination, ReliableUDPConnection connection, string name) {
 			this.ClientId = clientId;
 			this.Destination = destination;
@@ -23,11 +45,11 @@ namespace GameStateComponents {
 			this.Name = name;
         }
 
-		public void MarkPacketReceive(){
+		public void MarkPacketReceive() {
 			timeSinceLastPacket = 0;
 		}
 
-		public bool Disconnected(){
+		public bool Disconnected() {
 			return timeSinceLastPacket++ > 120;
 		}
     }

@@ -5,10 +5,32 @@ using NetworkLibrary;
 
 namespace GameStateComponents
 {
+    /// -------------------------------------------------------------------------------------------
+    /// Class:          Tower - A class to create tower objects.
+    /// 
+    /// PROGRAM:        Server
+    ///
+    ///	CONSTRUCTORS:	public Tower(int actorId, int team, GameUtility.Coordinate spawnLocation) 
+    /// 
+    /// FUNCTIONS:	    public override void Tick(State state)
+    ///                 private void attack(State state)
+    ///
+    /// DATE: 		    April 8, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	    Wayne Huang
+    ///
+    /// PROGRAMMER:     Wayne Huang
+    ///
+    /// NOTES:		    Extends from the Actor class.
+    /// -------------------------------------------------------------------------------------------
     public class Tower : Actor
     {
+        // Tower attributes
         private const int TOWER_RANGE = 50;
 
+        // Tower constructor
 		public Tower(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation)
         {
             Health = 1000;
@@ -22,6 +44,7 @@ namespace GameStateComponents
 			Stationary = true;
         }
 
+        // Call every game server tick
         public override void Tick(State state)
         {
 				base.Tick(state);
@@ -30,6 +53,7 @@ namespace GameStateComponents
 			}
         }
 
+        // Call for tower to attack
         private void attack(State state)
         {
             int targetActorId = state.GameState.getClosestEnemyActorInRange(ActorId, TOWER_RANGE);
