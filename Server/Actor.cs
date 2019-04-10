@@ -5,6 +5,7 @@ using NetworkLibrary;
 using System.Collections;
 namespace GameStateComponents
 {
+<<<<<<< HEAD
 	/// ----------------------------------------------
 	/// Abstract Class: Actor - An abstract actor class
 	/// 
@@ -40,7 +41,37 @@ namespace GameStateComponents
 	/// NOTES:	
 	/// ----------------------------------------------
 	public abstract class Actor
+=======
+    /// -------------------------------------------------------------------------------------------
+    /// Class:          Actor - An abstract class for actor game objects.
+    /// 
+    /// PROGRAM:        Server
+    ///
+    ///	CONSTRUCTORS:	public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
+    /// 
+    /// FUNCTIONS:	    public virtual void Tick (State state)
+    ///                 private void Move ()
+    ///                 private void DecrementCooldowns ()
+    ///                 public bool UseAbility (AbilityType abilityId)
+    ///                 public void startInvincibilityTimer()
+    ///                 public void OnTimedEvent(Object source, ElapsedEventArgs e)
+    ///                 public void ApplyAbilityEffects (AbilityType abilityId, Actor hitActor)
+    ///                 public int TakeDamage(Actor attacker, int baseDamage)                
+    ///
+    /// DATE: 		    April 8, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	    Wayne Huang
+    ///
+    /// PROGRAMMER:     Wayne Huang
+    ///
+    /// NOTES:		    Abstract class for all actors.
+    /// -------------------------------------------------------------------------------------------
+    public abstract class Actor
+>>>>>>> wayne_dev
 	{
+        // Actor parameters
 		private static readonly GameUtility.Coordinate deadArea = new GameUtility.Coordinate(-10, -10);
 
 		private const int MAX_HEALTH = 1000;
@@ -108,6 +139,7 @@ namespace GameStateComponents
 
         public float Defense { get; set; }
 
+<<<<<<< HEAD
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Actor
 		/// 
@@ -123,6 +155,9 @@ namespace GameStateComponents
 		/// 
 		/// NOTES: 	
 		/// ----------------------------------------------
+=======
+        // Actor constructor
+>>>>>>> wayne_dev
         public Actor (int actorId, int team, GameUtility.Coordinate spawnLocation)
 		{
 			ActorId = actorId;

@@ -8,8 +8,54 @@ using System.Timers;
 
 namespace GameStateComponents
 {
-	public class GameState
+    /// -------------------------------------------------------------------------------------------
+    /// Class:          GameState - Tracks all gamestate parameters and alters gamestate.
+    /// 
+    /// PROGRAM:        Server
+    ///
+    ///	CONSTRUCTORS:	public GameState ()
+    /// 
+    /// FUNCTIONS:	    public void StartGamePlayTimer ()
+    ///                 public void EndGamePlayTimer ()
+    ///                 private static void OnTimedEvent (Object source, ElapsedEventArgs e)
+    ///                 public bool CheckWinCondition ()
+    ///                 public int CheckWinningTeam ()
+    ///                 public int MakeCollisionId ()
+    ///                 public int AddPlayer (int team)
+    ///                 private ActorType RandomHuman ()
+    ///                 private ActorType RandomOrc ()
+    ///                 public int AddCreep (int team)
+    ///                 public int AddTower(GameUtility.Coordinate spawnLoc)
+    ///                 public void UpdateHealth(int actorId, int health)
+    ///                 public void UpdatePosition(int actorId, float x, float z)
+    ///                 public void UpdatePosition(int actorId, GameUtility.Coordinate position)
+    ///                 public void UpdateTargetPosition(int actorId, float x, float z)
+    ///                 public int GetHealth(int actorId)
+    ///                 public GameUtility.Coordinate GetPosition(int actorId)
+    ///                 public GameUtility.Coordinate GetTargetPosition(int actorId)
+    ///                 public void TickAllActors(State state)
+    ///                 public bool ValidateTargetedAbilityUse(int useActorId, AbilityType abilityId, int targetActorId)
+    ///                 public bool ValidateAreaAbilityUse(int useActorId, AbilityType abilityId, float x, float z)
+    ///                 public void TriggerAbility(AbilityType abilityType, int actorHitId, int actorCastId)
+    ///                 public void addEXP(Player killerPlayer, bool isKillPlayer)
+    ///                 public void addExp(Player player, int exp)
+    ///                 public int getClosestEnemyActorInRange(int actorId, int distance)
+    ///                 public void TriggerAbility(AbilityType abilityType, int actorCastId, float x, float z)
+    ///
+    /// DATE: 		    April 8, 2019
+    ///
+    /// REVISIONS: 
+    ///
+    /// DESIGNER: 	    Wayne Huang
+    ///
+    /// PROGRAMMER:     Wayne Huang
+    ///
+    /// NOTES:		    Manages only parameters regarding the game state and methods to update
+    ///                 the gamestate given events and new client data each tick. 
+    /// -------------------------------------------------------------------------------------------
+    public class GameState
 	{
+        // GameState attributes
 		private const int MAXTEAMS = 8;
 		private const int GAMEPLAY_TIME = 1200000;
 		//This means 20 mins for a game
@@ -40,6 +86,7 @@ namespace GameStateComponents
 
 		public int[] teamLives;
 
+        // GameState constructor
 		public GameState ()
 		{
 			Towers = new List<Tower> ();

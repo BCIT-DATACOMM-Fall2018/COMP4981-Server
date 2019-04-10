@@ -3,11 +3,32 @@ using NetworkLibrary;
 using Server;
 
 namespace GameStateComponents {
+    /// -------------------------------------------------------------------------------------------
+	/// Class:          Player - A class to track player parameters.
+	/// 
+	/// PROGRAM:        Server
+	///
+	///	CONSTRUCTORS:	public Player(int actorId, int team, GameUtility.Coordinate spawnLocation)
+	/// 
+	/// FUNCTIONS:	    None
+	///
+	/// DATE: 		    April 8, 2019
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	    Wayne Huang
+	///
+	/// PROGRAMMER:     Wayne Huang
+	///
+	/// NOTES:		    Extends from the Actor class.
+	/// -------------------------------------------------------------------------------------------
     public class Player : Actor {
+        // Player attributes
         public int Experience { get; set; }
         public int Level { get; set; }
         public float Speed { get; set; } = 0.82f;
 
+        // Player constructor
         public Player(int actorId, int team, GameUtility.Coordinate spawnLocation) : base(actorId, team, spawnLocation) {
             Health = 1000;
 			Abilities = new AbilityType[5];
