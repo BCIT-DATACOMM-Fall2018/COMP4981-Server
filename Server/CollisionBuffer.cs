@@ -6,6 +6,27 @@ using GameStateComponents;
 
 namespace Server
 {
+	/// ----------------------------------------------
+	/// Class: 		CollisionItem - A Class that models a collision element in the CollisionBuffer.
+	/// 
+	/// PROGRAM:	Server
+	///
+	/// 
+	/// FUNCTIONS:	public CollisionItem (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+	/// 			public override bool Equals (object obj)
+	///				public override int GetHashCode ()
+	/// 
+	/// DATE: 		March 11, 2019
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Daniel Shin
+	///
+	/// PROGRAMMER: Daniel Shin, Cameron Roberts
+	///
+	/// NOTES:			
+	///				This class is responsible for holding the relavent data for a collision.
+	/// ----------------------------------------------		
     public class CollisionItem
     {
         private const int maxTimeToLive = 20;
@@ -19,6 +40,23 @@ namespace Server
 
         public bool isSignalSent;
 
+		/// ----------------------------------------------
+		/// FUNCTION:		CollisionItem
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public CollisionItem (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+		/// 
+		/// RETURNS: 		void
+		/// 
+		/// NOTES:		  	CollisionItem constructor.
+		/// ----------------------------------------------
 		public CollisionItem(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
         {
             this.abilityId = abilityId;
@@ -30,6 +68,23 @@ namespace Server
 			this.collisionId = collisionId;
         }
 
+		/// ----------------------------------------------
+		/// FUNCTION:		Equals
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public override bool Equals (object obj)
+		/// 
+		/// RETURNS: 		bool; returns true if two CollisionItem is the same, false otherwise.
+		/// 
+		/// NOTES:		  	A overridden Equals method for CollisionItem.
+		/// ----------------------------------------------
 		public override bool Equals (object obj)
     	{
     		if (obj == null)
@@ -44,17 +99,63 @@ namespace Server
 			return abilityId == other.abilityId && actorHitId == other.actorHitId && actorCastId == other.actorCastId && collisionId == other.collisionId;
     	}
 
-
+		/// ----------------------------------------------
+		/// FUNCTION:		GetHashCode
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public override int GetHashCode ()
+		/// 
+		/// RETURNS: 		int; returns the computed hash code for the CollisionItem.
+		/// 
+		/// NOTES:		  	A overridden GetHashCode method for CollisionItem.
+		///					Hashcode is computed XORing the hashcode of:
+		///						abilityId - ability that was casted to cause the collision
+		///						actorHitId - the actor that was hit
+		///						actorCastId - the actor that casted the ability
+		/// ----------------------------------------------
     	public override int GetHashCode ()
     	{
     		unchecked {
     			return abilityId.GetHashCode () ^ actorHitId.GetHashCode () ^ actorCastId.GetHashCode ();
     		}
     	}
-
     }
 
 
+	/// ----------------------------------------------
+	/// Class: 		CollisionBuffer - A Circular buffer to hold the CollisionItem to be processed.
+	/// 
+	/// PROGRAM:	Server
+	/// 
+	/// FUNCTIONS:	public CollisionBuffer (GameState gameState)
+	/// 			public void Insert (CollisionItem toAdd)
+	///				private CollisionItem ContainsBufferItem (CollisionItem toAdd)
+	///				public void DecrementTTL ()
+	///				private void SignalCollision(CollisionItem toSignal)
+	///				public CollisionItem Remove ()
+	///				private bool IsEmpty ()
+	///				private bool IsFull ()
+	/// 
+	/// DATE: 		March 11, 2019
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Daniel Shin, Cameron Roberts
+	///
+	/// PROGRAMMER: Daniel Shin, Cameron Roberts
+	///
+	/// NOTES:			
+	///				This class is responsible for holding the CollisionItems in a circular buffer.
+	///				The circular buffer can hold 1024 CollisionItems and is implemented using an 
+	///				array with two pointers: head and tail to keep track of the first and last CollisionItems.
+	/// ----------------------------------------------
     public class CollisionBuffer
     {
         private const int MaxBufferSize = 1024;
@@ -68,11 +169,46 @@ namespace Server
         private int tailPtr;
         private int headPtr;
 
+		/// ----------------------------------------------
+		/// FUNCTION:		CollisionBuffer
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public CollisionBuffer (GameState gameState)
+		/// 
+		/// RETURNS: 		void
+		/// 
+		/// NOTES:		  	CollisionBuffer constructor.
+		/// ----------------------------------------------
 		public CollisionBuffer(GameState gameState) {
 			this.gameState = gameState;
 			buffer = new CollisionItem[MaxBufferSize];
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:		Insert
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin, Cameron Roberts
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public void Insert (CollisionItem toAdd)
+		/// 
+		/// RETURNS: 		void
+		/// 
+		/// NOTES:		  	The function inserts a CollisionItem to the circular buffer if the 
+		///					item does not already exist in the buffer and the buffer is not full.
+		/// ----------------------------------------------
         public void Insert(CollisionItem toAdd)
         {
 			lock (padlock) {
@@ -104,6 +240,25 @@ namespace Server
 			}
         }
 
+		/// ----------------------------------------------
+		/// FUNCTION:		ContainsBufferItem
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		private CollisionItem ContainsBufferItem (CollisionItem toAdd) 
+		/// 
+		/// RETURNS: 		CollisionItem; returns the CollisionItem in the buffer we are looking for,
+		///					null if it does not exist.
+		/// 
+		/// NOTES:		  	The function searches for a CollisionItem in the buffer and returns it if it exists
+		///					and returns null if it does not.
+		/// ----------------------------------------------
         private CollisionItem ContainsBufferItem(CollisionItem toAdd)
         {
 			for (int i = tailPtr; i % MaxBufferSize != headPtr % MaxBufferSize; i++)
@@ -115,7 +270,25 @@ namespace Server
             return null;
         }
 
-        //TODO: called by frame tick
+        /// ----------------------------------------------
+		/// FUNCTION:		DecrementTTL
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public void DecrementTTL ()
+		/// 
+		/// RETURNS: 		void
+		/// 
+		/// NOTES:		  	The function decreaments the time to live of all the
+		///					CollisionItem every frame tick, and discards them if the TTL
+		///					is 0.
+		/// ----------------------------------------------
         public void DecrementTTL()
         {
 			for (int i = tailPtr; i % MaxBufferSize != headPtr % MaxBufferSize; i++)
@@ -134,6 +307,24 @@ namespace Server
 			gameState.TriggerAbility (toSignal.abilityId, toSignal.actorHitId, toSignal.actorCastId);
         }
 
+		/// ----------------------------------------------
+		/// FUNCTION:		Remove
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		public CollisionItem Remove () 
+		/// 
+		/// RETURNS: 		CollisionItem; returns the oldest CollisionItem just removed from the buffer.
+		/// 
+		/// NOTES:		  	The function removes the oldest CollisionItem just removed from the buffer,
+		///					if the buffer is not already empty.
+		/// ----------------------------------------------
         public CollisionItem Remove()
         {
 			lock (padlock) {
@@ -153,11 +344,45 @@ namespace Server
 			}
         }
 
+		/// ----------------------------------------------
+		/// FUNCTION:		IsEmpty
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		private bool IsEmpty () 
+		/// 
+		/// RETURNS: 		bool; returns true if the buffer has a size of 0, false otherwise.
+		/// 
+		/// NOTES:		  	The function simply checks if the buffer is empty.
+		/// ----------------------------------------------
         private bool IsEmpty()
         {
             return currentBufferSize == 0;
         }
 
+		/// ----------------------------------------------
+		/// FUNCTION:		IsFull
+		/// 
+		/// DATE:			March 11, 2019
+		/// 
+		/// REVISIONS:		(none)
+		/// 
+		/// DESIGNER:	 	Daniel Shin
+		/// 
+		/// PROGRAMMER:		Daniel Shin, Cameron Roberts
+		/// 
+		/// INTERFACE: 		private bool IsFull () 
+		/// 
+		/// RETURNS: 		bool; returns true if the buffer is full, false otherwise.
+		/// 
+		/// NOTES:		  	The function simply checks if the buffer is full.
+		/// ----------------------------------------------
         private bool IsFull()
         {
             return currentBufferSize == MaxBufferSize;

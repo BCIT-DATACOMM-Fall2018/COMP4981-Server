@@ -4,11 +4,42 @@ using GameStateComponents;
 
 namespace Server
 {
+	/// ----------------------------------------------
+	/// Class: 			AbilityEffects - Class that contains functionalities to use 
+	///														and receive new abilities based on player level. 
+	/// 
+	/// PROGRAM:		Server
+	///
+	/// 
+	/// FUNCTIONS:	public GameEndElement (int actorId, int health)
+	/// 						public GameEndElement (BitStream bitstream)
+	///							public override ElementIndicatorElement GetIndicator ()
+	///							protected override void Serialize (BitStream bitStream)
+	/// 						protected override void Deserialize (BitStream bitstream)
+	/// 						public override void UpdateState (IStateMessageBridge bridge)
+	/// 						protected override void Validate ()
+	/// 
+	/// DATE: 			March 31, 2019
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Daniel Shin
+	///
+	/// PROGRAMMER: Daniel Shin, Kieran Lee, Cameron Roberts
+	///
+	/// NOTES:			
+	///							This class is responsible for holding all the ability function pointers,
+	///							initializing all the available player abilities, and randomly assigning the
+	///							abilities when a player levels up.
+	///							Level 1:       an ability from basic abilities
+	///							Level 2 and 3: an ability from normal abilities
+	///							Level 4:       an ability from ultimate abilities
+	/// ----------------------------------------------		
 	public static class AbilityEffects
 	{		
 		public delegate void Ability(Actor useActor, Actor hitActor);
 		
-        private const int TOWER_DAMAGE = 100;
+		private const int TOWER_DAMAGE = 100;
 
 		private const int DEBUG_ABILITIES_START = 0;
 		private const int DEBUG_ABILITIES_NUMBER = 4;
@@ -90,7 +121,27 @@ namespace Server
         };
 
 
-		
+		/// ----------------------------------------------
+		/// FUNCTION:		ReturnRandomAbilityId
+		/// 
+		/// DATE:				March 31, 2019
+		/// 
+		/// REVISIONS:	(none)
+		/// 
+		/// DESIGNER:	  Daniel Shin
+		/// 
+		/// PROGRAMMER:	Daniel Shin, Kieran Lee, Cameron Roberts
+		/// 
+		/// INTERFACE: 	public static int ReturnRandomAbilityId(Player player)
+		/// 
+		/// RETURNS: 		int; the index of the ability in the abilities list.
+		/// 
+		/// NOTES:		  This function returns a random index of the ability based on
+		///							player level.
+		///							Level 1:       an ability from basic abilities
+		///							Level 2 and 3: an ability from normal abilities
+		///							Level 4:       an ability from ultimate abilities
+		/// ----------------------------------------------
 		public static int ReturnRandomAbilityId(Player player)
 		{
 			switch (player.Level)
