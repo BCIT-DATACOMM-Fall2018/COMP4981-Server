@@ -41,6 +41,7 @@ namespace GameStateComponents
 		// Used to make sure an Actor can only use 1 ability at a time to
 		// prevent race condition with cooldown being set.
 		private readonly object abilityLock = new object ();
+        private static Logger Log;
 
         private ArrayList demageOverTimeList = new ArrayList();
         private ArrayList shieldOverTimeList = new ArrayList();
@@ -271,7 +272,6 @@ namespace GameStateComponents
 
 				// Check that the ability isn't on cooldown
 				if (Cooldowns [abilityIndex] > 0) {
-					//Console.WriteLine ("Attempted to use ability that is on cooldown");
 					return false;
 				}
 
@@ -346,8 +346,7 @@ namespace GameStateComponents
                 damage = (int)(baseDamage * damageRatio);
                 this.Health -= damage;
                 this.LastDamageSourceActorId = attacker.ActorId;
-            } else {
-			}
+            }
             return damage;
         }
 

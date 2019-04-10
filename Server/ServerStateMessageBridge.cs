@@ -48,8 +48,9 @@ namespace Server
         GameState gamestate;
         ClientManager clientmanager;
 		readonly CollisionBuffer collisionBuffer;
+        private static Logger Log;
 
-		public ServerStateMessageBridge (State state)
+        public ServerStateMessageBridge (State state)
 		{
             this.state = state;
             gamestate = state.GameState;
@@ -90,15 +91,16 @@ namespace Server
 
 				// Check if the ability is instantly applied and apply it if it is
 				if (!AbilityInfo.InfoArray [(int)abilityId].RequiresCollision) {
-					Console.WriteLine ("Instantly activating ability effects {0} used by {1} on {2}", abilityId, actorId, targetId);
-					gamestate.TriggerAbility (abilityId, targetId, actorId);
+                    Log.V("Instantly activating ability effects " + abilityId + " used by " + actorId + " on " + targetId);
+
+                    gamestate.TriggerAbility (abilityId, targetId, actorId);
 				}
 
 
 				// Queue the ability use to be sent to all clients
 				gamestate.OutgoingReliableElements.Enqueue (new TargetedAbilityElement (actorId, abilityId, targetId, gamestate.MakeCollisionId ()));
 			} else {
-				Console.WriteLine ("Invalid ability use {0} by {1} on {2}", abilityId, actorId, targetId);
+                Log.V("Invalid ability use "+ abilityId + " by " + actorId + " on " + targetId);
 			}
         }
 
@@ -113,13 +115,13 @@ namespace Server
 				// Queue the ability use to be sent to all clients
 				gamestate.OutgoingReliableElements.Enqueue (new AreaAbilityElement (actorId, abilityId, x, z, gamestate.MakeCollisionId ()));
 			} else {
-				Console.WriteLine ("Invalid ability use {0} by {1} on location {2},{3}", abilityId, actorId, x, z);
+                Log.V("Invalid ability use " + abilityId + " by " + actorId + " on location " + x + " " + z);
 			}
         }
 
 		public void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
         {
-			Console.WriteLine ("Received Collision {0}, {1}, {2}", abilityId, actorHitId, actorCastId);
+            Log.V("Received Collision " + abilityId + ", " + actorHitId + ", " + actorCastId);
 			collisionBuffer.Insert(new CollisionItem(abilityId, actorHitId, actorCastId, collisionId));
         }
 
@@ -140,8 +142,7 @@ namespace Server
             if (team != 0)
                 state.ClientManager.Connections [clientId].Ready = ready;
 
-
-			Console.WriteLine ("Set ready status of {0} to {1} on team {2}", clientId, ready, team);
+			Log.V("Set ready status of " + clientId + " to " + ready + " on team " + team);
 		}
 
 		public void StartGame (int playerNum){

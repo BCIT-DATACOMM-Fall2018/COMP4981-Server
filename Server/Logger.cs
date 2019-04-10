@@ -1,6 +1,34 @@
-﻿/*
- * Mar 28 changes to Logging errors
- */
+﻿/*---------------------------------------------------------------------------------------
+--	SOURCE FILE:		Logger.cs - Logger for logging server important messages into a file.
+--
+--	PROGRAM:		    program
+--
+--	FUNCTIONS:		    
+--      public void V(string vString)                   : verbose logging
+--      public void D(string dString)                   : debug logging
+--      public void E(string eString)                   : error logging
+--      private void CreateFile(string filePath)        : open log file
+--      public void LogToFile()                         : log to file
+--      public void Dispose()                           : cleanup
+--
+--	DATE:			    Mar 12, 2019    first working logger
+--          
+--	REVISIONS:	        Mar 28 fixed Logging errors
+--                      Apr 04 change Logging format
+--
+--	DESIGNERS:	        Allan Hsu
+--
+--				
+--	PROGRAMMER:         Allan Hsu
+--
+--	NOTES:
+--	Took into consideration this logger may be used by different threads, so a single queue
+--  was used to ensure the order is correct for events that happened.
+--  Logger file output will have the following format:
+--  <D or V or E> <ThreadNo> [year-month-day hour:min:sec] : message
+--  D for Debug, V for verbose, and E for Error
+--  ThreadNo tells you which thread is this message printed from.
+---------------------------------------------------------------------------------------*/
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -80,7 +108,7 @@ namespace Server
 
         public void V(string vString)
         {
-            currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
+            currentTime = DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]");
             string log = "V " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + vString;
             logQueue.Enqueue(log);
 
@@ -88,21 +116,24 @@ namespace Server
 
         public void D(string dString)
         {
-            currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
+            currentTime = DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]");
             string log = "D " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + dString;
             logQueue.Enqueue(log);
-
+            Console.WriteLine(log);
         }
 
         public void E(string eString)
         {
-            currentTime = DateTime.Now.ToString("hh:mm:ss.ffff");
+            currentTime = DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]");
             string log = "E " + Thread.CurrentThread.ManagedThreadId.ToString() + " " + currentTime + " :" + eString;
-            //logQueue.Enqueue(log); 
+            logQueue.Enqueue(log);
+            Console.WriteLine(log);
+            /*
             //No longer enqueue, instead we want to log error immediately
             Console.WriteLine(log);
             esw.WriteLine(log);
             esw.Flush();
+            */
         }
 
 

@@ -37,6 +37,7 @@ namespace Server
         public int validity { get; set; }
         public int timeToLive { get; set; }
 		public int collisionId { get; }
+        private static Logger Log;
 
         public bool isSignalSent;
 
@@ -94,7 +95,7 @@ namespace Server
     		if (obj.GetType () != typeof(CollisionItem))
     			return false;
     		CollisionItem other = (CollisionItem)obj;
-			Console.WriteLine ("{0} = {1}", other.collisionId, collisionId );
+            Log.V(other.collisionId + " = " + collisionId );
 
 			return abilityId == other.abilityId && actorHitId == other.actorHitId && actorCastId == other.actorCastId && collisionId == other.collisionId;
     	}
@@ -164,6 +165,7 @@ namespace Server
 		private readonly object padlock = new object();
 		private CollisionItem[] buffer;
 		private GameState gameState;
+        private static Logger Log;
 
         private int currentBufferSize;
         private int tailPtr;
@@ -217,15 +219,15 @@ namespace Server
 					CollisionItem cur = ContainsBufferItem(toAdd);
 					if (ContainsBufferItem(toAdd) == null)
 					{
-						Console.WriteLine ("Adding collision item to the queue");
+						Log.V("Adding collision item to the queue");
 						buffer[headPtr++] = toAdd;
 						currentBufferSize++;
 						cur = toAdd;
-						Console.WriteLine ("Added collision head {0} , tail {1}", headPtr, tailPtr);
+						Log.V("Added collision head " + headPtr + ", tail " + tailPtr);
 					}
 					else
 					{
-						Console.WriteLine ("Incrementing validity of existing collision item. Validity {0}", cur.validity);
+                        Log.V("Incrementing validity of existing collision item. Validity " + cur.validity);
 					}
 					if (++cur.validity == requiredValidity && !cur.isSignalSent) {
 						SignalCollision(cur);
@@ -294,7 +296,7 @@ namespace Server
 			for (int i = tailPtr; i % MaxBufferSize != headPtr % MaxBufferSize; i++)
 			{
 				if (--buffer [i].timeToLive <= 0) {
-					Console.WriteLine ("Discarding old collision item");
+					Log.V("Discarding old collision item");
 					Remove ();
 				}
 			}
@@ -302,7 +304,7 @@ namespace Server
 
         private void SignalCollision(CollisionItem toSignal)
         {
-			Console.WriteLine ("Signal collision {0}, {1}, {2}", toSignal.abilityId, toSignal.actorHitId, toSignal.actorCastId);
+			Log.V("Signal collision " + toSignal.abilityId + ", " + toSignal.actorHitId + ", " + toSignal.actorCastId);
 			toSignal.isSignalSent = true;
 			gameState.TriggerAbility (toSignal.abilityId, toSignal.actorHitId, toSignal.actorCastId);
         }

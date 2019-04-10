@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*---------------------------------------------------------------------------------------
+--	SOURCE FILE:		Program.cs - server of the game
+--
+--	PROGRAM:		    program
+--  Allan Hsu
+--	Mar 28, 2019 added Logger to server, cleanup for timer
+--	Apr 03, 2019 changed console.log to logging, removed unimportant logging		
+---------------------------------------------------------------------------------------*/
+using System;
 using System.Timers;
 using NetworkLibrary;
 using NetworkLibrary.CWrapper;
@@ -73,6 +81,7 @@ namespace Server
 		{
 			Logger Log = Logger.Instance;
 			Log.D ("Server started.");
+
 			// Create a list of elements to send. Using the same list for unreliable and reliable
 
 			// Create a UDPSocket
@@ -120,8 +129,9 @@ namespace Server
 
 		private static void StartHeartBeat (UDPSocket socket, State state)
 		{
-			// Create Timer with a 1/30 second interval
-			sendHeartBeatPing = new System.Timers.Timer (HeartBeatInterval);
+            Log.V("Start sending heart beat.");
+            // Create Timer with a 1/30 second interval
+            sendHeartBeatPing = new System.Timers.Timer (HeartBeatInterval);
 
 			// Set func on timer event (autoreset for continuous sending)
 			sendHeartBeatPing.Elapsed += (source, e) => SendHeartBeat (source, e, socket, state);
@@ -218,8 +228,6 @@ namespace Server
         private static void LobbyState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
 			StartHeartBeat (socket, state);
-
-
 			while (state.TimesEndGameSent < 80) {
 
 				Packet packet;
@@ -248,7 +256,6 @@ namespace Server
 
 					break;
 
-
 				case PacketType.RequestPacket:
 					Console.WriteLine ("Got request packet");
 					try {
@@ -262,11 +269,13 @@ namespace Server
 
 					break;
 				default:
-					Console.WriteLine ("Got unexpected packet type, discarding");
+					Log.V("Got unexpected packet type, discarding");
 					break;
 				}
 
 				Console.WriteLine ("Checking if all players ready");
+				//TODO If all players ready start game send start packet and go to gamestate.
+				Log.V("Checking if all players are ready");
 
 				bool allReady = state.ClientManager.CountCurrConnections > 0;
 				for (int i = 0; i < state.ClientManager.CountCurrConnections; i++) {
@@ -274,14 +283,14 @@ namespace Server
 						continue;
 					}
 					PlayerConnection client = state.ClientManager.Connections [i];
-					Console.WriteLine ("Client {0}, {1}", i, client.Ready);
+					Log.V("Client " + i + ", " + client.Ready);
 					allReady &= client.Ready; //bitwise operater to check that every connection is ready
 				}
-				Console.WriteLine ("Current connections {0}", state.ClientManager.CountCurrConnections);
+                Log.V("Current connections " + state.ClientManager.CountCurrConnections);
 
 
 				if (allReady) {
-					Console.WriteLine ("All are ready sending startgame packet");
+					Log.D("All are ready sending startgame packet");
 					List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 					List<UpdateElement> reliableElements = new List<UpdateElement> ();
 					int players = 0;
@@ -350,7 +359,7 @@ namespace Server
 
 
 				} else {
-					Console.WriteLine ("All players not ready");
+					Log.V("All players not ready");
 				}
 			}
 		}
@@ -380,9 +389,6 @@ namespace Server
         /// ----------------------------------------------
 		private static void GameState (UDPSocket socket, State state, ServerStateMessageBridge bridge)
 		{
-
-
-
 			state.GameState.CollisionBuffer.requiredValidity = Math.Max ((int)(state.ClientManager.CountCurrConnections * 0.8), 1);
 			Console.WriteLine ("set required validity to {0}", state.GameState.CollisionBuffer.requiredValidity);
 
@@ -454,8 +460,6 @@ namespace Server
 				element.UpdateState (new ServerStateMessageBridge (state)); //maybe should also keep a single bridge object in state instead of making a new one every time?
 			}
 
-
-
 		}
 
 		/*================================================================
@@ -478,6 +482,7 @@ namespace Server
 		=================================================================*/
 		private static void StartGameStateTimer (UDPSocket socket, State state)
 		{
+            Log.V("Start total game timer and game state send timer");
 			// Create Timer with a 1/30 second interval
 			sendGameStateTimer = new System.Timers.Timer (33);
 
@@ -487,12 +492,12 @@ namespace Server
 			sendGameStateTimer.Enabled = true;
 		}
 
-		//added for cleaning up gamestateTimer, also clean up the game state timer
-		private static void EndGameStateTimer ()
-		{
-			sendGameStateTimer.Dispose ();
-			state.GameState.EndGamePlayTimer (); // used for cleaning up timer
-		}
+        //added for cleaning up gamestateTimer, also clean up the game state timer
+        private static void EndGameStateTimer() {
+            Log.V("Disposing total game timer and game state send timer");
+            sendGameStateTimer.Dispose();
+            state.GameState.EndGamePlayTimer(); // used for cleaning up timer
+        }
 
         /// ----------------------------------------------
         /// FUNCTION:		Send Game State
@@ -539,6 +544,7 @@ namespace Server
 						//TODO end the game
 						reliable.Add (new GameEndElement (gs.CheckWinningTeam ()));
 						Console.WriteLine ("Game is over");
+                        Log.D("Game is over");
 					} else {
 						sendGameStateTimer.Enabled = false;
 					}
@@ -589,6 +595,8 @@ namespace Server
 			} catch (Exception ex) {
 				Console.WriteLine (ex.Message);
 				Console.WriteLine (ex.StackTrace);
+				Log.E(ex.Message);
+				Log.E(ex.StackTrace);
 			}
 
 		}
